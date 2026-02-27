@@ -1,5 +1,4 @@
-# Dev-Snacks
-This is the development repo of Dev Snacks (Seraphine Impex Pvt. Ltd.)
+# my-sfdc-project
 
 Salesforce DX Project - API Version 59.0
 
@@ -27,3 +26,5 @@ Salesforce DX Project - API Version 59.0
 - `config/` - Configuration files
 
 ## 🛠️ Development
+
+This project was generated using GitHub Actions workflow.
