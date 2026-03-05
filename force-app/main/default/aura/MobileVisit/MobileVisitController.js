@@ -1585,6 +1585,7 @@
         component.set("v.productStockMfgMap", []);
         component.set("v.confirmOrderWithItems", false);
         component.set('v.showConfirmInvoiceWithItem',false);
+        component.set("v.originalStockQuantities", {});
     },
     CancelClick: function (component, event) {
 
@@ -1606,6 +1607,7 @@
         component.set("v.productStockMfgMap", []);
         component.set("v.confirmOrderWithItems", false);
         component.set('v.showConfirmInvoiceWithItem',false);
+        component.set("v.originalStockQuantities", {});
     },
     addRow: function (component, event, helper) {
         var storeId = component.get('v.data.currentvisit.Account1__r.EId__c');
@@ -1796,6 +1798,7 @@
         console.log('selectedStock== ' + selectedStock);
         var products = component.get('v.orderItemList');
         var stocks = component.get('v.stocks');
+        var originalStockQuantities = component.get("v.originalStockQuantities");
         var storeId = component.get('v.data.currentvisit.Account1__c');
         var cashDis = component.get('v.data.currentvisit.Account1__r.Cash_Discount__c');
         var discounts = component.get('v.discounts');
@@ -1814,6 +1817,12 @@
                 // products[index].Stock__c = stocks[i].Id;
                 products[index].MRP__c = stocks[i].Price__c;                      
                 products[index].Available_Quantity__c = stocks[i].Available_Quantity__c;
+                // Store original quantity if not already stored
+                var stockId = stocks[i].Id;
+                if (!originalStockQuantities[stockId]) {
+                    originalStockQuantities[stockId] = stocks[i].Available_Quantity__c;
+                    component.set("v.originalStockQuantities", originalStockQuantities);
+                }
                 //  component.set('v.orderItemList', products);
                 console.log('products : ' + products);
                 var unitPriceAfterDiscount = 0.0,productDiscount=0,productDiscountAmt=0;
@@ -2107,6 +2116,45 @@
         console.log('quantity==' + quantity);
         var index = event.currentTarget.dataset.record;
         var oitems = component.get('v.orderItemList');
+        var orderItemList = oitems;
+
+        var originalStockQuantities = component.get("v.originalStockQuantities");
+        var currentItem = orderItemList[index];
+        var stockId = currentItem.Stock__c;
+        var enteredQty = currentItem.Quantity__c;
+        var indexNum = parseInt(index, 10);
+
+        // Validate stock is selected and quantity is entered
+        if(stockId && enteredQty && enteredQty > 0) {
+            var originalQty = originalStockQuantities[stockId] !== undefined
+                ? originalStockQuantities[stockId]
+                : currentItem.Available_Quantity__c;
+
+            // Calculate total quantity used by this stock in other items
+            var totalUsedQty = 0;
+            for(var i = 0; i < orderItemList.length; i++) {
+                if(i !== indexNum && orderItemList[i].Stock__c === stockId && orderItemList[i].Quantity__c) {
+                    totalUsedQty += parseFloat(orderItemList[i].Quantity__c);
+                }
+            }
+
+            // Calculate remaining quantity
+            var remainingQty = originalQty - totalUsedQty;
+
+            // Validate entered quantity
+            if(enteredQty > remainingQty) {
+                helper.showToast("Entered quantity (" + enteredQty + ") exceeds available quantity (" + remainingQty + ") for " + currentItem.Name, "error");
+                currentItem.Quantity__c = null;
+                currentItem.Available_Quantity__c = remainingQty;
+                component.set("v.orderItemList", orderItemList);
+                return;
+            }
+
+            // Update displayed available quantity (reduce by entered quantity)
+            currentItem.Available_Quantity__c = remainingQty - enteredQty;
+        }
+
+        // Continue with existing price calculation logic below...
         var storeId = component.get('v.data.currentvisit.Account1__c');
         var cashDis = component.get('v.data.currentvisit.Account1__r.Cash_Discount__c');
         var salesTaxPercent= 0;
