@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MFR_Name__c</fullName>
+    <externalId>false</externalId>
+    <label>MFR Name</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>AMAZE ASSOCIATE</fullName>
+                <default>false</default>
+                <label>AMAZE ASSOCIATE</label>
+            </value>
+            <value>
+                <fullName>DEVBHUMI NATURAL PRODUCTS PRODUCERS CO L</fullName>
+                <default>false</default>
+                <label>DEVBHUMI NATURAL PRODUCTS PRODUCERS CO L</label>
+            </value>
+            <value>
+                <fullName>DOWN TO EARTH</fullName>
+                <default>false</default>
+                <label>DOWN TO EARTH</label>
+            </value>
+            <value>
+                <fullName>GOODRICKE GROUP LIMITED</fullName>
+                <default>false</default>
+                <label>GOODRICKE GROUP LIMITED</label>
+            </value>
+            <value>
+                <fullName>GOODRICKE GROUP LIMITED(H)</fullName>
+                <default>false</default>
+                <label>GOODRICKE GROUP LIMITED(H)</label>
+            </value>
+            <value>
+                <fullName>HITA LIFE VENTURES PRIVATE LIMITED</fullName>
+                <default>false</default>
+                <label>HITA LIFE VENTURES PRIVATE LIMITED</label>
+            </value>
+            <value>
+                <fullName>INDIAN DENTAL ORGANIZATION</fullName>
+                <default>false</default>
+                <label>INDIAN DENTAL ORGANIZATION</label>
+            </value>
+            <value>
+                <fullName>KAI BEAUTY WARE</fullName>
+                <default>false</default>
+                <label>KAI BEAUTY WARE</label>
+            </value>
+            <value>
+                <fullName>KAI BRUSH</fullName>
+                <default>false</default>
+                <label>KAI BRUSH</label>
+            </value>
+            <value>
+                <fullName>KAI HOME WARE</fullName>
+                <default>false</default>
+                <label>KAI HOME WARE</label>
+            </value>
+            <value>
+                <fullName>KAI RAZORS</fullName>
+                <default>false</default>
+                <label>KAI RAZORS</label>
+            </value>
+            <value>
+                <fullName>KHADI NATURAL HEALTHCARE</fullName>
+                <default>false</default>
+                <label>KHADI NATURAL HEALTHCARE</label>
+            </value>
+            <value>
+                <fullName>MEHROTRA CONSUMER PRODUCTS PVT LTD</fullName>
+                <default>false</default>
+                <label>MEHROTRA CONSUMER PRODUCTS PVT LTD</label>
+            </value>
+            <value>
+                <fullName>NATURE LAND</fullName>
+                <default>false</default>
+                <label>NATURE LAND</label>
+            </value>
+            <value>
+                <fullName>ORGANIC INDIA PVT LTD</fullName>
+                <default>false</default>
+                <label>ORGANIC INDIA PVT LTD</label>
+            </value>
+            <value>
+                <fullName>PRO NATURE ORGANIC FOODS PVT LTD</fullName>
+                <default>false</default>
+                <label>PRO NATURE ORGANIC FOODS PVT LTD</label>
+            </value>
+            <value>
+                <fullName>SRESTA BIO NATURAL PRODUCTS</fullName>
+                <default>false</default>
+                <label>SRESTA BIO NATURAL PRODUCTS</label>
+            </value>
+            <value>
+                <fullName>WO HERBAL COSMETICS</fullName>
+                <default>false</default>
+                <label>WO HERBAL COSMETICS</label>
+            </value>
+            <value>
+                <fullName>WO HERBAL POWDERS</fullName>
+                <default>false</default>
+                <label>WO HERBAL POWDERS</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

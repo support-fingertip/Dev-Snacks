@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Day_Order__c</fullName>
+    <externalId>false</externalId>
+    <label>Day Order</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Day 1</fullName>
+                <default>false</default>
+                <label>Monday</label>
+            </value>
+            <value>
+                <fullName>Day 2</fullName>
+                <default>false</default>
+                <label>Tuesday</label>
+            </value>
+            <value>
+                <fullName>Day 3</fullName>
+                <default>false</default>
+                <label>Wednesday</label>
+            </value>
+            <value>
+                <fullName>Day 4</fullName>
+                <default>false</default>
+                <label>Thursday</label>
+            </value>
+            <value>
+                <fullName>Day 5</fullName>
+                <default>false</default>
+                <label>Friday</label>
+            </value>
+            <value>
+                <fullName>Day 6</fullName>
+                <default>false</default>
+                <label>Saturday</label>
+            </value>
+            <value>
+                <fullName>Day 7</fullName>
+                <default>false</default>
+                <label>Sunday</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

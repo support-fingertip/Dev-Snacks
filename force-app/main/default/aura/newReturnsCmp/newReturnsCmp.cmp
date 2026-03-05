@@ -1,0 +1,292 @@
+<aura:component controller="newReturnsController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction"  access="global">
+    
+    <aura:attribute name="customerId" type="String" />
+    <aura:attribute name="customerName" type="String" />
+    <aura:attribute name="today" type="Date" />
+    <aura:attribute name="Return" type="Return__c" default="{}" />
+    <aura:attribute name="returnItems" type="Object[]" />
+    <aura:attribute name="showItems" type="boolean" default="false" />
+    <aura:attribute name="disableSave" type="boolean" default="true" />
+    <aura:attribute name="GrandTotal" type="Decimal" default="0.00" />
+    <aura:attribute name="spinner" type="boolean" default="false" />
+    <aura:attribute name="redirect" type="Boolean" default="false" />
+    <aura:attribute name="makeRemarkRequired" type="Boolean" default="false" />
+    <aura:attribute name="cashDiscount" type="Decimal" default="0.00"/>
+     <aura:attribute name="cashDiscountCust" type="Decimal" default="0.00"/>
+    <aura:attribute name="Products" type="Stock__c[]" default="[]" />
+    <aura:attribute name="matchproducts" type="Stock__c[]" default="[]"/>
+    <aura:attribute name="searchProduct" type="string" default=""/>
+    <aura:attribute name="searchIndex" type="Integer" />
+    <aura:attribute name="discounts" type="Object[]" />
+    <aura:attribute name="salesInvoiceId" type="string" default=""/>
+    <aura:attribute name="agSalesInvoiceId" type="string" default=""/>
+     <aura:attribute name="showProduct" type="boolean" default="false" />
+      <aura:attribute name="productOptions" access="global" type="list" description="product list"/>
+     <aura:attribute name="productStockMap" access="global" type="map" description=""/>
+    <aura:handler name="change" value="{!v.salesInvoiceId}" action="{!c.changeSalesInvoice}"/>
+     <aura:handler name="change" value="{!v.agSalesInvoiceId}" action="{!c.changeAGSalesInvoice}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    
+    
+    <div class="slds-tabs_card">
+        <div class="slds-page-header">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-opportunity">
+                                <lightning:icon iconName="utility:cart" alternativeText="Event" title="Event" />
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span>Seraphine</span>
+                                        <span class="slds-page-header__title slds-truncate" title="New Returns">New Returns</span>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <br />
+    
+    <lightning:recordEditForm aura:id="recordEditForm" objectApiName="Return__c">
+        
+        <div class="slds-tabs_card">
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                    <div class="slds-size_1-of-3 slds-p-horizontal_x-small textfont slds-max-small-size_1-of-2" > <b>Store Name:</b>&nbsp; {!v.customerName}
+                    </div>
+                    <div class="slds-size_1-of-3 slds-p-horizontal_x-small slds-max-small-size_1-of-2" style="font-size:12px;">
+                        <lightning:inputField fieldName="Type__c" required="true" value="{!v.Return.Type__c}" onchange="{!c.onSelectType}"  /> 
+                    </div>
+                </div>
+                     <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                    <aura:if isTrue="{!v.Return.Type__c == 'Against Invoice'}">
+                        <div class="slds-size_1-of-3 slds-p-horizontal_x-small textfont slds-max-small-size_1-of-1">
+                            
+                            <div class="slds-form">
+                                <div class="slds-form-element slds-form-element_horizontal">
+                                    
+                                    <label class="slds-form-element__label" for="form-element-help-01"><span class="slds-required">*</span> Sales Invoice</label>
+                                    <div class="slds-form-element__control">
+                                        <c:CustomLookup objectName="Sales_Invoice__c" fieldName="Name" label="Sales Invoice" iconName="custom:custom56" placeholder="Search Sales invoice ..."  
+                                                        filterCondition="{! ' AND Customer__c =\''+v.customerId+'\' AND Pending_Amount__c >0 '}" selectedRecordId="{!v.salesInvoiceId}"/> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="slds-size_1-of-3 slds-p-horizontal_x-small" style="font-size:12px;">
+                            <lightning:inputField fieldName="Sales_Invoice__c" required="true"
+                                                  value="{!v.Return.Sales_Invoice__c}" onchange="{!c.clickInvoice}" />
+                        </div>-->
+                    </aura:if>
+                    <aura:if isTrue="{!OR(v.Return.Type__c == 'Against Invoice',v.Return.Type__c == 'Against Customer')}">
+                        <div class="slds-size_1-of-3 slds-p-horizontal_x-small slds-max-small-size_1-of-2" style="font-size:12px;">
+                            <lightning:inputField fieldName="Return_Type__c" required="true" onchange="{!c.handleReturnType}"  value="{!v.Return.Return_Type__c}" />
+                        </div>
+                        <div class="slds-size_1-of-3 slds-p-horizontal_x-small slds-max-small-size_1-of-2 " style="font-size:12px;">
+                            <lightning:inputField fieldName="Return_Date__c" required="true"  value="{!v.Return.Return_Date__c}" />
+                        </div>
+                    </aura:if>
+                </div>
+                <aura:if isTrue="{!v.Return.Type__c == 'Against Customer'}">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        
+                        <div class="slds-size_1-of-3 slds-p-horizontal_x-small slds-max-small-size_1-of-2" style="font-size:12px;">
+                            <lightning:inputField fieldName="Debit_Note_Number__c" required="true" onchange="{!c.handleReturnType}"  value="{!v.Return.Debit_Note_Number__c}" />
+                        </div>
+                        <div class="slds-size_1-of-3 slds-p-horizontal_x-small slds-max-small-size_1-of-2 " style="font-size:12px;">
+                            <lightning:inputField fieldName="Debit_Note_Date__c" required="true"  value="{!v.Return.Debit_Note_Date__c}" />
+                        </div>
+                          <div class="slds-size_1-of-3 slds-p-horizontal_x-small slds-max-small-size_1-of-1" style="font-size:12px;">
+                                 <div class="slds-form">
+                                <div class="slds-form-element slds-form-element_horizontal">
+                                    
+                                    <label class="slds-form-element__label" for="form-element-help-01"><span class="slds-required">*</span> Sales Invoice</label>
+                                    <div class="slds-form-element__control">
+                                        <c:CustomLookup objectName="Sales_Invoice__c" fieldName="Name" label="Sales Invoice" iconName="custom:custom56" placeholder="Search Sales invoice ..."  
+                                                        filterCondition="{! ' AND Customer__c =\''+v.customerId+'\' '}" selectedRecordId="{!v.agSalesInvoiceId}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+            </div>
+        </div>
+    </lightning:recordEditForm>
+    
+    <aura:if isTrue="{!v.showItems}">
+        <aura:if isTrue="{!v.Return.Type__c == 'Against Invoice'}">
+            <aura:iteration items="{!v.returnItems}" var="ret" indexVar="index">
+                
+                <lightning:card class="slds-p-left_xx-small groove">
+                    <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                        <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                            <lightning:input value="{!ret.Item_Name__c}" label="{!index+1+(') Name')}" type="text"  disabled="true" />
+                        </div>
+                        
+                        <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                            <lightning:input name="prodCode" type="text" label="Batch No." value="{!ret.Batch_No__c}"  disabled="true" />
+                        </div>
+                        <!-- <div class="slds-size_1-of-3 slds-p-horizontal_small" data-record="{!index}">
+                            <lightning:select name="select1" label="Type" required="true" value="{!ret.Type__c}">
+                                <option value="">choose one...</option>
+                                <option value="Saleable">Saleable</option>
+                                <option value="Non-Saleable">Non-Saleable</option>
+                            </lightning:select>
+                        </div>-->
+                        <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                            <lightning:textarea name="Remarks" label="Remarks" required="{!v.makeRemarkRequired}" value="{!ret.Remarks__c}"/>
+                        </div>
+                        <div class="slds-size_1-of-3 slds-p-horizontal_small" data-record="{!index}">
+                            <lightning:input name="invQty" type="number" label="Inv. Quantity" value="{!ret.Inv_Quantity}"   disabled="true" />
+                        </div>
+                        <div class="slds-size_1-of-3 slds-p-horizontal_small" onkeyup="{!c.getGrandTotal}"
+                             data-record="{!index}">
+                            <lightning:input name="retQty" type="number" label="Ret. Quantity" value="{!ret.Quantity__c}" />
+                        </div>
+                        
+                        <div class="slds-size_1-of-3 slds-p-horizontal_small" data-record="{!index}">
+                            <lightning:input name="prodPrice" type="number" formatter="currency" disabled="true" step="0.01"  label="Unit Price" value="{!ret.Unit_Price__c}" />
+                        </div>
+                        <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                            <lightning:input name="total" type="number" formatter="currency" step="0.01" disabled="true"
+                                             label="Total Price" value="{!ret.Total__c}" style="color:green;font-weight:bold" />
+                        </div>
+                    </div>
+                </lightning:card>
+            </aura:iteration>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.Return.Type__c == 'Against Customer'}">
+            <aura:iteration items="{!v.returnItems}" var="ret" indexVar="index">
+                <lightning:card class="slds-p-left_xx-small groove">
+                    <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                        <div class="slds-size_1-of-3 slds-max-small-size_1-of-1  slds-p-horizontal_small">
+                            <aura:if isTrue="{!v.showProduct}">
+                                <c:MultiSelectCombobox options="{!v.productOptions}" value="{!ret.Item_Name__c}"  label="Product Name" multiSelect="false" searchString=""  onchange="{!c.updateProduct}" />
+                            </aura:if>
+                        </div>
+                     <!--   <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                            <div class="slds-combobox_container">
+                                
+                                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"  data-record="{!index}"  onchange="{!c.searchProduct}">
+                                    
+                                    <lightning:input value="{!ret.Item_Name__c}" aura:id="field1" name="enter-search" label="Product Name"   type="search" required="true" id="combobox-id-1" aria-autocomplete="list" aria-controls="listbox-id-1" aria-expanded="false" aria-haspopup="listbox" autoComplete="off" role="combobox" placeholder="Search..."/>                                      
+                                    
+                                </div>
+                                
+                                <aura:if isTrue="{!v.searchIndex == index}">
+                                    <div class="{!not(empty(v.matchproducts)) ? 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click' }" aura:id="open">
+                                        <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox">
+                                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                <aura:if isTrue="{!v.matchproducts}">
+                                                    
+                                                    <aura:iteration items="{!v.matchproducts}" var="item">
+                                                        <li role="presentation" class="slds-listbox__item">
+                                                            <div id="option1" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                                
+                                                                <span class="slds-media__figure slds-listbox__option-icon">
+                                                                    <span class="slds-icon_container slds-icon-standard-account">
+                                                                        <lightning:icon iconName="standard:user" size="xx-small"/>&nbsp;
+                                                                    </span>
+                                                                </span>
+                                                                <span class="slds-media__body">
+                                                                    <div class="slds-lookup__result-text" data-id="{!item.Id}"  data-record="{!index}" onclick="{!c.updateProduct }">
+                                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Product_Batch_Name__c}</span>
+                                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Manufacturing_Date__c}</span>
+                                                                    </div>
+                                                                </span>
+                                                            </div>
+                                                        </li>
+                                                    </aura:iteration>
+                                                    
+                                                </aura:if>     
+                                            </ul>
+                                        </div>  
+                                    </div>
+                                </aura:if> 
+                                
+                            </div>
+                            
+                        </div>-->
+                        
+                        <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                            <lightning:input name="prodCode" type="text" label="Batch No." value="{!ret.Batch_No__c}"   disabled="true" />
+                        </div>
+                        <div class="slds-size_1-of-3 slds-p-horizontal_small"  data-record="{!index}"  onchange="{!c.onChangeTax}">
+                            <lightning:select aura:id="field"  name="taxOption" label="Tax Value" value="{!ret.Tax_Option__c}" required="true" disabled="{!empty(ret.Product__c)}">
+                                <option value="New Tax">New Tax</option>
+                                <option value="Old Tax">Old Tax</option>
+                            </lightning:select>
+                           
+                        </div>
+                        
+
+                        <aura:if isTrue="{!ret.Tax_Option__c != ''}">
+                            <div class="slds-size_1-of-3 slds-p-horizontal_small" onkeyup="{!c.getGrandTotal}"
+                                 data-record="{!index}">
+                                <lightning:input name="retQty" type="number" label="Ret. Quantity" value="{!ret.Quantity__c}" />
+                            </div>
+                            
+                            <div class="slds-size_1-of-3 slds-p-horizontal_small" data-record="{!index}">
+                                <lightning:input name="prodPrice" type="number" formatter="currency" disabled="true" step="0.01"
+                                                 label="Unit Price" value="{!ret.Unit_Price__c}" />
+                            </div>
+                            <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                <lightning:input name="total" type="number" formatter="currency" step="0.01" disabled="true"
+                                                 label="Total Price" value="{!ret.Total__c}" style="color:green;font-weight:bold" />
+                            </div>
+                            <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                <lightning:textarea name="Remarks" label="Remarks" required="{!v.makeRemarkRequired}" value="{!ret.Remarks__c}"/>
+                            </div>
+                        </aura:if>
+                    </div>
+                    <aura:set attribute="actions" >
+                        <a onclick="{!c.removeRow}" data-record="{!index}">
+                            <lightning:buttonIcon iconName="utility:delete" iconClass="red"  size="x-large" variant="destructive" alternativeText="Delete" />
+                        </a>
+                        <lightning:buttonIcon iconName="utility:add" iconClass="green"  size="x-large" variant="success" alternativeText="Add" onclick="{!c.addRow}"/>
+                        
+                    </aura:set>
+                </lightning:card>
+            </aura:iteration>
+        </aura:if>
+        
+        <div class="slds-p-top_small">
+            <lightning:card class="slds-p-left_xx-small groove">
+                <lightning:icon iconName="custom:custom17" size="x-small" />
+                &nbsp;&nbsp;
+                <b>Grand Total:</b>&nbsp; &nbsp;
+                <span style="color:red; font-size:12px;font-weight:bold">₹{!v.GrandTotal}</span>
+                <br/>
+                <lightning:icon iconName="standard:discounts" size="x-small"/>
+                &nbsp;&nbsp;
+                <b>Cash Discount:</b>&nbsp; &nbsp;<span style=" font-size:12px;font-weight:bold">{!v.cashDiscount}%</span>
+                <br/>
+                <p style="font-size:9px;color:red">* Cash discount will be applied on each items before Sales Tax.</p>
+                
+            </lightning:card>
+            
+            <div class="slds-align_absolute-center slds-p-top_small ">
+                <lightning:button variant="destructive" label="Cancel" title="Cancel" onclick="{!c.CancelClick }" />
+                <lightning:button variant="brand" label="Submit" title="Brand action" disabled="{!v.disableSave}"
+                                  onclick="{!c.save}" />
+                
+            </div>
+        </div>
+    </aura:if>
+    <!-- spinner -->
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+</aura:component>

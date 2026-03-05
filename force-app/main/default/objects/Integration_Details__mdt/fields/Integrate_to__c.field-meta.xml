@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Integrate_to__c</fullName>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Integrate to</label>
+    <required>true</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>SAP</fullName>
+                <default>true</default>
+                <label>SAP</label>
+            </value>
+            <value>
+                <fullName>EInvoice</fullName>
+                <default>false</default>
+                <label>EInvoice</label>
+            </value>
+            <value>
+                <fullName>GSTvalidator</fullName>
+                <default>false</default>
+                <label>GSTvalidator</label>
+            </value>
+            <value>
+                <fullName>SAPO</fullName>
+                <default>false</default>
+                <label>SAPO</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

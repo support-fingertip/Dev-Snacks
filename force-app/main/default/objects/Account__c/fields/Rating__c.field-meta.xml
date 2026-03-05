@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Rating__c</fullName>
+    <externalId>false</externalId>
+    <formula>IMAGE(&apos;https://image.shutterstock.com/image-vector/fivestar-rating-icon-4-260nw-729509077.jpg&apos;, &apos;&apos;, 20,100)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Rating</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

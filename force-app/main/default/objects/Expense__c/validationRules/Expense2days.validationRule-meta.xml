@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Expense2days</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(Expense_Date__c  &lt;  TODAY() -2 ,ISNEW() )</errorConditionFormula>
+    <errorDisplayField>Expense_Date__c</errorDisplayField>
+    <errorMessage>you can&apos;t submit more then 2 working days back expense</errorMessage>
+</ValidationRule>

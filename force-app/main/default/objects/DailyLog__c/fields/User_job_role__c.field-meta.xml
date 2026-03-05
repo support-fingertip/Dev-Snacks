@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>User_job_role__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE( Owner:User.ProfileId   , &apos;00e5g000001Ao5B&apos;, &apos;Sales promoter&apos;, &apos;00e5g000001BFaT&apos;, &apos;Sales officer&apos;,&apos;00e5g000001BGl9&apos;,&apos;Sales manager&apos;,&apos;00e5g000001eXgW&apos;,&apos;Admin&apos;,&apos;Other&apos;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>User job role</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

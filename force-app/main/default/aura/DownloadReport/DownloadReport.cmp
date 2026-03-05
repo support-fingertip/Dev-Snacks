@@ -1,0 +1,51 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+        <aura:attribute name="FromDate" type="Date" />
+    <aura:attribute name="ToDate" type="Date" />
+    <aura:attribute name="showReport" type="boolean" default="false"/>
+    <aura:attribute name="label" type="string" default="Show"/>	
+    <lightning:card >
+        <aura:set attribute="title">
+            <lightning:icon iconName="action:share_file" size="small"/>
+           Download Report
+        </aura:set>
+  
+         
+            <div class="slds-panel slds-m-around_medium slds-p-left_xx-small slds-p-right_xxx-small" >
+ Please select Date Range 
+               <div class="slds-grid slds-wrap slds-gutters ">
+                                <div class="slds-size_1-of-2 slds-p-horizontal_small">
+                                     <lightning:input type="date" name="input1" aura:id="dayte" value="{!v.FromDate}" label="Start date" required="true" onchange="{!c.onDateChange}"/>
+                   </div>
+                    <div class="slds-size_1-of-2 slds-p-horizontal_small">
+                         <lightning:input type="date" name="input1" label="End date"  aura:id="dayte"  value="{!v.ToDate}" required="true" onchange="{!c.onDateChange}"/>
+                   </div>
+                
+                </div>
+                <br/>
+                  <aura:if isTrue="{!v.showReport}">
+                <table class=" slds-table " cellpadding="1" border="1" >
+                    <thead>
+                    <tr><th>Report Name</th><th class="slds-text-align_center">Action</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                      <td>Collection Sheet</td><td class="slds-text-align_center"><lightning:button label="Download" class="btn btndown" iconName="utility:download"  onclick="{!c.collectionSheet}"/></td>
+                    </tr> 
+                     <tr>
+                         <td>Expense Sheet</td><td class="slds-text-align_center"><lightning:button label="Download" class="btn btndown" iconName="utility:download"  onclick="{!c.ExpenseSheet}"/></td>
+                    </tr> 
+                     <tr>
+                         <td>CashBook</td><td class="slds-text-align_center"><lightning:button label="Download" class="btn btndown" iconName="utility:download"  onclick="{!c.cashbook}"/></td>
+                    </tr>
+                         <tr>
+                         <td>VanStock</td><td class="slds-text-align_center"><lightning:button label="Download" class="btn btndown" iconName="utility:download"  onclick="{!c.vanstock}"/></td>
+                    </tr>
+                        </tbody>
+                </table>
+                </aura:if>
+        </div>
+
+  
+    </lightning:card>
+    
+</aura:component>

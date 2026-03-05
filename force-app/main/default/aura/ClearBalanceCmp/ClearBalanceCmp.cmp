@@ -1,0 +1,25 @@
+<aura:component controller="ClearBalController" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doinIt}"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="showMsg" type="boolean" default="false"/>
+    <aura:attribute name="spinner" type="boolean" default="false" />
+    
+     <header class="slds-modal__header">
+        <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Clear Balance</h1>
+    </header>
+    <aura:if isTrue="{!v.showMsg}">
+    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+        <p><b>Are you sure you want to clear the balance?</b></p>
+    </div>
+    <footer class="slds-modal__footer">      
+        <lightning:button name='No' label='No' onclick='{!c.handleConfirmDialogNo}'/>
+        <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.handleConfirmDialogYes}'/>
+    </footer>
+        </aura:if>
+     <!-- spinner -->
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+</aura:component>

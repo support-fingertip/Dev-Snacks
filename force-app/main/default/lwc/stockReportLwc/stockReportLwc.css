@@ -1,0 +1,97 @@
+.custom-background {
+    background-color: #f3f3f3;
+}
+.zindex-val{
+    z-index: 9;
+    height: -webkit-fill-available;
+}
+.custom-align-baseline{
+    align-items: self-end;
+}
+.cust-size_medium{
+    width: 17rem !important;
+}
+.cust-overflow{
+    overflow-x: auto;
+}
+.custom-align-center{
+    align-items: center;
+}
+.custom-panelrow{
+        display: flex;
+    flex-direction:row;
+    justify-content:flex-start;
+    flex-wrap: wrap;
+
+}
+.down-button {display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #e2f1e8;
+    border-radius: 12px;
+    padding: 12px 7px 11px 5px;
+    width: max-content;
+    height: min-content;
+    cursor: pointer;
+    font-size: 1opx;
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+    .down-button:hover { transform: scale(1.05); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35); /* stronger shadow on hover */ }
+.down-button-button lightning-icon { --sds-c-icon-color-foreground-default: #db5959; /* bright pink */ --sds-c-icon-color-foreground: #db5959;
+ }
+ .slds-table_container {
+    overflow-x: auto;
+    overflow-y: auto;
+    overflow-block: auto;
+     height: 120vh;
+      width: 60vh;
+
+}
+/* Highlight editable/selectable rows in green */
+tr.editable-row {
+    background-color: #d9fdd3; /* light green */
+}
+
+/* Table borders */
+.slds-table_col-bordered th,
+.slds-table_col-bordered td {
+    border: 1px solid #d8dde6;
+}@media (max-width: 480px) {
+    /* Target the main docked panel container */
+    .slds-panel_docked {
+        width: 100vw !important; /* Full viewport width */
+        height: 100vh !important; /* Full viewport height */
+        position: fixed !important; /* Fixed position relative to viewport */
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        z-index: 1000; /* Ensure it's on top of other content */
+    }
+    /* Ensure the body of the panel scrolls if content is long */
+    .slds-panel__body {
+        overflow-y: auto;
+        height: calc(100vh - (height of header + height of footer));
+    }
+}
+
+/* Reduce font/padding on medium screens */
+@media screen and (max-width: 1200px) {
+    .slds-table th,
+    .slds-table td {
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+/* Highlight editable/selectable rows in green */
+tr.editable-row {
+    background-color: #d9fdd3; /* light green */
+}
+
+/* Table borders */
+.slds-table_col-bordered th,
+.slds-table_col-bordered td {
+    border: 1px solid #d8dde6;
+}

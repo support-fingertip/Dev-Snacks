@@ -1,0 +1,260 @@
+<aura:component  controller="NewInvoiceCmpCtrl" extends="c:BaseComponent" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <aura:attribute name="cashDiscount" type="Decimal" default="0.00"/>
+    <aura:attribute name="GrandTotal" type="Decimal" default="0.00"/>
+         <aura:attribute name="GrandTotalDisc" type="Decimal" default="0.00"/>
+    <aura:attribute name="TotalQty" type="Decimal" default="0.00"/>
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    <aura:attribute name="disableBtn" type="boolean" default="false"/>
+    <aura:attribute name="searchProductName" type="String"/>
+    <aura:attribute name="cartItems"  type="String"/>
+    <aura:attribute name="disableCart" type="boolean" default="true"/>
+    <aura:attribute name="showCart" type="boolean" default="false"/>
+    
+    <!-- Object attributes -->
+    <aura:attribute name="Invoice" type="object" default="{}" /> 
+    <aura:attribute name="invoiceItemList" type="object[]"/>
+    <aura:attribute name="data" type="object" />
+    <aura:attribute name="wrapper" type="object[]" default="[]" />
+    <aura:attribute name="Stocks" type="Stock__c[]" default="[]" />
+    <aura:attribute name="Products" type="Product__c[]" default="[]" />
+    <aura:attribute name="discounts" type="Object[]" />
+    <aura:attribute name="searchList" type="List" /> 
+    <aura:attribute name="cartProductIds" type="List"/>
+    
+    <!-- Lookup attributes -->
+    <aura:attribute name="matchstocks" type="Stock__c[]" default="[]"/>
+    <aura:attribute name="searchProduct" type="string" default=""/>
+    <aura:attribute name="searchIndex" type="Integer" />
+    <aura:handler name="change" value="{!v.searchProduct}" action="{!c.searchProduct}"></aura:handler>
+    
+    
+    <!-- Handlers-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    
+    
+    <div class="slds-tabs_card">
+        <div class="slds-page-header">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-opportunity">
+                                <lightning:icon iconName="utility:cart" alternativeText="Event" title="Event" />
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span>Seraphine</span>
+                                        <span class="slds-page-header__title slds-truncate" title="New Invoice">New Invoice</span>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <br/>
+    <aura:if isTrue="{!v.data.currentvisit != null}">
+        <div class="slds-modal__content">
+            <div style="padding:3px; text-align:center;">
+                <h1> <b><span style="color:brown">Customer</span> </b> : {!v.data.currentvisit.Account1__r.Name}
+                    <br/> <b> <span style="color:brown">Invoice Date</span></b> : <lightning:formattedDateTime value="{!v.data.currentvisit.Actual_Start_Time__c}"/>
+                </h1>
+            </div>
+            
+            <aura:if isTrue="{!v.showCart == false}">
+                <lightning:card title="Search by one of the following Product fields." iconName="standard:product_request">
+                    <lightning:layout >
+                        <lightning:layoutItem flexibility="auto" size="{!$Browser.formFactor == 'DESKTOP' ? 6 : 12}">
+                            <div class="slds-m-around_x-small">
+                                <lightning:input aura:id="enter-search"
+                                                 name="enter-search"
+                                                 label="Search Product By Name/Code"
+                                                 type="search"
+                                                 placeholder="Enter Product Name/Code"
+                                                 value="{!v.searchProductName}"
+                                                 onchange="{!c.searchProducts}"/>
+                            </div>
+                        </lightning:layoutItem>
+                        
+                    </lightning:layout>
+                    <lightning:layout>
+                        <lightning:layoutItem flexibility="auto" size="{!$Browser.formFactor == 'DESKTOP' ? 1 : 2}">
+                            <div class="slds-clearfix slds-m-left_small">
+                                <div class="slds-float_left">
+                                    <lightning:buttonIcon iconName="utility:cart" disabled="{!v.disableCart}" variant="brand" alternativeText="Cart" onclick="{! c.cartClickOrder }" title="Cart" />
+                                </div>
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="auto" size="{!$Browser.formFactor == 'DESKTOP' ? 4 : 6}">
+                            <div class="slds-clearfix slds-m-left_small">
+                                <aura:renderIf isTrue="{!v.cartProductIds.length}">
+                                    <div class="border">
+                                        <p class="productDetails slds-m-around_xx-small">Cart Items: <ui:outputText value="{!v.cartProductIds.length}"/></p>
+                                    </div>
+                                </aura:renderIf> 
+                            </div>
+                        </lightning:layoutItem>  
+                        <lightning:layoutItem flexibility="auto" size="3">
+                            <div class="slds-clearfix slds-m-left_small">
+                                    <lightning:button variant="destructive" label="Cancel" title="Cancel" onclick="{!c.CancelClick }" />
+                            </div>
+                        </lightning:layoutItem>  
+                    </lightning:layout>
+                     
+                    <lightning:card>
+                        <aura:iteration items="{!v.searchList}" var="wrp" indexVar="index">
+                            <lightning:card class="slds-p-left_xx-small groove">
+                                <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                                    
+                                    <div class="slds-size_1-of-1 slds-p-horizontal_small">
+                                        <lightning:input value="{!wrp.product.Product_Name_Code__c}" aura:id="enter-search" name="enter-search" label="{!index+1+(') Product Name')}" type="text" disabled="true"/>
+                                        <aura:if isTrue="{!wrp.stock.Fixed_Price_Item__c}"><span style="font-size:9px;color:red">* This is a fixed price item.</span></aura:if>
+                                    </div>  
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                        <lightning:input value="{!wrp.availableQty}" label="Available Quantity" type="number" disabled="true"/>
+                                    </div> 
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                        <lightning:input value="{!wrp.price}" type="number" formatter="currency" step="0.01" label="MRP" disabled="true"/>
+                                    </div> 
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" data-value="{!wrp.quantity}" data-record="{!index}" onchange="{!c.addToCart}">
+                                        <lightning:input name="quantity" type="number"  min="1"  message-when-range-underflow="Please enter valid qty"  value="{!wrp.quantity}" step="0.01" label="Quantity" />
+                                    </div>
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" >
+                                        <aura:if isTrue="{!wrp.stock.Fixed_Price_Item__c == false}">
+                                            <lightning:input name="cashdis" type="text" label="Cash Discount(%)" value="{!v.cashDiscount + '%'}" disabled="true"/>
+                                            <aura:set attribute="else">
+                                                <lightning:input name="cashdis" type="text" label="Cash Discount(%)" value="N/A" disabled="true"/>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" > 
+                                        <lightning:input name="salestax" type="text" label="Sales Tax(%)" value="{!wrp.product.Sales_Tax__c + '%'}" disabled="true"/>
+                                    </div>
+                                      <div class="slds-size_1-of-3 slds-p-horizontal_small" > 
+                                        <lightning:input name="prddiscount" type="text" label="Product Disount(%)" value="{!wrp.product.Discount__c}" disabled="true"/>
+                                    </div>
+                                    <!--<div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                    <lightning:input value="{!wrp.total}" type="number" formatter="currency" step="0.01" label="Total Price" disabled="true"/>
+                                </div>-->
+                                </div>
+                            </lightning:card>
+                            
+                        </aura:iteration>
+                    </lightning:card>
+                    
+                    
+                    <br/>
+                    
+                </lightning:card>
+            </aura:if>
+            
+            <aura:if isTrue="{!v.showCart == true}">
+                
+                <lightning:card title="Preview Order" iconName="standard:product_request">
+                    
+                    <lightning:layout>
+                        <lightning:layoutItem flexibility="auto" size="{!$Browser.formFactor == 'DESKTOP' ? 1 : 2}">
+                            <div class="slds-clearfix slds-m-left_small">
+                                <div class="slds-float_left">
+                                    <lightning:buttonIcon iconName="utility:back" variant="brand" alternativeText="Back" onclick="{! c.goBack }" title="Back" />
+                                </div>
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="auto" size="9">
+                            <div class="slds-clearfix slds-m-left_small">
+                                <aura:renderIf isTrue="{!v.cartProductIds.length}">
+                                    <div class="border">
+                                        <p class="productDetails slds-m-around_xx-small">Cart Items: <ui:outputText value="{!v.cartProductIds.length}"/></p>
+                                        <p class="productDetails slds-m-around_xx-small">Total Quantity: <ui:outputText value="{!v.TotalQty}"/></p>
+                                    </div>
+                                </aura:renderIf> 
+                            </div>
+                        </lightning:layoutItem>  
+                    </lightning:layout>
+                    <lightning:card>
+                        <aura:iteration items="{!v.invoiceItemList}" var="wrp" indexVar="index">
+                            <lightning:card class="slds-p-left_xx-small groove">
+                                <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                                    
+                                    <div class="slds-size_10-of-12 slds-p-horizontal_small">
+                                        <lightning:input value="{!wrp.Name}" aura:id="enter-search" name="enter-search" label="{!index+1+(') Product Name')}" type="text" disabled="true"/>
+                                        <aura:if isTrue="{!wrp.Fixed_Price_Item__c}"><span style="font-size:9px;color:red">* This is a fixed price item.</span></aura:if>
+                                    </div>  
+                                    <div class="slds-size_1-of-12 slds-p-horizontal_small">
+                                        
+                                        <a onclick="{!c.removeRow}" data-record="{!index}">
+                                            <lightning:buttonIcon iconName="utility:delete" iconClass="red"  size="x-large" variant="destructive" alternativeText="Delete" />
+                                        </a>
+                                      <!--  <lightning:buttonIcon iconName="utility:add" iconClass="green"  size="x-large" variant="success" alternativeText="Add" onclick="{!c.addRow}"/>-->
+                                    
+                                    </div>  
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                        <lightning:input value="{!wrp.Available_Quantity__c}" label="Available Quantity" type="number" disabled="true"/>
+                                    </div> 
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                        <lightning:input value="{!wrp.Unit_Price__c}" type="number" formatter="currency" step="0.01" label="Unit Price" disabled="true"/>
+                                    </div> 
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                        <lightning:input name="quantity" type="number"  min="1"  message-when-range-underflow="Please enter valid qty"  value="{!wrp.Quantity__c}" step="0.01" label="Quantity" disabled="true"/>
+                                    </div>
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" >
+                                        <aura:if isTrue="{!wrp.Fixed_Price_Item__c == false}">
+                                            <lightning:input name="cashdis" type="text" label="Cash Discount(%)" value="{!v.cashDiscount + '%'}" disabled="true"/>
+                                            <aura:set attribute="else">
+                                                <lightning:input name="cashdis" type="text" label="Cash Discount(%)" value="N/A" disabled="true"/>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" > 
+                                        <lightning:input name="salestax" type="text" label="Sales Tax(%)" value="{!wrp.Sales_Tax_PercentValue__c}" disabled="true"/>
+                                    </div>
+                                     <div class="slds-size_1-of-3 slds-p-horizontal_small" > 
+                                        <lightning:input name="prddiscount" type="text" label="Product Disount(%)" value="{!wrp.Product_Discount__c}" disabled="true"/>
+                                    </div>
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                        <lightning:input value="{!wrp.Total__c}" type="number" formatter="currency" step="0.01" label="Total Price" disabled="true"/>
+                                    </div>
+                                   
+                                </div>
+                               
+                            </lightning:card>
+                            
+                        </aura:iteration>
+                        
+                    </lightning:card>
+                    <br/>
+                    
+                </lightning:card>
+                
+                
+                <div class="slds-p-top_small">
+                    <lightning:card  class="slds-p-left_xx-small groove" >
+                        <lightning:icon iconName="custom:custom17" size="x-small"/>
+                        &nbsp;&nbsp;
+                        <b>Grand Total:</b>&nbsp; &nbsp;<span style="color:red; font-size:12px;font-weight:bold">₹{!v.GrandTotal}</span>
+                        <br/>
+                        <p style="font-size:9px;color:red">* Cash discount will be applied on each items (not fixed price items) before Sales Tax.</p>
+                    </lightning:card>
+                    
+                    <div class="slds-align_absolute-center slds-p-top_small ">
+                        <!--<lightning:button variant="brand" label="Cancel" title="Brand action" onclick="{!c.cancel}" />-->
+                        <lightning:button variant="destructive" label="Cancel" title="Cancel" onclick="{!c.CancelClick }" />
+                        <lightning:button  variant="brand" label="Submit" title="Brand action"  disabled="{!v.disableBtn}"  onclick="{!c.save}" />
+                        
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </aura:if>
+    <!-- spinner -->
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+</aura:component>

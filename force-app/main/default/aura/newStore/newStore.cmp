@@ -1,0 +1,468 @@
+<aura:component controller="newStoreController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride,lightning:hasPageReference"
+                access="global">
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    <aura:attribute name="showAccount" type="boolean" default="true" />
+    <aura:attribute name="hasDefaultCompany" type="boolean" default="false" />
+    <aura:attribute name="companyNames" type="List"/>
+    <aura:attribute name="customerTypes" type="List"/>
+    <aura:attribute name="showUpdate" type="boolean" default="false" />
+    <aura:attribute name="showUpload" type="boolean" default="false" />
+    <aura:attribute name="currentsetp" type="integer" default="1" />
+    <!--<aura:attribute name="selectedRecordTypeId" type="Id" default=""/>-->
+    <aura:attribute name="listId" type="string" />
+    <aura:attribute name="StatePicklist" type="String[]" />
+    <aura:attribute name="DistPicklist" type="String[]" />
+    <!--<aura:attribute name="recordtypeMap" type="List"/>-->
+    <aura:attribute name="account" type="object" default="{}" />
+    <aura:attribute name="searchText" type="string" default="" />
+    <aura:attribute name="warehouse" type="object[]" default="[]" />
+    <aura:attribute name="matchWarehouse" type="object[]" default="[]" />
+    <aura:attribute name="routeSearchText" type="string" default="" />
+    <aura:attribute name="accountSearchText" type="string" default="" />
+    <aura:attribute name="Routes" type="object[]" default="[]" />
+    <aura:attribute name="parentAccount" type="object[]" default="[]" />
+    <aura:attribute name="matchRoutes" type="object[]" default="[]" />
+    <aura:attribute name="matchAccounts" type="object[]" default="[]" />
+    <aura:attribute name="fromMyVisit" type="boolean" default="false" />
+    <aura:attribute name="isUpdate" type="boolean" default="false" />
+    <aura:attribute name="spinner" type="boolean" default="false" />
+      <aura:attribute name="StatePicklist1" type="Map" />
+    <aura:handler name="change" value="{!v.routeSearchText}" action="{!c.doRouteSearch}"></aura:handler>
+    <aura:handler name="change" value="{!v.accountSearchText}" action="{!c.accountSearch}"></aura:handler>
+    <aura:handler name="change" value="{!v.searchText}" action="{!c.doSearch}"></aura:handler>
+    <aura:handler event="aura:locationChange" action="{!c.reloadComponent}" />
+    
+    <aura:attribute name="isChecked" type="Boolean" default="false" />
+    
+    <aura:html tag="style">
+        .slds-p-around–medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .toastMessage.forceActionsText{
+        white-space : pre-line !important;
+        }
+    </aura:html>
+    
+    <div class="modal-header slds-modal__header slds-p-around__medium slds-size_1-of-1">
+        <!--{!v.fromMyVisit}-->
+        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> <b> New Account</b></h2>
+        <div class="slds-readonly-path">
+            <lightning:progressIndicator currentStep="{!v.currentsetp}" type="path" variant="base">
+                <lightning:progressStep label="Account Details" value="1" />
+                <lightning:progressStep label="Upload Photo" value="2" />
+            </lightning:progressIndicator>
+        </div>
+    </div>
+    
+    
+    <div class="slds-modal__content slds-p-around--medium">
+        
+        <aura:if isTrue="{!v.showAccount}">
+            <!--<aura:if isTrue="{!v.fromMyVisit}">
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning:select aura:id="field1" name="Type" label="Select a record type" value="{!v.selectedRecordTypeId}">
+                            <aura:iteration items="{!v.recordtypeMap}" var="item">
+                                 <option value="{!item.value}">{!item.label}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                </div>
+            </aura:if>-->
+            
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-1">
+                    <aura:if isTrue="{!v.hasDefaultCompany}">
+                        <!--<lightning:input aura:id="field1" name="Company Name" required="true" label="Company Name"  disabled="true" type="text" value="{!v.account.CompanyId__c}"/>-->
+                        <lightning:select aura:id="field1" name="Company Name" label="Company Name"  disabled="true" value="{!v.account.CompanyId__c}">
+                            <aura:iteration items="{!v.companyNames}" var="item">
+                                <option value="{!item.value}">{!item.label}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                        <aura:set attribute="else">
+                            <lightning:select aura:id="field1" name="Company Name" required="true" label="Company Name" value="{!v.account.CompanyId__c}">
+                                <option value="">Select Company...</option>
+                                <aura:iteration items="{!v.companyNames}" var="item">
+                                    <option value="{!item.value}">{!item.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+            
+            
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input aura:id="field1" label="Store Name" type="text" required="true"
+                                     value="{!v.account.Name}" messageWhenValueMissing="Enter Store Name" />
+                </div>
+                &nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input label="Email" type="email" aura:id="field1"
+                                     value="{!v.account.Email__c}" messageWhenTypeMismatch="Enter a valid email address" />
+                </div>
+                
+            </div>
+            <div class="slds-grid">
+                <!--<div class="slds-col slds-size_1-of-2">
+                    <lightning:input aura:id="field1" label="Contact Person Name" type="text" required="true"  value="{!v.account.Contact_Person__c}" messageWhenValueMissing="Enter contact person Name"/>
+                </div>-->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input label="UPI ID" type="text" value="{!v.account.UPI_ID__c}" />
+                </div>&nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input aura:id="field1" label="Phone" type="tel" required="true" minlength="10"
+                                     maxlength="10" value="{!v.account.Phone}" messageWhenValueMissing="Enter mobile number"
+                                     messageWhenTooShort="Please enter 10digit mobile number" />
+                </div>
+            </div>
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input aura:id="field1" label="Region" type="text" value="{!v.account.Region__c}" />
+                </div>&nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select aura:id="field1" name="Rating" label="Rating" value="{!v.account.Rating}">
+                        <option value="">choose one...</option>
+                        <option value="Hyper market">Hot</option>
+                        <option value="super market">Warm</option>
+                        <option value="consumer store">Cold</option>
+                    </lightning:select>
+                </div>
+            </div>
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input aura:id="field1" label="Credit Limit" type="number" formatter="currency"
+                                     value="{!v.account.Credit_Limit__c}" />
+                </div>&nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input aura:id="field1" label="Credit Period" type="text"
+                                     value="{!v.account.Credit_period__c}" />
+                </div>
+            </div>
+            
+            <!--<div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input aura:id="field1" label="Alternate Mobile" type="tel" minlength="10" maxlength="10" value="{!v.account.Alternate_Mobile__c}" messageWhenTooShort="Please enter 10digit mobile number" />
+                </div>&nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="slds-form-element slds-m-bottom_medium">
+                        <div class="slds-form-element__control"> 
+                            <ul class="slds-lookup__list" role="listbox"> 
+                                <lightning:input value="{!v.searchText}" aura:id="enter-search" required="true" name="enter-search" label="Warehouse" type="search" messageWhenValueMissing="Enter warehouse"/>
+                                
+                                <aura:if isTrue="{!v.matchWarehouse}">
+                                    <div class="{!if(not(empty(v.matchWarehouse)), 'result-buttom','')}">
+                                        <aura:iteration items="{!v.matchWarehouse}" var="item">
+                                            <li role="presentation">
+                                                <span class="slds-lookup__item-action slds-media slds-media_center" role="option">
+                                                    <div class="slds-media__body">
+                                                        <div class="slds-input-has-icon slds-input-has-icon_right">
+                                                            <div class="slds-lookup__result-text" data-id="{!item.Id}" onclick="{!c.update }">
+                                                                <a role="option" >
+                                                                    <lightning:icon iconName="standard:account" size="xx-small"/>&nbsp;{!item.Name}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </span>
+                                            </li>
+                                        </aura:iteration>
+                                    </div>
+                                </aura:if>     
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+            <!--<div class="slds-grid">
+                <aura:if isTrue="{!v.account.Warehouse__c ==''}">
+                    <div class="slds-col slds-size_1-of-1">
+                        
+                        <div class="slds-form-element slds-m-bottom__medium">
+                            <div class="slds-form-element__control"> 
+                                <ul class="slds-lookup__list" role="listbox"> 
+                                    <lightning:input value="{!v.routeSearchText}" aura:id="enter-search" disabled="true" required="true" name="enter-search" label="Route" type="search" messageWhenValueMissing="Enter route"/>                                     
+                                </ul>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!v.account.Warehouse__c !=''}">
+                    <div class="slds-col slds-size_1-of-1">
+                        
+                        <div class="slds-form-element slds-m-bottom__medium">
+                            <div class="slds-form-element__control"> 
+                                <ul class="slds-lookup__list" role="listbox"> 
+                                    <lightning:input value="{!v.routeSearchText}" aura:id="enter-search" required="true" name="enter-search" label="Route" type="search" messageWhenValueMissing="Enter route"/>                                     
+                                    <aura:if isTrue="{!v.matchRoutes}">
+                                        <div class="{!if(not(empty(v.matchRoutes)), 'result-buttom','')}">
+                                            <aura:iteration items="{!v.matchRoutes}" var="item">
+                                                <li role="presentation">
+                                                    <span class="slds-lookup__item-action slds-media slds-media__center" role="option">
+                                                        <div class="slds-media__body">
+                                                            <div class="slds-input-has-icon slds-input-has-icon__right">
+                                                                <div class="slds-lookup__result-text" data-id="{!item.Id}" onclick="{!c.updateRoute }">
+                                                                    <a role="option" >
+                                                                        <lightning:icon iconName="standard:account" size="xx-small"/>&nbsp;{!item.Name}
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </span>
+                                                </li>
+                                            </aura:iteration>
+                                        </div>
+                                    </aura:if>     
+                                </ul>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </aura:if>
+            </div>-->
+            <!--<div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select aura:id="field1" name="selectCategory" label="Store Category" value="{!v.account.Store_Category__c}" required="true" messageWhenValueMissing="Select store category">
+                        <option value="">choose one...</option>
+                        <option value="Hyper market">Hyper market</option>
+                        <option value="super market">super market</option>
+                        <option value="consumer store">consumer store</option>
+                        <option value="Hotel">Hotel</option>
+                        <option value="Bakery">Bakery</option>
+                        <option value="Whole sale shop">Whole sale shop</option>
+                        <option value="Distributor">Distributor</option>
+                    </lightning:select></div> &nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select aura:id="field1" name="selectGrade" label="Grade"  value="{!v.account.Grade__c}" required="true" messageWhenValueMissing="Select Grade">
+                        <option value="">choose one...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </lightning:select></div>
+            </div>-->
+            <!--<div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    
+                </div>&nbsp;
+
+            </div>-->
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input aura:id="field1" label="Pan Number" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}"
+                                     messageWhenPatternMismatch="Enter a valid PAN number" type="text"
+                                     value="{!v.account.Pan_Number__c}" />
+                </div>&nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select aura:id="field1" name="Customer Type" label="Customer Type" value="{!v.account.CustomerType__c}" required="true">
+                        <option value="">choose one...</option>
+                        <aura:iteration items="{!v.customerTypes}" var="item">
+                            <option value="{!item.value}">{!item.label}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                    <!--<lightning:select aura:id="field1" name="Type" label="Customer Type" value="{!v.account.Type}">
+                        <option value="">choose one...</option>
+                        <option value="Analyst">Analyst</option>
+                        <option value="Competitor">Competitor</option>
+                        <option value="Customer">Customer</option>
+                        <option value="Integrator">Integrator</option>
+                        <option value="Investor">Investor</option>
+                        <option value="Partner">Partner</option>
+                        <option value="Press">Press</option>
+                        <option value="Prospect">Prospect</option>
+                        <option value="Reseller">Reseller</option>
+                        <option value="Other">Other</option>
+                    </lightning:select>-->
+                </div>
+            </div>
+            <!--<div class="slds-grid">
+                <lightning:input type="checkbox" label="GST applicable" name="input1" checked="{!v.account.GST_applicable__c}" onchange="{!c.handleCheckboxChange}"/>
+            </div>
+            <aura:if isTrue="{!v.isChecked}">
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input label="GST" type="text" required="true"
+                                         pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+                                         messageWhenPatternMismatch="Enter a valid GST number" aura:id="field1" minlength="15"
+                                         maxlength="15" value="{!v.account.GST__c}"
+                                         messageWhenTooShort="Please enter valid 15digit GST" />
+                    </div>&nbsp;
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:select aura:id="field1" name="GST Type" label="GST Type"
+                                          value="{!v.account.GST_Type__c}">
+                            <option value="">choose one...</option>
+                            <option value="CGST">CGST</option>
+                            <option value="SGST">SGST</option>
+                            <option value="IGST">IGST</option>
+                            <option value="UTGST/UGST">UTGST/UGST</option>
+                        </lightning:select>
+                    </div>
+                </div>
+                
+            </aura:if>-->
+            
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select aura:id="field1" name="Card Type" label="Card Type" required="true"
+                                      value="{!v.account.CardType__c}" messageWhenValueMissing="Enter card type" >
+                        <option value="">choose one...</option>
+                        <option value="C">C</option>
+                    </lightning:select>
+                </div>
+                &nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input label="Customer Group Code" type="text" aura:id="field1" required="true"
+                                     value="{!v.account.CustomerGroupCode__c}" messageWhenValueMissing="Enter customer group code" />
+                </div>
+                
+            </div>
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input label="Opening Balance" type="number" formatter="currency"
+                                     value="{!v.account.Opening_Balance__c}" />
+                </div>
+                &nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    
+                    <lightning:input value="{!v.accountSearchText}" aura:id="enter-search" name="enter-search"
+                                     label="Parent Customer" type="search" />
+                    <div class="slds-form-element slds-m-bottom__medium">
+                        <div class="slds-form-element__control">
+                            <ul class="slds-lookup__list" role="listbox">
+                                <aura:if isTrue="{!v.matchAccounts}">
+                                    <div class="{!if(not(empty(v.matchAccounts)), 'result-buttom slds-card','')}">
+                                        <aura:iteration items="{!v.matchAccounts}" var="item">
+                                            <li role="presentation">
+                                                <span class="slds-lookup__item-action slds-media slds-media__center"
+                                                      role="option">
+                                                    <div class="slds-media__body">
+                                                        <div class="slds-input-has-icon slds-input-has-icon__right">
+                                                            <div class="slds-lookup__result-text" data-id="{!item.Id}"
+                                                                 onclick="{!c.updateAccount}">
+                                                                <a role="option">
+                                                                    <lightning:icon iconName="standard:account"
+                                                                                    size="xx-small" />&nbsp;{!item.Name}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </span>
+                                            </li>
+                                        </aura:iteration>
+                                    </div>
+                                </aura:if>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            &nbsp;
+            <div class="slds-grid ">
+             
+                <div class="slds-col slds-size_1-of-2 ">
+                 
+                    <label class="slds-form-element__label" for="unique-id-of-input">GST applicable</label>
+                   <lightning:input type="checkbox"  name="input1" checked="{!v.account.GST_applicable__c}" onchange="{!c.handleCheckboxChange}"/>
+                </div>  
+                  <div class="slds-col slds-size_1-of-2">
+                    <lightning:select aura:id="field1" name="State" label="Customer State"  required="true"
+                                      value="{!v.account.State__c}" messageWhenValueMissing="Enter customer state" >
+                      <option value="">choose one...</option>
+                        <aura:iteration items="{!v.StatePicklist1}" var="item">
+                        <option value="{!item.value}">{!item.label}</option>
+                      
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </div>
+                     <div class="slds-grid ">
+                <div class="slds-col slds-size_1-of-2 ">
+                    <label class="slds-form-element__label" for="unique-id-of-input">IGST Intrastate Applicable</label>
+                   <lightning:input type="checkbox"  name="input1" checked="{!v.account.IgstOnIntra__c}" />
+                </div>  
+                  <div class="slds-col slds-size_1-of-2">
+                       <label class="slds-form-element__label" for="unique-id-of-input">Don't Apply FIFO</label>
+                      <lightning:input type="checkbox"  name="input2" checked="{!v.account.Don_t_Apply_FIFO__c}" />
+                </div>
+                <!--<div class="slds-col slds-size_1-of-2">
+                    <lightning:input label="Street Name" type="text"  value="{!v.account.Street_Name__c}"/>
+                </div>-->
+                <!--<div class="slds-col slds-size_1-of-2">
+                    <lightning:input label="Panchayath"  type="text" value="{!v.account.Panchayath__c}" />
+                </div>-->
+            </div>
+            <!--<div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select label="State" value="{!v.account.State__c}" onchange="{!c.getdisricts}">
+                        <option value="">Choose one..</option>
+                        <aura:iteration items="{!v.StatePicklist}" var="val">
+                            <option value="{!val}"> {!val}</option>
+                        </aura:iteration>
+                    </lightning:select>  
+                </div>
+                &nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select label="District" value="{!v.account.District__c}" onchange="{!c.getdisricts}">
+                        <option value="">Choose one..</option>
+                        <aura:iteration items="{!v.DistPicklist}" var="val">
+                            <option value="{!val}"> {!val}</option>
+                        </aura:iteration>
+                    </lightning:select>  
+                </div>
+                
+            </div>-->
+            
+            <!--<div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input label="Pincode" required="true" type="text" minlength="6" maxlength="6" value="{!v.account.Pin_code__c}" messageWhenTooShort="Please enter valid 6digit Pincode"/>
+                </div>&nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:textarea name="Description" value="{!v.account.Description}" label="Description"  />
+                </div>
+            </div>-->
+        </aura:if>
+        <aura:if isTrue="{!v.showUpload}">
+            <c:photoUploadComponent recordId="{!v.account.Id}" />
+        </aura:if>
+    </div>
+    
+    
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+        <aura:if isTrue="{!v.showAccount}">
+            <button class="slds-button slds-button_neutral" onclick="{!c.closeExpense}">Cancel</button>
+            <aura:if isTrue="{!!v.showUpdate}">
+                <button class="slds-button slds-button_brand" onclick="{!c.dosave}">Save and Next</button>
+            </aura:if>
+            <aura:if isTrue="{!v.showUpdate}">
+                <button class="slds-button slds-button_neutral" onclick="{!c.donext}">Next</button>
+                <button class="slds-button slds-button_brand" onclick="{!c.doUpdate}">Update and Next</button>
+            </aura:if>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.showUpload}">
+            <button class="slds-button slds-button_neutral" onclick="{!c.gotoRecord}">Save</button>
+            <button class="slds-button slds-button_neutral" onclick="{!c.doPrevious}">Previous</button>
+            <!--<button class="slds-button slds-button_brand" onclick="{!c.doSubmit}">Submit for Approval</button>-->
+        </aura:if>
+    </div>
+    
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+    
+</aura:component>

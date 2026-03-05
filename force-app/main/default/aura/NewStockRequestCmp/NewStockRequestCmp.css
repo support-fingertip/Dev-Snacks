@@ -1,0 +1,14 @@
+.THIS .slds-dropdown-trigger{
+    display:none !important;
+}
+.THIS .searchbtn{
+    margin-top: 25px !important;
+}
+.THIS .slds-size_12-of-12{
+    padding-top:0px !important;
+}
+ 
+.THIS .MButton{
+    width: 100% !important;
+    padding: 5px !important;
+}

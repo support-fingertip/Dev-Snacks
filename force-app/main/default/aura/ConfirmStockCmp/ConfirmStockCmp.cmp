@@ -1,0 +1,114 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction" 
+                controller="ConfirmStockController" access="global" >
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="stockRequests" type="Object[]"  />
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    <aura:attribute name="isDesktop" type="boolean"/>
+    <aura:attribute name="isMobile1" type="boolean"/>
+    <aura:attribute name="disableBtn" type="boolean" default="false"/>
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    
+    <div class="slds-tabs_card">
+        <div class="slds-page-header">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-opportunity">
+                                <lightning:icon iconName="utility:cart" alternativeText="Event" title="Event" />
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span>Confirm Stock Request</span>
+                                        <span class="slds-page-header__title slds-truncate" title="Dev Snacks">Dev Snacks</span>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <br/>
+    <lightning:card>
+        <table > 
+            <tbody>      
+                <aura:iteration items="{!v.stockRequests}" var="req" indexVar="index">
+                    <tr>
+                        <td> 
+                            <lightning:card class="slds-p-left_xx-small groove">
+                                <aura:if isTrue="{!v.isDesktop}">
+                                    <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small">
+                                            <lightning:input value="{!req.Name}" aura:id="enter-search" name="enter-search" label="{!index+1+(') Product Name')}" type="text" disabled="true"/>
+                                        </div>
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small">
+                                            <lightning:input name="prodCode" type="text"  label="Product Code" value="{!req.Item_Code__c}" disabled="true"/> 
+                                        </div>
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small" data-record="{!index}">
+                                            <lightning:input name="prdReqQty" type="number" label="Requested Quantity" value="{!req.Quantity__c}"  disabled="true"/>
+                                        </div>
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small" data-record="{!index}">
+                                            <lightning:input name="batchNumber" type="text" label="Batch Number" value="{!req.Batch_Number__c}" disabled="true"/>
+                                        </div>
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small" data-record="{!index}">
+                                            <lightning:input name="prdTranQty" type="number" label="Transferred Quantity" value="{!req.Transfered_Quantity__c}"  disabled="true" />
+                                        </div>
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small" data-record="{!index}">
+                                            <lightning:input name="prdRecQty" type="number" label="Received Quantity" value="{!req.Received_Qunatity__c}"  disabled="true" />
+                                        </div>
+
+                                    </div>
+                                </aura:if>
+                                
+                                <aura:if isTrue="{!v.isMobile1}">
+                                    <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                                        <div class="slds-size_2-of-3 slds-p-horizontal_small">
+                                            <lightning:input value="{!req.Name}" aura:id="enter-search" name="enter-search" label="{!index+1+(') Product Name')}" type="text" disabled="true"/>
+                                        </div>
+                                        
+                                        <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                            <lightning:input name="prodCode" type="text"  label="Product Code" value="{!req.Item_Code__c}" disabled="true"/> 
+                                        </div>
+                                        <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                            <lightning:input name="batchNumber" type="number" label="Batch Number" value="{!req.Batch_Number__c}" disabled="true"/>
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                                        <div class="slds-size_1-of-3 slds-p-horizontal_small" data-record="{!index}">
+                                            <lightning:input name="prdReqQty" type="number" label="Requested Quantity" value="{!req.Quantity__c}"  disabled="true"/>
+                                        </div>
+                                        <div class="slds-size_1-of-3 slds-p-horizontal_small" data-record="{!index}">
+                                            <lightning:input name="prdTranQty" type="number" label="Transferred Quantity" value="{!req.Transfered_Quantity__c}"  disabled="true" />
+                                        </div>
+                                        <div class="slds-size_1-of-3 slds-p-horizontal_small" data-record="{!index}">
+                                            <lightning:input name="prdRecQty" type="number" label="Received Quantity" value="{!req.Received_Qunatity__c}" />
+                                        </div>
+                                    </div>
+                                </aura:if>
+                            </lightning:card>
+                        </td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+        <footer class="slds-modal__footer">
+            <lightning:button variant="brand" label="Approve"  disabled="{!v.disableBtn}"  title="Save" onclick="{! c.save }"  aura:id="disablebuttonid"/>
+            <lightning:button variant="destructive" label="Reject"  disabled="{!v.disableBtn}"  title="cancel stock " onclick="{! c.reject }" />
+            <lightning:button variant="destructive-text" label="Cancel" title="Cancel" onclick="{! c.cancel }" />
+        </footer>
+    </lightning:card>
+    
+    <!-- spinner -->
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+</aura:component>

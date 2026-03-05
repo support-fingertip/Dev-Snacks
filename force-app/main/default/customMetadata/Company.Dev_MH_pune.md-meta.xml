@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Dev MH pune</label>
+    <protected>false</protected>
+    <values>
+        <field>Addr1__c</field>
+        <value xsi:type="xsd:string">S.NO.28/21/1
+SHOP NO.2 ,ADESH BUILDING SINHGAD ROAD NEAR PARI COMPANY</value>
+    </values>
+    <values>
+        <field>Addr2__c</field>
+        <value xsi:type="xsd:string">DHAYRI,PUNE,MAHARASHTRA-411041</value>
+    </values>
+    <values>
+        <field>Branch_Id__c</field>
+        <value xsi:type="xsd:double">14.0</value>
+    </values>
+    <values>
+        <field>Company__c</field>
+        <value xsi:type="xsd:string">Dev</value>
+    </values>
+    <values>
+        <field>Email__c</field>
+        <value xsi:type="xsd:string">info@seraphinedevimpex.com</value>
+    </values>
+    <values>
+        <field>GST_State_Code__c</field>
+        <value xsi:type="xsd:string">29</value>
+    </values>
+    <values>
+        <field>Gstin__c</field>
+        <value xsi:type="xsd:string">27AADCG4992P1ZT</value>
+    </values>
+    <values>
+        <field>Key__c</field>
+        <value xsi:type="xsd:string">Token</value>
+    </values>
+    <values>
+        <field>Leagal_Name__c</field>
+        <value xsi:type="xsd:string">SERAPHINE DEV IMPEX PVT LTD</value>
+    </values>
+    <values>
+        <field>Location__c</field>
+        <value xsi:type="xsd:string">PUNE</value>
+    </values>
+    <values>
+        <field>Phone__c</field>
+        <value xsi:type="xsd:string">8078113119</value>
+    </values>
+    <values>
+        <field>Pin_Code__c</field>
+        <value xsi:type="xsd:double">411041.0</value>
+    </values>
+    <values>
+        <field>Value__c</field>
+        <value xsi:type="xsd:string">de3a3a01-273a-4a81-8b75-13fe37f14dc6</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,34 @@
+.THIS .spins::after {
+    position: absolute;
+    content: 'Please wait while loading';
+    width: 100%;
+    text-align: center;
+    top: calc(50% + 3em);
+    font-weight: bold;
+}
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}
+
+.THIS.myBtn  {
+    width: 5px;
+}
+.THIS .field-title{
+    font-weight: bold;
+    color:blue;
+}
+.THIS .field-title2{
+    font-weight: bold;
+    color:rgb(194, 57, 52);
+}
+.THIS .field-title3{
+    font-weight: bold;
+    color:#4bc076;
+}
+.THIS .pointer{
+    cursor: pointer;
+}
+.THIS.result-buttom{
+    border : 1px solid grey;
+}

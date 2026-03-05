@@ -1,0 +1,26 @@
+<template>
+    <lightning-card title="Branch-wise Latest MRP" icon-name="standard:pricebook">
+
+        <template if:true={data}>
+            <lightning-datatable
+                key-field="branchName"
+                data={data}
+                columns={columns}
+                hide-checkbox-column>
+            </lightning-datatable>
+        </template>
+
+        <template if:true={error}>
+            <div class="error-box">
+                Unable to load branch-wise MRP details.
+            </div>
+        </template>
+
+        <template if:true={noData}>
+            <div class="no-data">
+                No stock available for this product.
+            </div>
+        </template>
+
+    </lightning-card>
+</template>

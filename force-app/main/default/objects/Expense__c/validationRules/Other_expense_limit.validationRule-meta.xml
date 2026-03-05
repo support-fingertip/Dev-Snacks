@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Other_expense_limit</fullName>
+    <active>true</active>
+    <errorConditionFormula>Other_Expenses__c  &gt; 5000</errorConditionFormula>
+    <errorMessage>Please enter other expense below Rs.5000</errorMessage>
+</ValidationRule>

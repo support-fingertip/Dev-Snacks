@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Return_Id__c</fullName>
+    <displayFormat>RET-{0000}</displayFormat>
+    <externalId>false</externalId>
+    <label>Return Id</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>AutoNumber</type>
+</CustomField>

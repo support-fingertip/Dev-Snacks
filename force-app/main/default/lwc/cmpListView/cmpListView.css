@@ -1,0 +1,31 @@
+@media only screen and (max-width: 600px) {
+     
+     
+      .listview td:nth-child(5){
+        display:none;
+      }
+      .listview td:nth-child(6){
+        display:none;
+      }
+      .listview td:nth-child(7){
+        display:none;
+      }
+      .listview td:nth-child(1) {
+        width:5%;
+        max-width:10px;
+      }
+      .listview td:nth-child(2) {
+        width:40%;
+        max-width:50px;
+
+      }
+      .listview  td:nth-child(3){
+        width:20%;
+        max-width:30px;
+
+      }
+      .listview  td:nth-child(4){
+        width:20%;
+ 
+      }
+  }

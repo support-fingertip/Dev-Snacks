@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>Product__c</columns>
+    <columns>Return__c</columns>
+    <columns>Quantity__c</columns>
+    <columns>Type__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>CREATEDBY_USER</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Product__c</field>
+        <operation>equals</operation>
+        <value>Dev Achappam 10 No&apos;s</value>
+    </filters>
+    <label>All</label>
+</ListView>

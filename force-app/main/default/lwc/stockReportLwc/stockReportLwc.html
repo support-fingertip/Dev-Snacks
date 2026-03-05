@@ -1,0 +1,233 @@
+<template>
+    <template if:true={loading}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+    <header class="demo-only-element slds-theme_default slds-border_bottom slds-p-around_small slds-text-align_right"
+        style="z-index:1">
+        <div>
+            <!-- Main Heading -->
+            <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate" title=" Stock Report"> STOCK
+                REPORT</h2>
+
+
+            <!-- Sub details -->
+            <div class="slds-text-body_small slds-text-color_weak slds-m-top_small custom-panelrow">
+                <template if:true={routeName}>
+                    <span><strong>Route:</strong> {routeName}</span>
+                    <span class="slds-m-horizontal_x-small">|</span>
+                </template>
+
+                <span>
+                    <strong>Period:</strong> {fromDate} → {toDate}
+                </span>
+
+                <span class="slds-m-horizontal_x-small">|</span>
+
+                <span>
+                    <strong>No of Rows:</strong> {rowCount}
+                </span>
+                <span class="slds-m-horizontal_x-small">|</span>
+                <span>
+                    <strong>Filter:</strong> {selectedFilter}
+                </span>
+            </div>
+        </div>
+
+
+        <div class="slds-button-group" role="group">
+            <lightning-button class="slds-m-left_small" icon-name="utility:download" label="Download PDF"
+                onclick={downloadPdf} style="font-size:10px;"></lightning-button>
+
+
+        </div>
+
+        <button class="slds-button slds-button_icon slds-is-selected  slds-button_icon-border"
+            title="Toggle filter panel" onclick={closeFilter}>
+            <lightning-icon icon-name="standard:filter" size="small"></lightning-icon>
+
+            <span class="slds-assistive-text">filter</span>
+        </button>
+    </header>
+    <div class="demo-only-element"
+        style="background-color:#fafaf9;position:relative;height:600px;overflow:hidden;display:flex;flex-direction:row-reverse">
+
+
+        <template lwc:if={showFilter}>
+            <div class="slds-panel slds-size_medium slds-panel_docked slds-panel_docked-right slds-panel_drawer slds-is-open"
+                id="example-unique-id-17">
+                <div class="slds-panel__header">
+                    <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate" title="Filter">Filter
+                    </h2>
+                    <div class="slds-panel__header-actions">
+
+                        <button class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                            title="Collapse Filter" onclick={closeFilter}>
+                            <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Collapse Filter</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="slds-panel__body">
+                    <div class="slds-filters">
+                        <ol class="slds-list_vertical slds-list_vertical-space">
+                            <li class="slds-item slds-hint-parent">
+                                <lightning-combobox label="Route" value={routeId} options={routeOptions}
+                                    onchange={onRouteChange}></lightning-combobox>
+
+                            </li>
+                        </ol>
+                        <ol class="slds-list_vertical slds-list_vertical-space">
+                            <li class="slds-item slds-hint-parent">
+                                <lightning-input type="date" label="From Date" value={fromDate}
+                                    onchange={onFromChange}></lightning-input>
+
+                            </li>
+                        </ol>
+                        <ol class="slds-list_vertical slds-list_vertical-space">
+                            <li class="slds-item slds-hint-parent">
+                                <lightning-input type="date" label="To Date" value={toDate}
+                                    onchange={onToChange}></lightning-input>
+
+                            </li>
+                        </ol>
+                        <ol class="slds-list_vertical slds-list_vertical-space">
+                            <li class="slds-item slds-hint-parent">
+                                <c-custom-multiselect-picklist-l-w-c label="Filter Zero" showpills="true"
+                                    role="cm-picklist" options={colOptions}
+                                    onpicklistselected={handleFilterSelection}></c-custom-multiselect-picklist-l-w-c>
+                            </li>
+                        </ol>
+
+                        <ol class="slds-list_vertical slds-list_vertical-space">
+                            <li class="slds-item slds-hint-parent">
+                                <lightning-combobox label="Sort By" value={sortBy} options={sortOptions}
+                                    onchange={onSortByChange}></lightning-combobox>
+                            </li>
+                        </ol>
+                        <ol class="slds-list_vertical slds-list_vertical-space">
+                            <li class="slds-item slds-hint-parent">
+                                <lightning-combobox label="Storing Direction" value={sortDir} options={dirOptions}
+                                    onchange={onSortDirChange}></lightning-combobox>
+                            </li>
+                        </ol>
+
+
+                    </div>
+
+                    <div class="slds-text-align_center slds-p-top_large">
+                        <lightning-button variant="brand" label="View Report" onclick={loadReport}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <div class="demo-only-content slds-col slds-p-around_medium">
+
+
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-m-top_small">{error}</div>
+            </template>
+
+
+
+            <!-- Desktop -->
+            <template if:true={showTable}>
+                <lightning-datatable key-field="productId" data={rows} columns={columns} hide-checkbox-column>
+                </lightning-datatable>
+                <!--   <lightning-button class="slds-m-left_small" label="Download PDF"
+                onclick={downloadPdf}></lightning-button> -->
+
+            </template>
+
+            <!-- Mobile -->
+
+            <template if:true={showCards}>
+                <lightning-card>
+                    <div class="slds-table_container slds-scrollable">
+                        <!-- Responsive Table -->
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped slds-table_col-bordered">
+                            <thead>
+                                <tr>
+
+                                    <th>Product Code</th>
+                                    <th>Product</th>
+                                    <th>Opening Quantit</th>
+                                    <th>Total stock Received</th>
+                                    <th>Invoice cancellation</th>
+                                    <th>Salable Returns</th>
+                                    <th>Total Saleable Quantity</th>
+                                    <th>Sold Quantity</th>
+                                    <th> Saleable Closing Quantity </th>
+                                    <th>Damaged Quantity</th>
+                                    <th>Total Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={rows} for:item="row">
+                                    <tr key={row.productCode} class={row.highlightClass}>
+                                        <td>
+                                            <a href="javascript:void(0);" data-id={row.productCode}
+                                                onclick={handleProductClick}>
+                                                {row.productCode}
+                                            </a>
+                                        </td>
+                                        <td>{row.productName}</td>
+                                        <td>{row.openingQty}</td>
+                                        <td>{row.totalStockReceived}</td>
+                                        <td>{row.invoiceCancellation}</td>
+                                        <td>{row.saleableReturns}</td>
+                                        <td>{row.totalSaleableQty}</td>
+                                        <td>{row.soldQty}</td>
+                                        <td>{row.saleableClosingQty}</td>
+                                        <td>{row.damagedQty}</td>
+                                        <td>{row.totalQty}</td>
+
+
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <template if:true={showModal}>
+                        <section role="dialog" class="slds-modal slds-fade-in-open">
+                            <div class="slds-modal__container">
+                                <!-- Header -->
+                                <header class="slds-modal__header">
+                                    <button class="slds-button slds-button_icon slds-modal__close" onclick={closeModal}>
+                                        <lightning-icon icon-name="utility:close" size="x-small"></lightning-icon>
+                                    </button>
+                                    <h2 class="slds-text-heading_medium">Product Details</h2>
+                                </header>
+
+                                <!-- Body -->
+                                <div class="slds-modal__content slds-p-around_medium">
+                                    <p><b>Product Code:</b> {selectedRow.productCode}</p>
+                                    <p><b>Product Name:</b> {selectedRow.productName}</p>
+                                    <p><b>Opening Quantity:</b> {selectedRow.openingQty}</p>
+                                    <p><b>Total Stock Received:</b> {selectedRow.totalStockReceived}</p>
+                                    <p><b>Invoice Cancellation:</b> {selectedRow.invoiceCancellation}</p>
+                                    <p><b>Saleable Returns:</b> {selectedRow.saleableReturns}</p>
+                                    <p><b>Total Saleable Quantity:</b> {selectedRow.totalSaleableQty}</p>
+                                    <p><b>Sold Quantity:</b> {selectedRow.soldQty}</p>
+                                    <p><b>Saleable Closing Quantity:</b> {selectedRow.saleableClosingQty}</p>
+                                    <p><b>Damaged Quantity:</b> {selectedRow.damagedQty}</p>
+                                    <p><b>Total Quantity:</b> {selectedRow.totalQty}</p>
+                                </div>
+
+                                <!-- Footer -->
+                                <footer class="slds-modal__footer">
+                                    <lightning-button label="Close" onclick={closeModal}></lightning-button>
+                                </footer>
+                            </div>
+                        </section>
+
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                    </template>
+                </lightning-card>
+            </template>
+
+
+        </div>
+    </div>
+</template>

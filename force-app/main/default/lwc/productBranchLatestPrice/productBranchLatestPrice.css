@@ -1,0 +1,14 @@
+.no-data {
+    padding: 1rem;
+    text-align: center;
+    color: #706e6b;
+    font-size: 0.9rem;
+}
+
+.error-box {
+    padding: 1rem;
+    color: #c23934;
+    background-color: #fdecea;
+    border-radius: 4px;
+    margin: 0.5rem;
+}

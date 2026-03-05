@@ -1,0 +1,5 @@
+<aura:component controller="SAPsend_TriggerHandler" implements="force:lightningQuickActionwithoutheader,force:appHostable,force:hasRecordId" access="global" >
+	      <aura:attribute name="recordId" type="string"  /> 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+ 
+</aura:component>

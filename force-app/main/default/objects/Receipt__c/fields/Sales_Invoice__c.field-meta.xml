@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sales_Invoice__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Sales Invoice</label>
+    <lookupFilter>
+        <active>true</active>
+        <booleanFilter>(1 AND 2) OR (2 AND 3)</booleanFilter>
+        <filterItems>
+            <field>Sales_Invoice__c.Pending_Amount__c</field>
+            <operation>greaterThan</operation>
+            <value>0</value>
+        </filterItems>
+        <filterItems>
+            <field>Sales_Invoice__c.Customer__c</field>
+            <operation>equals</operation>
+            <valueField>$Source.Customer__c</valueField>
+        </filterItems>
+        <filterItems>
+            <field>Sales_Invoice__c.Pending_Amount_SAP__c</field>
+            <operation>greaterThan</operation>
+            <value>0</value>
+        </filterItems>
+        <isOptional>true</isOptional>
+    </lookupFilter>
+    <referenceTo>Sales_Invoice__c</referenceTo>
+    <relationshipLabel>Receipts</relationshipLabel>
+    <relationshipName>Collections</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

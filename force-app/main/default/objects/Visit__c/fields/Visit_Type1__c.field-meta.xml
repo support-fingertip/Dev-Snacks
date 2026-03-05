@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Visit_Type1__c</fullName>
+    <externalId>false</externalId>
+    <label>Visit Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Customer Support</fullName>
+                <default>false</default>
+                <label>Customer Support</label>
+            </value>
+            <value>
+                <fullName>Payment</fullName>
+                <default>false</default>
+                <label>Payment</label>
+            </value>
+            <value>
+                <fullName>Installtion</fullName>
+                <default>false</default>
+                <label>Installtion</label>
+            </value>
+            <value>
+                <fullName>Training</fullName>
+                <default>false</default>
+                <label>Training</label>
+            </value>
+            <value>
+                <fullName>Sales</fullName>
+                <default>false</default>
+                <label>Sales</label>
+            </value>
+            <value>
+                <fullName>Exams and Activities</fullName>
+                <default>false</default>
+                <label>Exams and Activities</label>
+            </value>
+            <value>
+                <fullName>Value Added Services</fullName>
+                <default>false</default>
+                <label>Value Added Services</label>
+            </value>
+            <value>
+                <fullName>general visit</fullName>
+                <default>false</default>
+                <label>general visit</label>
+            </value>
+            <value>
+                <fullName>renewal visits</fullName>
+                <default>false</default>
+                <label>renewal visits</label>
+            </value>
+            <value>
+                <fullName>addhoc visit</fullName>
+                <default>false</default>
+                <label>addhoc visit</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

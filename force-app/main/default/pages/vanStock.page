@@ -1,0 +1,82 @@
+<apex:page controller="vanStockController"  showHeader="false" standardStylesheets="false"  applyBodyTag="false" applyHtmlTag="false" lightningStylesheets="true" >
+    <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+            <style type="text/css">
+                
+                div.header {
+                width: 100%;
+                font-size:16px;
+                }
+                div.body {
+                width: 100%;
+                text-align:Center;
+                font-size:12px
+                }
+                
+                table,th,td{
+                border: .2px solid black;
+                border-collapse: collapse;
+                }
+                table {
+                width: 100%;
+                }
+                
+                @page {
+                size: A4 ;
+                border: .5px solid black; 
+                }
+                
+                @media print {
+                thead {display: table-header-group;} 
+                tfoot {display: table-footer-group;}
+                button {display: none;}
+                body {margin: 0;}
+                * {-webkit-print-color-adjust:exact;}
+                }
+                
+            </style>
+            <script>
+            function printPage(){
+                window.print();
+            }
+            </script>
+        </head>
+        <body >
+           
+           
+           <apex:slds />
+            <div class="header" >
+                <div style="text-align:center;margin-top:14px;">
+                    <apex:image url="{!$Resource.Ledger_logo}"/> 
+                    <p><b>VAN STOCK REPORT</b> </p>
+                </div>
+            </div>
+            <div class="body">
+              
+                <table class="slds-table" cellspacing="0" >
+                    <thead >
+                        <th>Sl.no</th><th>Date</th><th>Product Name</th><th>Opening Qty</th><th>Received Qty</th><th>Total Saleable Qty</th><th>Closing Qty</th><th>Sold Qty</th><th>Damaged Qty</th><th>Free Qty</th><th>Total Qty</th>
+                    </thead>
+                    <tbody>
+                        <apex:variable var="rowNo" value="{!0}"/>
+                        <apex:repeat value="{!stockList}" var="s" id="theRepeat"> 
+                            <tr style="font-size:11.5px;">
+                                <td> <apex:variable var="rowNo" value="{!rowNo+1}"/>{!rowNo}</td>
+                                  <td><apex:outputText value="{0,date,dd/MM/yy}"> <apex:param value="{!s.Date__c}" /> </apex:outputText></td>
+                                <td>{!s.Product__r.Name}</td>
+                                <td>{!s.Opening_Quantity__c}</td> <td>{!s.Initial_Quantity__c}</td> <td>{!s.Total_Quantity__c}</td><td>{!s.Available_Quantity__c}</td><td>{!s.Sold_Quantity__c}</td><td>{!s.Damaged_Quantity__c}</td><td>{!s.Free_Quantity__c}</td><td>{!s.Total_Qty__c}</td>
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+              
+                 <div style="width: 100%;text-align: center;">
+                     <br/>
+                 <button type="button" class="slds-button" onclick="printPage();">  Print this page </button>
+                </div>
+            </div>
+            
+        </body>
+    </html>
+</apex:page>

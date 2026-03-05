@@ -1,0 +1,14 @@
+.THIS .btn{
+ border-radius:7px;
+    background-color: #009c4d;
+    color: white;
+    z-index: 8;
+}
+ .THIS .btndown{
+    border-radius: 4px;
+    box-shadow: 0 8px 6px 0 rgba(0,0,0,0.2), 0 6px 6px 0 rgba(0,0,0,0.19);
+}
+ .THIS .bx{
+    border-radius: 2px;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.2), 0 2px 3px 0 rgba(0,0,0,0.19);
+}

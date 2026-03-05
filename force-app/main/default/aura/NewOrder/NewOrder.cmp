@@ -1,0 +1,59 @@
+<aura:component controller="NewOrderController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="stockList" type="object[]" />
+    
+    <div class="slds-table--header-fixed_container slds-border--top">
+        <div class="slds-scrollable_y">
+            <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-table--header-fixed" id="myTable">
+                <thead>
+                    <tr class="slds-text-title--caps slds-text-title_caps">
+                        <th width="100">
+                            <span class="slds-truncate slds-cell-fixed">Product Name</span>  
+                        </th>
+                        <th width="100">
+                            <span class="slds-truncate slds-cell-fixed">Batch Number</span>
+                        </th>
+                        <th width="100">
+                            <span class="slds-truncate slds-cell-fixed">Available Qty</span>      
+                        </th>  
+                        <th width="100">       
+                            <span class="slds-truncate slds-cell-fixed">Price</span>
+                        </th>
+                        <th width="100">       
+                            <span class="slds-truncate slds-cell-fixed">Order Qty</span>
+                        </th>
+                        <th width="100">       
+                            <span class="slds-truncate slds-cell-fixed">Total Price</span>
+                        </th>
+                    </tr>
+                    
+                    <aura:iteration items="{!v.stockList}" var="sl">
+                        <tr>
+                            <td scope="row">
+                                <div class="slds-truncate" title="">{!sl.Product__r.Name	}</div>
+                            </td>
+                            <td scope="row">
+                                <div class="slds-truncate" title="">{!sl.Batch_Number__c}</div>
+                            </td>
+                            <td scope="row">
+                                <div class="slds-truncate" title="">{!sl.Available_Quantity__c}</div>
+                            </td>
+                            <td scope="row">
+                                <div class="slds-truncate" title="">{!sl.Price__c	}</div>
+                            </td>
+                            <td scope="row">
+                                <div class="slds-truncate" title=""></div>
+                            </td>
+                            <td scope="row">
+                                <div class="slds-truncate" title=""></div>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                    
+                </thead>
+            </table>
+            
+        </div>
+    </div>
+</aura:component>

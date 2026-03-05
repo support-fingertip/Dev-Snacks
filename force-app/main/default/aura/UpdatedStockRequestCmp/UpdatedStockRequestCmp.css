@@ -1,0 +1,22 @@
+.THIS .border{
+    border-style: solid;
+    border-width: 0.5px;
+    border-color: rgba(50, 50, 93, 0.25);
+    border-radius: 5px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.THIS .productDetails  {
+    font-family: "Segoe UI";
+    font-weight: bold;
+    font-size: 14px; 
+}
+.THIS .productName  {
+    font-size: 16px; 
+    color : rgb(194, 57, 52);
+}
+.THIS .productParameters  {
+    color : rgb(0, 0, 0);
+}
+.THIS .productParaInfo  {
+    color : rgb(2, 75, 194);
+}

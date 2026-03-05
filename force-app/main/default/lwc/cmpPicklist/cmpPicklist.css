@@ -1,0 +1,22 @@
+div.suggestions{
+   
+}
+.menu{
+    
+}
+.clear-icon{
+    --sds-c-icon-color-background:  #757373; 
+
+} 
+.slds-input__icon{
+    pointer-events: unset;
+}
+.slds-input-has-icon .slds-input__icon{
+    height : 35px !important;
+    top:25% !important;
+    margin-right: 9px;
+}
+.cmpPicklist{
+    float:left;
+    margin:3px;
+}

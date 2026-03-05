@@ -1,0 +1,157 @@
+<aura:component  controller="MyOrderCmpCtrl" extends="c:BaseComponent" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <aura:attribute name="cashDiscount" type="Decimal" default="0.00"/>
+    <aura:attribute name="GrandTotal" type="Decimal" default="0.00"/>
+    <aura:attribute name="GrandTotalDisc" type="Decimal" default="0.00"/>
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    <aura:attribute name="disableBtn" type="boolean" default="false"/>
+    
+    <!-- Object attributes -->
+    <aura:attribute name="Order" type="object" default="{}" /> 
+    <aura:attribute name="orderItemList" type="object[]"/>
+    <aura:attribute name="data" type="object" />
+    <aura:attribute name="Stocks" type="Stock__c[]" default="[]" />
+    <aura:attribute name="Products" type="Product__c[]" default="[]" />
+    <aura:attribute name="discounts" type="Object[]" />
+    
+    <!-- Lookup attributes -->
+    <aura:attribute name="matchstocks" type="Stock__c[]" default="[]"/>
+    <aura:attribute name="searchProduct" type="string" default=""/>
+    <aura:attribute name="searchIndex" type="Integer" />
+      <aura:handler name="change" value="{!v.searchProduct}" action="{!c.searchProduct}"></aura:handler>
+    
+    
+    <!-- Handlers-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    
+    
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+       <u> <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" style="color:blue;font-weight:bold">New Order</h2>
+      </u>
+    </div>
+    <aura:if isTrue="{!v.data.currentvisit != null}">
+    <div class="slds-modal__content">
+        <div style="padding:3px; text-align:center;">
+            <h1> <b><span style="color:brown">Customer</span> </b> : {!v.data.currentvisit.Account1__r.Name}
+                <br/> <b> <span style="color:brown">Order Date</span></b> : <lightning:formattedDateTime value="{!v.data.currentvisit.Actual_Start_Time__c}"/>
+            </h1>
+        </div>
+        <table > 
+            <tbody> 
+                
+                <aura:iteration items="{!v.orderItemList}" var="prd" indexVar="index">
+                    <tr>
+                        <td> 
+                            <lightning:card iconName="standard:work_order_item" class="slds-p-left_xx-small groove">
+                                <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                                    
+                                    <div class="{!$Browser.formFactor == 'DESKTOP' ? 'slds-size_1-of-3 slds-p-horizontal_small' : 'slds-size_1-of-1 slds-p-horizontal_small'}"> 
+                                        <div class="slds-combobox_container">
+                                            
+                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"  data-record="{!index}"  onchange="{!c.searchProduct}">
+                                                
+                                                <lightning:input value="{!prd.Product_Name__c}" aura:id="field1" name="enter-search" label="Product Name"   type="search" required="true" id="combobox-id-1" aria-autocomplete="list" aria-controls="listbox-id-1" aria-expanded="false" aria-haspopup="listbox" autoComplete="off" role="combobox" placeholder="Search..."/>                                      
+                                                
+                                            </div>
+                                            
+                                            
+                                            <aura:if isTrue="{!v.searchIndex == index}">
+                                                <div class="{!not(empty(v.matchstocks)) ? 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click' }" aura:id="open">
+                                                    <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox">
+                                                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                            <aura:if isTrue="{!v.matchstocks}">
+                                                                
+                                                                <aura:iteration items="{!v.matchstocks}" var="item">
+                                                                    <li role="presentation" class="slds-listbox__item">
+                                                                        <div id="option1" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                                            
+                                                                            <span class="slds-media__figure slds-listbox__option-icon">
+                                                                                <span class="slds-icon_container slds-icon-standard-account">
+                                                                                    <lightning:icon iconName="standard:user" size="xx-small"/>&nbsp;
+                                                                                </span>
+                                                                            </span>
+                                                                            <span class="slds-media__body">
+                                                                                <div class="slds-lookup__result-text" data-id="{!item.Id}"  data-record="{!index}" onclick="{!c.updateProduct }">
+                                                                                    <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Product_Batch_Name__c} - Avl. Qty: {!item.Available_Quantity__c}</span>
+                                                                                    <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Manufacturing_Date__c}</span>
+                                                                                </div>
+                                                                            </span>
+                                                                        </div>
+                                                                    </li>
+                                                                </aura:iteration>
+                                                                
+                                                            </aura:if>     
+                                                        </ul>
+                                                    </div>  
+                                                </div>
+                                            </aura:if> 
+                                            
+                                            
+                                        </div>
+                                    </div>
+                                                                  
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" onchange="{!c.getGrandTotal}" data-record="{!index}">
+                                        <lightning:input name="prodQty" type="number"  label="Quantity" value="{!prd.Quantity__c}" /> 
+                                    </div>
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small"  data-record="{!index}" >
+                                        <lightning:input name="prodPrice" type="number" formatter="currency" disabled="true" step="0.01" label="Unit Price" value="{!prd.Unit_Price__c}" />
+                                    </div>
+                                   
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" >
+                                        <lightning:input name="tax" type="text" formatter="percent-fixed" label="Cash Discount(%)" disabled="true" value="{!prd.Cash_Discount__c + ('%')}" /> 
+                                    </div>
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" >
+                                        <lightning:input name="tax" type="text" formatter="percent-fixed" label="Sales Tax(%)" value="{! prd.Sales_Tax__c + ('%')}" disabled="true"/>
+                                    </div>
+                                    
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                        <lightning:input name="total" type="number" formatter="currency" step="0.01" disabled="true" label="Total Price" value="{!prd.Total__c}"  style="color:green;font-weight:bold"/>
+                                    </div>
+                                    
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small slds-clearfix">
+                                        <div class="slds-float_left">
+                                            <p class="slds-m-around_xx-small slds-p-top_large availableQty"><strong>Available quantity : <ui:outputText value="{!prd.Available_Quantity__c}"/></strong></p>
+                                            <p class="slds-m-around_xx-small slds-p-top_large availableQty"><strong>MRP : <ui:outputText value="{!prd.Price__c}"/></strong></p>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <aura:set attribute="actions" >
+                                    <a onclick="{!c.removeRow}" data-record="{!index}">
+                                        <lightning:buttonIcon iconName="utility:delete" iconClass="red"  size="x-large" variant="destructive" alternativeText="Delete" />
+                                    </a>
+                                    <lightning:buttonIcon iconName="utility:add" iconClass="green"  size="x-large" variant="success" alternativeText="Add" onclick="{!c.addRow}"/>
+                                    
+                                </aura:set>
+                            </lightning:card>
+                        </td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+        <div class="slds-p-top_small">
+            <lightning:card  class="slds-p-left_xx-small groove" >
+                <lightning:icon iconName="custom:custom17" size="x-small"/>
+                &nbsp;&nbsp;
+                <b>Grand Total:</b>&nbsp; &nbsp;<span style="color:red; font-size:12px;font-weight:bold">₹{!v.GrandTotalDisc}</span>
+                <br/>
+                <p style="font-size:9px;color:red">* Cash discount will be applied on each items before Sales Tax.</p>
+            </lightning:card>
+          
+            <div class="slds-align_absolute-center slds-p-top_small ">
+                <!--<lightning:button variant="brand" label="Cancel" title="Brand action" onclick="{!c.cancel}" />-->
+                <lightning:button variant="destructive" label="Cancel" title="Cancel" onclick="{!c.CancelClick }" />
+                <lightning:button  variant="brand" label="Submit" title="Brand action"  disabled="{!v.disableBtn}"  onclick="{!c.save}" />
+                
+            </div>
+        </div>
+        
+    </div>
+    </aura:if>
+    <!-- spinner -->
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+</aura:component>

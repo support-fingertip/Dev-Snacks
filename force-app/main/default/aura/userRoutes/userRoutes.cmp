@@ -1,0 +1,240 @@
+<aura:component controller="userRoutesController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+	
+     <aura:attribute name="users" type="object[]" />
+    <aura:attribute name="warehouses" type="object[]" />
+    <aura:attribute name="Routes" type="String[]" />
+    <aura:attribute name="userId" type="String" />
+   
+     <aura:attribute name="routeName" type="String" />
+    
+      <aura:attribute name="SEId" type="String" />
+    <aura:attribute name="NextUserId" type="String" />
+     <aura:attribute name="warehouseId" type="String" />
+     <aura:attribute name="routeId" type="String" />
+    <aura:attribute name="TotalStores" type="Integer" />
+     <aura:attribute name="showRoutes" type="boolean" default="false"/>
+     <aura:attribute name="showWarehouseRoutes" type="boolean" default="false"/>
+	<aura:attribute name="showStores" type="boolean" default="false"/> 
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    <aura:attribute name="showDelete" type="boolean" default="false"/>
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+     <aura:attribute name="searchText" type="string" default=""/>
+    <aura:attribute name="allStores" type="object" default="{}"/>
+  
+    <!-- data tabel attributes -->
+     
+    <aura:attribute name="mydata3" type="Object"/>
+    <aura:attribute name="mycolumns3" type="List"/>
+    
+     <aura:attribute name="mydata4" type="Object"/>
+    <aura:attribute name="mycolumns4" type="List"/>
+    
+     <aura:attribute name="mydata5" type="Object"/>
+    <aura:attribute name="mycolumns5" type="List"/>
+    
+     <aura:attribute name="storesData" type="Object"/>
+    <aura:attribute name="storeColumns" type="List"/>
+     <aura:attribute name="selectedRowsCount" type="Integer" default="0"/>
+    <aura:attribute name="selectedRoutesCount" type="Integer" default="0"/>
+     <aura:attribute name="selectedstores" type="List" />
+     <aura:attribute name="selectedRoutes" type="List" />
+   <aura:attribute name="deleteStoreColumns" type="List" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+     <aura:handler name="change" value="{!v.searchText}" action="{!c.doSearch}"></aura:handler> 
+   
+    <div >
+    <div class="slds-page-header">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title slds-align-middle">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <lightning:icon size="large" iconName="standard:omni_supervisor"/>
+                    </div>
+                    <div class="slds-media__body slds-align-middle"><span style="font-size:18px;font-weight: bold;">User Routes and Stores</span></div>
+                </div>
+            </div>
+             </div>
+         </div>
+                 <lightning:tabset variant="scoped">
+        
+        <lightning:tab label="User Routes and Stores" >
+           <div class="slds-page-body">
+       
+                <div class="slds-has-flexi-truncate">
+                    <div class="slds-grid  slds-wrap slds-grid_pull-padded-xx-small slds-m-bottom--medium">
+                      
+                        <div class="slds-size_1-of-2 slds-p-horizontal_x-small"> 
+                            <lightning:select class="select"  label="User Name" value="{!v.SEId}" onchange="{!c.fetchRoutes}" messageWhenValueMissing="Please select this field">
+                                <option value="">Select User</option>
+                                <aura:iteration items="{!v.users}" var="val">
+                                    <option value="{!val.Id}"> {!val.Name}</option>
+                                </aura:iteration></lightning:select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <aura:if isTrue="{!v.showRoutes}">
+            <aura:if isTrue="{!and(v.mydata3 != '',v.mydata3 != null)}">
+              <div style="background-color:white;">
+                <center><h1 class="slds-text-align_center slds-text-heading_medium"><span style="color:black;"> <lightning:icon size="small" iconName="standard:activations"/>&nbsp;<b>Routes</b></span></h1></center>
+
+        </div>
+                 
+            <div style="height: 200px">
+         <lightning:datatable
+                             keyField="id"
+                             data="{! v.mydata3 }"
+                             columns="{! v.mycolumns3 }"
+                             onrowaction="{!c.handleRowAction3 }"
+                              hideCheckboxColumn="true"
+                           />
+    </div>
+                </aura:if>
+            </aura:if>
+                   <br/>
+       
+         <aura:if isTrue="{!v.showStores}">
+         <aura:if isTrue="{!and(v.mydata4 != '',v.mydata4 != null)}">
+                 <div style="background-color:white;">
+                <center><h1 class="slds-text-align_center slds-text-heading_medium"><span style="color:black;"><b><lightning:icon size="small" iconName="standard:account"/>&nbsp;{!v.routeName} Route Stores</b></span></h1></center>
+        </div>
+            <div style="height: 250px">
+        <h1><b>No of Stores:</b> {! v.TotalStores }</h1>
+         <lightning:datatable
+                             keyField="id"
+                             data="{! v.mydata4 }"
+                             columns="{! v.mycolumns4 }"
+                             hideCheckboxColumn="true"/>
+    </div>
+            </aura:if>
+         
+       
+        </aura:if>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+        </lightning:tab>
+                     <lightning:tab label="Delete Stores" >
+                     <aura:if isTrue="{!and(v.storesData != '',v.storesData != null)}">
+              <div style="background-color:white;">
+                   <!-- <center>
+                       <h1 class="slds-text-align_center slds-text-heading_medium">
+                  <lightning:badge class="slds-badge" label="Stores" iconName="standard:account" iconPosition="start"/>
+                       </h1>
+                  </center> -->
+                <center><h1 class="slds-text-align_center slds-text-heading_medium"><span style="color:black;"> <lightning:icon size="small" iconName="standard:account"/>&nbsp;<b>Stores</b></span></h1></center>
+         <div class="slds-grid">
+                         <div class="slds-size_1-of-3"> 
+                  <lightning:input value="{!v.searchText}" aura:id="enter-search" name="enter-search" label="Store Name" type="search" placeholder="type store name" variant="label-hidden"/>
+                              </div>
+                              <div class="slds-size_1-of-3"> 
+                                  <aura:if isTrue="{!(v.selectedRowsCount != 0)}">
+         <div class="slds-text-align_right">
+        <button class="slds-button slds-button--destructive" onclick="{!c.showDeleteWarning}" >Delete</button>
+    	</div>
+        </aura:if>
+                             </div>
+            
+                  </div>
+        
+        </div>
+                 
+            <div style="height: 500px">
+                 <h1>Selected Stores: {!v.selectedRowsCount }</h1>
+         <lightning:datatable
+                             keyField="id"
+                             data="{!v.storesData}"
+                             columns="{! v.storeColumns }"
+                             onrowselection="{! c.updateSelectedStores}"
+                              />
+      
+    </div>
+                </aura:if>
+                     
+                     </lightning:tab>
+                     
+       <lightning:tab label="Change route owner" >
+           <div class="slds-page-body">
+       
+                <div class="slds-has-flexi-truncate">
+                    <div class="slds-grid  slds-wrap slds-grid_pull-padded-xx-small slds-m-bottom--medium">
+                      
+                        <div class="slds-size_1-of-2 slds-p-horizontal_x-small"> 
+                            <lightning:select class="select"  label="User Name" value="{!v.warehouseId}" onchange="{!c.fetchWarehouseRoutes}" messageWhenValueMissing="Please select this field">
+                                <option value="">Select Warehouse</option>
+                                <aura:iteration items="{!v.warehouses}" var="val">
+                                    <option value="{!val.Id}"> {!val.Name}</option>
+                                </aura:iteration></lightning:select>
+                        </div>
+                         <div class="slds-size_1-of-2 slds-p-horizontal_x-small"> 
+                            <lightning:select class="select"  label="Assigning To" value="{!v.NextUserId}" messageWhenValueMissing="Please select this field">
+                                <option value="">Select User</option>
+                                <aura:iteration items="{!v.users}" var="val">
+                                    <option value="{!val.Id}"> {!val.Name}</option>
+                                </aura:iteration></lightning:select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <aura:if isTrue="{!v.showWarehouseRoutes}">
+               
+            <aura:if isTrue="{!and(v.mydata5 != '',v.mydata5 != null)}">
+              <div style="background-color:white;">
+                <center><h1 class="slds-text-align_center slds-text-heading_medium"><span style="color:black;"> <lightning:icon size="small" iconName="standard:activations"/>&nbsp;<b>Routes</b></span></h1></center>
+
+        </div>
+                 
+            <div style="height: 400px">
+                 <h1><b>Selected Routes:</b> {!v.selectedRoutesCount}</h1>
+         <lightning:datatable
+                             keyField="id"
+                             data="{! v.mydata5 }"
+                             columns="{! v.mycolumns5 }"
+                              onrowselection="{! c.updateSelectedRoutes}" 
+                           />
+                </div><br/>
+                <aura:if isTrue="{!(v.selectedRoutesCount != 0)}">
+        <center><button class="slds-button slds-button--brand" onclick="{!c.changeRouteUser}" >Change Route Owner</button></center>
+                  </aura:if>
+                </aura:if>
+            </aura:if>
+                  
+        </lightning:tab>
+    </lightning:tabset>
+   <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+        <aura:if isTrue="{!v.showDelete}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse"
+                                title="Close" onclick="{!c.closeDeleteWarning}">
+                            X <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate"> <lightning:icon iconName="action:delete" size="small"/><br/>Are you sure want to delete these stores?</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_small slds-text-align--center" id="modal-content-id-1">
+                       
+                         <lightning:datatable
+                             keyField="id"
+                             data="{! v.selectedstores}"
+                             columns="{! v.deleteStoreColumns }"
+                             hideCheckboxColumn="true"/>
+      
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.closeDeleteWarning}">No</button>
+                        <button class="slds-button slds-button_neutral slds-button_destructive" variant="Destructive" onclick="{!c.doDelete}">Delete</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    </div>
+         
+            
+        
+</aura:component>

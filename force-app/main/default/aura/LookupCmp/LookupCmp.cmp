@@ -1,0 +1,32 @@
+<aura:component >
+    <aura:attribute name="accounts" type="object[]" default="[]"/>
+    <aura:attribute name="searchText" type="string" default=""/>
+    <aura:attribute name="storeName" type="string" default=""/>
+    <aura:attribute name="status" type="string" default=""/>
+    <aura:attribute name="value" type="string" default=""/>
+    <aura:attribute name="matchaccounts" type="object[]" default="[]"/>
+    <aura:handler name="change" value="{!v.searchText}" action="{!c.searchText}"></aura:handler> 
+    
+    <lightning:input value="{!v.searchText}" aura:id="enter-search" name="enter-search" label="Store Name" type="search"/><br/>                                      
+    <aura:if isTrue="{!v.matchaccounts}">
+        <div class="{!if(not(empty(v.matchaccounts)), 'result-buttom','')}">
+            <aura:iteration items="{!v.matchaccounts}" var="item">
+                <li role="presentation">
+                    <span class="slds-lookup__item-action slds-media slds-media--center" role="option">
+                        <div class="slds-media__body">
+                            <div class="slds-input-has-icon slds-input-has-icon--right">
+                                <div class="slds-lookup__result-text" data-id="{!item.EId__c}" onclick="{!c.update }">
+                                    <a role="option" >
+                                       
+                                            <lightning:icon iconName="standard:account" size="xx-small"/>&nbsp;{!item.Name}
+                                       
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </li>
+            </aura:iteration>
+        </div>
+    </aura:if>    
+</aura:component>

@@ -1,0 +1,11 @@
+<aura:component   implements="lightning:actionOverride,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+	<aura:attribute name="recordId" type="Id" />
+	<aura:attribute name="objectName" type="string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+     <aura:if  isTrue="{! v.objectName  == 'Order' }">  
+          <c:orderMasterDetail recordId="{!v.recordId}"></c:orderMasterDetail>
+    </aura:if>
+    <aura:if  isTrue="{! v.objectName  == 'Invoice' }">  
+          <c:invoiceMasterDetail recordId="{!v.recordId}"></c:invoiceMasterDetail>
+    </aura:if>
+</aura:component>

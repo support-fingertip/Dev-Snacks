@@ -1,0 +1,167 @@
+<apex:page standardController="Receipt__c" extensions="ReceiptPDF" standardStylesheets="true" applyBodyTag="false" applyHtmlTag="false" showHeader="false" >
+    <head>
+         <style> 
+            @page {
+            margin-top: 50px;padding:0px;margin-bottom: 90px;
+            @top-left {
+            content: element(header);
+            }                           
+            @bottom-left {   
+            content: element(footer);
+            } 
+            }
+            div.header {
+            margin-top:10px;
+            position: running(header);
+            width: 100%;
+            margin-right: 10px;
+            text-align: right;
+            }
+            div.footer {  
+            margin-top:10px;
+            position: running(footer);
+            width: 100%;
+            margin-right: 10px;
+            position: running(footer);
+            }
+            .center {
+            text-align: center;
+            font-family: sans-serif;
+            
+            }
+            .subheading {
+            text-align: center;
+            font-family: sans-serif;
+            font-size: 12px;
+            padding-top: 0px;
+            }
+            .heading {
+            font-size: 18px;
+            margin-bottom: 20px;
+            }
+            .borderline {
+            width: 25%;
+            float: right;
+            }
+            .carriedOver {
+            margin-top: 15px;
+            text-align: center;
+            }
+            .Date{
+            text-align: right;
+            }
+            table,th,td{
+            border: 1px solid #808080;
+            border-collapse: collapse;
+            
+            }
+              @page {
+            size: A4 ;
+            }
+            
+            @media print {
+            thead {display: table-header-group;} 
+            tfoot {display: table-footer-group;}
+            button {display: none;}
+            body {margin: 0;}
+            }
+            
+        </style>
+        <script>
+        document.onkeydown = function (e) {
+            //alert(e.keyCode)
+            if ( e.keyCode == 17 ) {
+                e.preventDefault();
+                return false;
+            }
+            return false;
+        }
+        function printPage(){
+            window.print();
+        }
+        </script>
+    </head>
+    <body>
+        
+        <div class="center heading">
+           <!-- <b style="font-size: 26px;">SERAPHINE DEV IMPEX PVT LTD<br/></b>
+            <span style="font-size: 26px;">ARA26A ,DEW DROPS<br/>
+                AMRUTHAKULAM ,KOLLAM<br/>
+                FSSI:LicenceNo:10021041000304<br/>
+                Kerala - 691001, India<br/>
+                CIN: U15100KL2020PTC061169<br/>
+                Contact : 0474-2753119,9847800119/9188520168<br/>
+                E-Mail : dev.snacks@yahoo.com<br/>
+                <b>Kollam1 Ser Receipt Voucher</b>
+              
+            </span>-->
+          
+                 <div style="{!IF((branchRecord.Company_Id__c == 'Dev'), 'display:block', 'display:none')}" >            
+                        <div style="font-size: 14px;float:center;text-align:center"><strong>SERAPHINE DEV IMPEX PRIVATE LIMITED</strong></div>
+                    </div>
+                    <div style="{!IF((branchRecord.Company_Id__c == 'Eva'), 'display:block', 'display:none')}" >            
+                        <div style="font-size: 14px;float:center;text-align:center"><strong>EVA Traders</strong></div>
+                    </div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>{!branchRecord.Address__c}</strong></div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>Fssai Licence No : </strong>{!branchRecord.Fssai_Licence_Number__c}</div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>State : </strong> {!branchRecord.State__c}, India</div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>GSTIN/UIN : </strong>{!branchRecord.GST_No__c}</div>
+                    <!-- <div style="font-size: 14px;float:center;text-align:center"><strong>Code : </strong>{!branchRecord.Branch_Id__c}</div>-->
+                    <!--<div style="font-size: 14px;float:center;text-align:center">CIN : </div>-->
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>Contact : </strong>{!branchRecord.Contact_Number__c}</div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>E-Mail : </strong>{!branchRecord.Emails__c}</div>
+            <br/>    
+            <b>Receipt Voucher</b>
+        </div>
+        
+        <table style="width:100%;" >
+            <tr >
+                <td colspan="2" style="font-size: 18px;float:center;" width="25%">No:&nbsp;&nbsp;<b>{!Receipt__c.Name}</b></td>
+                <td colspan="2" style="font-size: 18px;float:center;" width="25%">Date:&nbsp;&nbsp;<b>{!TEXT(DAY(Receipt__c.Receipt_Date__c))}/{!TEXT(MONTH(Receipt__c.Receipt_Date__c))}/{!TEXT(YEAR(Receipt__c.Receipt_Date__c))}</b></td>     
+            </tr>
+            <tr  >
+                <td colspan="2" style="font-size: 18px;float:center;" >Particulars</td>
+                <td colspan="2" style="font-size: 18px;float:center;text-align:right;" >Amount</td>     
+            </tr>
+            <tr  >
+                <td colspan="2" style="font-size: 18px;float:center;" >Account:&nbsp;&nbsp;<b>{!Receipt__c.Customer__r.Name}</b></td>
+                <td colspan="2" style="font-size: 18px;float:center;text-align:right;" ><b>{!Receipt__c.Initial_On_Account_Value__c}</b></td>     
+            </tr>
+            
+            <apex:repeat value="{!receiptItems}" var="item">
+                <tr  >
+                    <td colspan="2" style="font-size: 18px;float:center;text-align:left" width="50%">Agst Ref:&nbsp;&nbsp;<b>{!item.Sales_Invoice__r.Name}&nbsp;</b></td>
+                    <td colspan="2" style="font-size: 18px;float:center;text-align:left;" width="25%"><b>&nbsp;{!item.Amount__c}&nbsp;Cr</b> </td>     
+                </tr>
+                
+            </apex:repeat>
+            
+            
+            
+            <tr>
+                <td colspan="2" style="font-size: 18px;float:center;text-align:left">Through:</td>
+                <td colspan="2" style="font-size: 18px;float:center;text-align:right;"><b>{!Receipt__c.Mode_of_payment__c}</b></td>
+                
+            </tr>
+            
+            <tr>
+                <td colspan="2" style="font-size: 18px;float:center;text-align:left" >On Account of:</td>
+                <td colspan="2" style="font-size: 18px;float:center;text-align:right;" ><b>Account</b></td>
+                
+            </tr>
+            <tr>
+                
+                <td colspan="2" style="font-size: 18px;float:center;text-align:left" width="25%">Amount(in words):</td>
+                <td colspan="2" style="font-size: 18px;float:center;text-align:right;" width="25%"><b>{!numToWord}</b></td>
+                
+            </tr>
+            
+        </table>
+        
+        <div style="width: 100%;text-align: center;">
+            <button onclick="printPage();" style="height: 30px;margin-top: 10px;">
+                Print
+            </button>
+        </div>
+    </body>
+</apex:page>

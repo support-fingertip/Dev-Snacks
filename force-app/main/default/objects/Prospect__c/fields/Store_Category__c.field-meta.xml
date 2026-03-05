@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Store_Category__c</fullName>
+    <externalId>false</externalId>
+    <label>Store Category</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Hyper market</fullName>
+                <default>false</default>
+                <label>Hyper market</label>
+            </value>
+            <value>
+                <fullName>super market</fullName>
+                <default>false</default>
+                <label>super market</label>
+            </value>
+            <value>
+                <fullName>consumer store</fullName>
+                <default>false</default>
+                <label>consumer store</label>
+            </value>
+            <value>
+                <fullName>Hotel</fullName>
+                <default>false</default>
+                <label>Hotel</label>
+            </value>
+            <value>
+                <fullName>Bakery</fullName>
+                <default>false</default>
+                <label>Bakery</label>
+            </value>
+            <value>
+                <fullName>Whole sale shop</fullName>
+                <default>false</default>
+                <label>Whole sale shop</label>
+            </value>
+            <value>
+                <fullName>Distributor</fullName>
+                <default>false</default>
+                <label>Distributor</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

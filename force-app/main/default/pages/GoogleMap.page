@@ -1,0 +1,250 @@
+<apex:page showHeader="false">
+    <html>
+        <head>
+            <!-- 
+This stylesheet contains specific styles for displaying the map on this page. Replace it with your own styles as described in the documentation:
+https://developers.google.com/maps/documentation/javascript/tutorial 
+-->
+            <link rel="stylesheet" href="//developers.google.com/maps/documentation/javascript/demos/demos.css"/>
+        </head>
+        <script>
+        var mapkey = "AIzaSyBY5UAqK58-wYs8tTvwYGD1Zu-SN7dWoVU";
+        //  (mapkey);
+        //Receive message from LC
+        window.addEventListener("message", function(event) {
+            //If page is public (like used in force.com sites) then be careful about the origin
+            //if (event.origin !== lexOrigin) {
+            // Not the expected origin: reject message!
+            //return;
+            //}
+            // Handle message
+            //alert('vf3');
+            console.log('Data Sent to VF: ', event.data);
+            data = event.data;
+            //alert('data'+JSON.stringify(data));
+            console.log('VF ',data);
+            
+            if(typeof(event.data.loadGoogleMap) != 'undefined'){
+                //Load Google Map Script
+                // alert('inside url content');
+                var script = document.createElement("script");
+                //alert('1');
+                script.src = "https://maps.googleapis.com/maps/api/js?key="+mapkey+"&callback=initMap";
+                //alert('2');
+                document.getElementsByTagName("body")[0].appendChild(script);
+                //alert('3');
+            }
+        }, false);
+        
+        var lexOrigin = 'https://{!JSENCODE($CurrentPage.parameters.lcHost)}';
+        
+        //Data for Google map
+        var data;
+        
+        //Send message to LC
+        function sendToLC(message) {
+            // alert('vf1');
+            if(typeof(lexOrigin) != 'undefined'){
+                parent.postMessage(message, lexOrigin);
+            }
+        }
+        
+        sendToLC({'state':'LOADED', 'vfHost': "{!LEFT($CurrentPage.URL,FIND('/',$CurrentPage.URL,9))}"});
+        
+        //Callback when Google Map is loaded
+        function initMap() {
+            //alert('inside initMap');
+            var isIphone = navigator.userAgent.indexOf("iPhone") != -1 ;
+            var isIpod = navigator.userAgent.indexOf("iPod") != -1 ;
+            var isIpad = navigator.userAgent.indexOf("iPad") != -1 ;
+            var isAndroid = navigator.userAgent.indexOf("Android") != -1 ;
+            var isIos = isIphone || isIpod || isIpad ; 
+            
+            //Add marker for each point along with text
+            function addMarker(feature) {
+                // alert(JSON.stringify(feature));
+                if(feature.status == 'New' ){
+                    //alert('status');
+                    var marker = new google.maps.Marker({
+                        position: feature.position,
+                        icon: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png',
+                        map: map
+                    });
+                    // alert('marker'+JSON.stringify(marker));
+                }                    
+                else if(feature.status == 'Planned' || feature.status == 'In Progress' ){
+                    //alert('inside planned if');
+                    var marker = new google.maps.Marker({
+                        position: feature.position,
+                        icon: 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png',
+                        map: map
+                    });                      
+                }else if(feature.status == 'Completed'){
+                    if(feature.startingPoint){
+                        var marker = new google.maps.Marker({
+                            position: feature.position,
+                            icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+                            map: map
+                        });
+                    } else if(feature.endingPoint){
+                        var marker = new google.maps.Marker({
+                            position: feature.position,
+                            icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                            map: map
+                        });
+                    } else {
+                        var marker = new google.maps.Marker({
+                            position: feature.position,
+                            icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+                            map: map
+                        }); 
+                    }                             
+                }else if(feature.status == 'Incomplete'){
+                    var marker = new google.maps.Marker({
+                        position: feature.position,
+                        icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+                        map: map
+                    });  
+                } 
+                
+                var chkIn = feature.checkIn ? DisplayTime(feature.checkIn) : '';
+                var chkOut = feature.checkOut ? DisplayTime(feature.checkOut) : '';
+                
+                var checkInOut = feature.status == 'Completed' ? "CheckIn : "+chkIn+"<br/>CheckOut : "+chkOut : ''; 
+                
+                var contentStr = '';
+                if(isIos)
+                {
+                    contentStr = feature.markerText + "<br>"+ checkInOut +"</br><a href='comgooglemaps://?center="+ feature.position.lat() +","+ feature.position.lng() +"&zoom=14&views=traffic' target='_blank'>Open in App</a>";
+                }
+                else if(isAndroid)
+                {
+                    contentStr = feature.markerText + "<br>"+ checkInOut +"</br><a href='geo:"+ feature.position.lat() +","+ feature.position.lng() +"' target='_blank'>Open in App</a>";
+                }
+                    else
+                    {
+                        contentStr = feature.markerText + "<br/>"+ checkInOut  +"<br/><a href='https://www.google.com/maps/?q="+ feature.position.lat() +","+ feature.position.lng() +"' target='_blank'>Open in App</a>";
+                    }
+            
+                //alert('out of commented section');
+                var infoWindow = new google.maps.InfoWindow({
+                    content: contentStr
+                });
+                //alert('info window'+infoWindow);
+                function DisplayTime(datetime){
+                    //alert('inside date time');
+                    var date = new Date(datetime);
+                    var hours = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
+                    var am_pm = date.getHours() >= 12 ? "PM" : "AM";
+                    hours = hours < 10 ? "0" + hours : hours;
+                    var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                    var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+                    return hours + ":" + minutes + ":" + seconds + " " + am_pm;
+                }
+                marker.addListener('click', function() {
+                    //alert('inside click');
+                    infoWindow.open(map, marker);
+                    var pos = map.getZoom();
+                    map.panTo(this.getPosition());
+                    console.log(this.getPosition().lat());
+                    console.log(this.getPosition().lng());
+                    
+                    //map.setZoom(19);
+                    window.setTimeout(function() {map.setZoom(pos);},6000);
+                    //alert('out of click');
+                });
+            }
+            
+            //Create new map
+            var mapOptions1 = {};
+            //alert('map option');
+            mapOptions1 = {
+                // center: new google.maps.LatLng(markers[0].lat, markers[0].lng),
+                zoom: 12,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(document.getElementById("map"), mapOptions1);
+            //alert('map'+map);
+            //Set map center
+            map.setCenter(data.mapOptionsCenter);
+            
+            //iterate through map data for each point (even if 1)
+            
+            var mapData = data.mapData;
+            // alert('153----MapData-----'+mapData);
+            //Test
+            //Add marker for each point
+            var j=mapData.length;
+            var lat_lng = new Array();
+            for(var i=0; i<j; i++){
+                //alert('inside map data itrate');
+                if(mapData[i].lat != null && mapData[i].lng != null )
+                    var myLatlng = new google.maps.LatLng(mapData[i].lat, mapData[i].lng);
+                //alert('map data itrate'+myLatlng);
+                lat_lng.push(myLatlng);
+                console.log(myLatlng)
+                
+               
+                
+                addMarker({position: myLatlng, markerText: mapData[i].markerText, status:mapData[i].status, checkIn:mapData[i].checkIn, checkOut:mapData[i].checkOut,startingPoint:mapData[i].startingPoint,endingPoint:mapData[i].endingPoint });
+                //alert('marker: '+{position: myLatlng, markerText: mapData[i].markerText, status:mapData[i].status, checkIn:mapData[i].checkIn, checkOut:mapData[i].checkOut })
+            }
+            
+          
+            
+            //alert('166'+myLatlng);
+            //alert('169'+lat_lng);
+            
+            //***********ROUTING***************
+            
+            //Initialize the Path Array
+            var path = new google.maps.MVCArray();
+            
+            //Initialize the Direction Service
+            var service = new google.maps.DirectionsService();
+            
+            //Set the Path Stroke Color
+            var poly = new google.maps.Polyline({ map: map, strokeColor: '#4986E7' });
+            console.log(lat_lng);
+            //Loop and Draw Path Route between the Points on MAP
+            for (var i = 0; i < lat_lng.length; i++) {
+                //alert('inside  for'+lat_lng.length);
+                if ((i + 1) < lat_lng.length) {
+                    //alert('inside if of for');
+                    var src = lat_lng[i];
+                    var des = lat_lng[i + 1];
+                    //path.push(src);
+                    poly.setPath(path);
+                    service.route({
+                        origin: src,
+                        destination: des,
+                        travelMode: google.maps.DirectionsTravelMode.DRIVING
+                    }, function (result, status) {
+                        if (status == google.maps.DirectionsStatus.OK) {
+                             console.log(status);
+                            for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
+                                path.push(result.routes[0].overview_path[i]);
+                                console.log('routes: '+path);
+                            }
+                        }
+                    });
+                }
+            }
+           
+        } 
+       
+        
+        
+        </script>  
+        <body class="slds-scope">    
+            <div id="maindivid" class="demo-only demo-only--sizing slds-grid slds-wrap">
+                <div class="slds-size_2-of-2 slds-small-size_2-of-2 slds-medium-size_2-of-2 slds-large-size_1-of-3"> 
+                </div> 
+                <div class="slds-m-around--small slds-size_2-of-2 slds-small-size_2-of-2 slds-medium-size_2-of-2 slds-large-size_4-of-7 ">          
+                    <div id="map" >
+                    </div>
+                </div>              
+            </div>  
+        </body>
+    </html>
+</apex:page>

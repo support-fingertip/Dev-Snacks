@@ -1,0 +1,71 @@
+<aura:component controller="GenrateLeadgerStatementController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="FromDate" type="Date" />
+    <aura:attribute name="ToDate" type="Date" />
+    <aura:attribute name="Openpdf" type="Boolean" default="false"/>
+    <aura:attribute name="SelectDate" type="Boolean" default="true"/>
+    <aura:attribute name="ShowDate" type="Boolean" default="true"/>
+    <aura:attribute name="LedgerOf" type="String" />
+    
+    
+    <aura:html tag="style">
+        .panel.slds-modal > .modal-container{
+        width: 75%;
+        max-width: 70rem;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.SelectDate}">
+        
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <div class="slds-grid slds-gutters slds-align_absolute-center" >
+
+            <div class="slds-form-element slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                
+                <label class="slds-form-element__label" for="date-input-id-default"><b>Date</b></label>
+                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                    
+                    <lightning:select aura:id="field"  name="Ledger of" label="Ledger of" value="{!v.LedgerOf}" required="true" messageWhenValueMissing="Select this field" onchange="{!c.onPicklistChange}">
+                        <option class="field-title2" value="">choose one...</option>
+                        <option class="field-title3" value="Today">Today</option>
+                        <option class="field-title" value="This Week">This Week</option>
+                        <option class="field-title3" value="This Month">This Month</option>
+                        <option class="field-title3" value="Last 3 Month">Last 3 Month</option>
+                        <option class="field-title3" value="Last 6 Month">Last 6 Month</option>
+                        <option class="field-title3" value="This Year">This Year</option>
+                        <option class="field-title3" value="Custom">Custom</option>
+                        
+                    </lightning:select>
+                    <lightning:input label="From Date" required="true"  disabled="{!v.ShowDate}"  aura:id="field1" messageWhenValueMissing="Select date"  type="date"  value="{!v.FromDate}" />
+                    <b>TO</b>
+                    <lightning:input label="To Date" required="true" disabled="{!v.ShowDate}" aura:id="field2" messageWhenValueMissing="Select date"  type="date"  value="{!v.ToDate}" />
+                    
+                </div><br/>             
+                <button class="slds-button slds-button_neutral" onclick="{!c.ShowPdf}">Genrate Leadger</button>
+                
+                
+                
+                <!--  <iframe src="{!'/apex/apex/LedgerStatement?Id=' + v.recordId }" width="100%" height="500px;" frameBorder="0"/> -->
+                
+            </div>
+            </div> 
+            
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.Openpdf}">
+        <section class="slds-modal slds-fade-in-open">
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium slds-hyphenate">Ledger Statement</h2>
+            </header>
+            <iframe src="{!'/apex/apex/DevSnacksPDF?Id=' + v.recordId +'&amp;from=' + v.FromDate +'&amp;to=' + v.ToDate  }" width="100%" height="500px;" frameBorder="0"/>
+            
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick="{!c.close}">Cancel</button>
+               <!-- <button class="slds-button slds-button_brand" onclick="{!c.send}">Send Email</button>-->
+                
+            </footer>
+        </section>
+    </aura:if>
+</aura:component>

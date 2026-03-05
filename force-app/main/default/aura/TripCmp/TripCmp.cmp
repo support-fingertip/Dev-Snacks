@@ -1,0 +1,158 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" 
+                controller="TripController" access="global" >
+    
+    <aura:attribute name="tripData" type="object" />
+    <aura:attribute name="logData" type="object" />
+    <aura:attribute name="visits" type="object[]" />
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    <aura:attribute name="noPending" type="boolean" default="true"/>
+    <aura:attribute name="showTripData" type="boolean" default="false"/>
+    
+    <!-- Popup attributes -->
+    <aura:attribute name="startTripWarning" type="boolean" default="false"/>
+    <aura:attribute name="endTripWarning" type="boolean" default="false"/>
+    
+    <!-- Handler  Attributes -->
+    <aura:attribute name="clockIn" type="object" />
+    <aura:attribute name="clockOut" type="object" />
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    <aura:handler name="change" value="{!v.clockIn}" action="{!c.startDayClick}"></aura:handler>
+    <aura:handler name="change" value="{!v.clockOut}" action="{!c.endDayClick}"></aura:handler>
+    
+    
+    <!-- Buttons section -->
+    <div class="slds-tabs_card">
+        <div class="slds-grid slds-wrap tm-mob-mode">   
+            <div class="slds-align-bottom tm-top-right--block">
+                <aura:if isTrue="{!or(v.tripData == null,v.tripData.Start_Date__c == null)}">
+                    <lightning:button  class="slds-box_x-small slds-text-align_center slds-p-top_none slds-p-bottom_none" iconPosition="left" iconName="utility:clock" variant="brand" label="Start Trip" onclick="{!c.showStartTripWarning}"/>
+                </aura:if>
+                <aura:if isTrue="{!v.showTripData}">
+                    
+                    <div>
+                        <table>
+                            <tr>
+                                <th>
+                                    Trip Start Date:
+                                </th>
+                                <td>
+                                    
+                                    <lightning:formattedDateTime value="{!v.tripData.Start_Date__c}" year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                                                 minute="2-digit" hour12="true"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Driver Name:
+                                </th>
+                                <td>
+                                    {!v.logData.Driver__r.Name}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Sales Man:
+                                </th>
+                                <td>
+                                    {!v.logData.Sales_Man__r.Name}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Assistant SalesMan:
+                                </th>
+                                <td>
+                                    {!v.logData.Assistant_SalesMan__r.Name}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Sales Manager:
+                                </th>
+                                <td>
+                                    {!v.logData.Sales_Manager__r.Name}
+                                </td>
+                            </tr>
+                        </table> 
+                        <br/>
+                    </div>
+                    <lightning:button class="slds-box slds-box_x-small slds-text-align_center slds-p-top_none slds-p-bottom_none" iconPosition="left"  variant="brand" label="End Trip" onclick="{!c.showEndTripWarning}"/>
+                    
+                </aura:if>
+                
+            </div>
+        </div> 
+    </div>
+    
+    <!-- day start warning --> 
+    
+    <aura:if isTrue="{!v.startTripWarning}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse"
+                            title="Close" onclick="{!c.startTripNo}">
+                        X <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Start Trip</h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_large" id="modal-content-id-2">
+                    <lightning:input label="Start KM" type="number" name="input3" required="true"  value="{!v.tripData.Start_KM__c}"/>
+                    
+                </div>
+                
+                
+                <div class="slds-modal__content slds-p-around_large slds-text-align--center" id="modal-content-id-1">
+                    <b>You are about to Start the Trip, Are you Sure?</b>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.startTripNo}">No</button>
+                    <button class="slds-button slds-button_neutral slds-button_brand" variant="brand" onclick="{!c.getclockIn}">Yes</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <!-- day End warning --> 
+    
+    <aura:if isTrue="{!v.endTripWarning}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse"
+                            title="Close" onclick="{!c.EndTripNo}">
+                        X <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">End Trip</h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_large" id="modal-content-id-2">
+                    <lightning:input label="End KM" type="number" name="input3" required="true"  value="{!v.tripData.End_KM__c}"/>
+                    
+                </div>
+                
+                <div class="slds-modal__content slds-p-around_large slds-text-align--center" id="modal-content-id-1">
+                    <b>You are about to End the Trip, Are you Sure?</b>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.EndTripNo}">No</button>
+                    <button class="slds-button slds-button_neutral slds-button_brand" variant="brand" onclick="{!c.getclockOut}">Yes</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    
+    <!-- spinner -->
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+</aura:component>

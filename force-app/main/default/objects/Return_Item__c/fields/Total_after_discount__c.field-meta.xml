@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_after_discount__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(Unit_Price__c != UnitPriceWithDiscount__c  , 
+				((Total_Unit_Price__c - (Total_Unit_Price__c * Cash_Discount__c))  +
+	((Total_Unit_Price__c - (Total_Unit_Price__c * Cash_Discount__c)) * Sales_Tax__c  )
+	), Total_Unit_Price__c  +
+		(Total_Unit_Price__c  * Sales_Tax__c  ))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Total after discount</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

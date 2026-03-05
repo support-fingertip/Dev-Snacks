@@ -1,0 +1,93 @@
+<template>
+    <lightning-card title="Stock Report (Route Wise)">
+        <div class="slds-p-around_medium">
+            <lightning-layout multiple-rows vertical-align="end">
+                <lightning-layout-item size="12" small-device-size="6" padding="around-small">
+                    <lightning-combobox label="Route" value={routeId} options={routeOptions} onchange={onRouteChange}>
+                    </lightning-combobox>
+                </lightning-layout-item>
+               
+                <lightning-layout-item size="12" small-device-size="3" padding="around-small">
+                    <lightning-input type="date" label="From Date" value={fromDate}
+                        onchange={onFromChange}></lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" small-device-size="3" padding="around-small">
+                    <lightning-input type="date" label="To Date" value={toDate} onchange={onToChange}></lightning-input>
+                </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="3" padding="around-small">
+                   <c-custom-multiselect-picklist-l-w-c label="Filter Zero" showpills="true"
+                                    role="cm-picklist" options={colOptions}
+                                    onpicklistselected={handleFilterSelection}></c-custom-multiselect-picklist-l-w-c>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small">
+                    <lightning-button variant="brand" label="View Report" onclick={loadReport}></lightning-button>
+                    <lightning-button class="slds-m-left_small" label="Download PDF"
+                        onclick={downloadPdf}></lightning-button>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <template if:true={loading}>
+                <lightning-spinner alternative-text="Loading"></lightning-spinner>
+            </template>
+
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-m-top_small">{error}</div>
+            </template>
+
+            <lightning-layout multiple-rows>
+                <lightning-layout-item size="12" small-device-size="6" padding="around-small">
+                    <lightning-combobox label="Sort By" value={sortBy} options={sortOptions}
+                        onchange={onSortByChange}></lightning-combobox>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" small-device-size="6" padding="around-small">
+                    <lightning-combobox label="Direction" value={sortDir} options={dirOptions}
+                        onchange={onSortDirChange}></lightning-combobox>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <!-- Desktop -->
+            <template if:true={showTable}>
+                <lightning-datatable key-field="productId" data={rows} columns={columns} hide-checkbox-column>
+                </lightning-datatable>
+                <!--   <lightning-button class="slds-m-left_small" label="Download PDF"
+                    onclick={downloadPdf}></lightning-button> -->
+
+            </template>
+
+            <!-- Mobile -->
+            <template if:true={showCards}>
+                <div class="cards">
+                    <template for:each={rows} for:item="r">
+                        <div key={r.productId} class="card">
+                            <div class="cardHeader">
+                                <div class="title">{r.productName}</div>
+                                <div class="code">{r.productCode}</div>
+                            </div>
+
+                            <div class="grid">
+                                <div class="kv"><span>Opening</span><b>{r.openingQty}</b></div>
+                                <div class="kv"><span>Received</span><b>{r.totalStockReceived}</b></div>
+
+                                <div class="kv"><span>Invoice Cancellation</span><b>{r.invoiceCancellation}</b></div>
+                                <div class="kv"><span>Saleable Returns</span><b>{r.saleableReturns}</b></div>
+
+                                <div class="kv"><span>Total Saleable</span><b>{r.totalSaleableQty}</b></div>
+                                <div class="kv"><span>Sold</span><b>{r.soldQty}</b></div>
+
+                                <div class="kv"><span>Saleable Closing</span><b>{r.saleableClosingQty}</b></div>
+                                <div class="kv"><span>Damaged</span><b>{r.damagedQty}</b></div>
+
+                                <div class="kv full"><span>Total Qty</span><b>{r.totalQty}</b></div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+
+            </template>
+        </div>
+    </lightning-card>
+</template>

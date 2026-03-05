@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Complaint_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Complaint Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Billing issue</fullName>
+                <default>false</default>
+                <label>Billing issue</label>
+            </value>
+            <value>
+                <fullName>Product Issue</fullName>
+                <default>false</default>
+                <label>Product Issue</label>
+            </value>
+            <value>
+                <fullName>Warranty</fullName>
+                <default>false</default>
+                <label>Warranty</label>
+            </value>
+            <value>
+                <fullName>Dispatch</fullName>
+                <default>false</default>
+                <label>Dispatch</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

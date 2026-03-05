@@ -1,0 +1,61 @@
+<aura:component controller="DailyLogReportController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes">
+    <aura:attribute name="startDate" type="String" />
+    <aura:attribute name="endDate" type="String" />
+    <aura:attribute name="branchOptions" type="List" />
+    <aura:attribute name="selectedBranchId" type="String" default="" />
+    <aura:attribute name="routeOptions" type="List" />
+    <aura:attribute name="selectedRouteId" type="String" default="" />
+    <aura:attribute name="reportData" type="List" default="[]" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="showTable" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:layout multipleRows="true">
+        <lightning:layoutItem padding="around-small" size="12">
+            <div class="slds-box">
+                <lightning:layout>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <lightning:input type="date" label="Start Date" value="{!v.startDate}" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <lightning:input type="date" label="End Date" value="{!v.endDate}" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <lightning:combobox name="branch"
+                                            label="Branch"
+                                            placeholder="Select Branch"
+                                            options="{!v.branchOptions}"
+                                            value="{!v.selectedBranchId}" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <lightning:combobox name="route"
+                                            label="Route"
+                                            placeholder="Select Route"
+                                            options="{!v.routeOptions}"
+                                            value="{!v.selectedRouteId}" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <lightning:button variant="brand" label="Load Report" onclick="{!c.loadReport}" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <lightning:button variant="neutral" label="Export to CSV"
+                                          onclick="{!c.exportToExcel}"
+                                          disabled="{!not(v.showTable)}"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </div>
+        </lightning:layoutItem>
+
+        <lightning:layoutItem padding="around-small" size="12">
+            <aura:if isTrue="{!v.showTable}">
+                <lightning:datatable
+                    data="{!v.reportData}"
+                    columns="{!v.columns}"
+                    keyField="logId"
+                    hideCheckboxColumn="true"/>
+            </aura:if>
+        </lightning:layoutItem>
+    </lightning:layout>
+</aura:component>

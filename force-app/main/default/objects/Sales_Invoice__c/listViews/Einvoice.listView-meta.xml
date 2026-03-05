@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Einvoice</fullName>
+    <columns>NAME</columns>
+    <columns>Branch__c</columns>
+    <columns>Customer__c</columns>
+    <columns>Amount_Received__c</columns>
+    <columns>Grand_Total_Discounted__c</columns>
+    <columns>Pending_Amount__c</columns>
+    <columns>Invoice_Date__c</columns>
+    <columns>Route__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>Sales_Order__c</columns>
+    <columns>Payment_Type__c</columns>
+    <columns>CompanyId__c</columns>
+    <columns>Send_to_GSTZen__c</columns>
+    <columns>Sent_to_SAP__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Send_to_GSTZen__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <label>Einvoice</label>
+</ListView>

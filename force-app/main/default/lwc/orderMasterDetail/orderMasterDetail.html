@@ -1,0 +1,150 @@
+<template>
+
+  <div if:false={showSearchList} class="slds-card" style="font-family: 'Open Sans', sans-serif">
+      <!-- Header -->
+        <div class="slds-page-header"> 
+            <div class="slds-grid slds-wrap slds-gutters">             
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-box_small">
+                    <div class="slds-media">
+                    <div class="slds-media__figure ">
+                            <lightning-icon icon-name="standard:orders" size="medium"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body slds-text-heading_small ">
+                        <p>  
+                            <span if:false={isCreateEdit}><b>{record.Name}</b></span>
+                            <span if:true={isCreateEdit}><b>New Order</b></span>
+                        </p>
+                      </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-show_medium slds-box_small">
+                    <div if:false={isCreateEdit} class="slds-text-heading_small"><b>{record.Store__r.Name}</b></div>
+                    <c-cmp-Lookup if:true={isCreateEdit} s-object-api-name="Account"   onlookupupdate={handleRecordInputLookupChange}    selected-record={record.Store__r}  lookup-field="Store__c" lookup-name-field="Name" ></c-cmp-Lookup>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-box_small">
+                     <div class="slds-text-heading_small"><b>₹{record.Grand_Total__c}</b></div>
+
+                </div>  
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-show_medium slds-box_small">
+                    <div  class="slds-text-heading_small"><b>{items.length} Item<span if:true={itemsSize} >s</span> </b></div>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-show_medium slds-box_small">
+                    <div  class="slds-text-heading_small"><b><lightning-formatted-date-time value={record.Order_Date__c}></lightning-formatted-date-time></p></b></div>
+                </div>  
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-grid slds-box_small">
+                    <lightning-button    class="slds-size_1-of-2 slds-p-right_small"  icon-name="utility:save" variant="brand" label="Save" title="Save" onclick={saveRecordsCall}></lightning-button> 
+                    <lightning-button    class="slds-size_1-of-2 slds-p-right_small"  icon-name="utility:search" variant="brand" label="Search" title="Search" onclick={searchItems}></lightning-button>
+                </div>   
+            </div>  
+        </div> 
+
+
+
+        <div if:true={cardview} class="slds-grid slds-wrap slds-grid_pull-padded-xx-small">
+            <template for:each={items} for:item="item"> 
+                  <div key={item.Id}   class="slds-box box slds-m-bottom--small slds-m-around_small">
+                  <div class="slds-grid slds-grid_pull-padded-xx-small">
+
+                  <div class="slds-size_1-of-2 slds-p-horizontal--xx-small">
+                     <div class="slds-form-element product_title">
+                           {item.Product__r.Name} 
+                     </div>
+                     <div class="slds-form-element unit_price">
+                         Unit Price -  ₹  {item.Unit_Price__c} 
+                     </div>   
+                  </div>
+                
+                  <div class="slds-size_1-of-2 slds-p-horizontal--xx-small"> 
+                     <div class="slds-float_right    cart_button"> 
+                        <lightning-button   icon-name="utility:delete" variant="destructive"></lightning-button>
+                     </div>  
+                 </div>
+               </div>  
+                  <div class="slds-grid slds-grid_pull-padded-xx-small slds-m-top--medium">
+                     <div class="slds-size_1-of-2 slds-p-horizontal--xx-small">
+                        <div class="slds-grid slds-wrap number_input">
+                                 <div class="slds-align-middle">  
+                                    <button class="slds-button number_button"  icon-name="utility:dash"  title="Substract"></button>
+                                 </div>
+                              <div class="slds-has-flexi-truncate slds-align-middle hide_lable">
+                                 <input type="number" class="slds-input" placeholder="Qty" name="Quantity"   value={item.Quantity__c} ></input>
+                              </div> 
+                                 <div class="slds-align-middle">
+                                    <button class="slds-button number_button"   icon-name="utility:add"  title="add"  ></button>
+                                 </div>  
+                        </div> 
+                     </div> 
+                     <div class="slds-size_1-of-2 slds-p-horizontal--xx-small discount_blk">
+                        <div class="slds-grid slds-wrap number_input">
+                            <div class="slds-has-flexi-truncate slds-align-middle hide_lable">
+                                <input class="slds-input" type="number" placeholder="Disc" name="Discount" label="Discount" value={items.Discount__c}></input>
+                            </div> 
+                            <div class="slds-align-middle">
+                                <span class="percentage_icon">%</span>
+                            </div> 
+                        </div>
+                  </div>
+                        
+                     </div> 
+                    
+                 </div>  
+               </template>
+            </div> 
+
+ 
+
+      <table if:false={cardview} class="slds-table slds-table_bordered slds-no-row-hover slds-table_cell-buffer listview" role="grid">
+          <thead>
+          <tr>
+              <th scope="col" height="22" class="slds-show_medium" style="width: 3rem">No.</th>
+              <th scope="col" height="22">Product</th>
+              <th scope="col" height="22">Unit Price</th>
+              <th scope="col" height="22">Quantity</th>
+              <th scope="col" height="22" class="slds-show_medium">Item Tax</th>
+              <th scope="col" height="22">Total</th>
+              <th scope="col" height="22" style="width: 3rem"></th>
+          </tr>
+          </thead>
+          <tbody>
+          <template for:each={items} for:item="item">
+              <tr key={item.index} class="slds-hint-parent">
+                  <td style="font-weight: bold" class="slds-show_medium">
+                      <lightning-formatted-number value={item.index}></lightning-formatted-number>.  
+                  </td>  
+                  <td>   
+                      <c-cmp-Lookup index={item.index} selected-record={item.Product__r}  lookup-field="Product__c" lookup-name-field="Name"   onlookupupdate={handleInputLookupChange}></c-cmp-Lookup>
+                      <!-- <lightning-input type="text" variant="label-hidden" label="" data-id={item.index} name="Product__c" value={item.Product_Name__c} onchange={handleInputChange}></lightning-input> -->
+                  </td> 
+                  <td>
+                    <lightning-input type="text" variant="label-hidden" label="" data-id={item.index} name="Unit_Price__c" value={item.Unit_Price__c} onchange={handleInputChange}></lightning-input>
+                  </td>  
+                  <td>
+                      <lightning-input type="text" variant="label-hidden" label="" data-id={item.index} name="Quantity__c" value={item.Quantity__c} onchange={handleInputChange}></lightning-input>
+                  </td>  
+                  <td class="slds-show_medium">
+                    <lightning-input type="text" variant="label-hidden" label="" data-id={item.index} name="Phone" value={item.Tax_value_edit__c}  ></lightning-input>
+                  </td>
+                  <td>
+                      <lightning-input type="text" variant="label-hidden" label="" data-id={item.index} name="Phone" value={item.Total_Price__c}  ></lightning-input>
+                  </td>
+                  <td>
+                      <lightning-button-icon icon-name="utility:delete" alternative-text="Remove" title="Remove" name={item.index} onclick={removeRow}></lightning-button-icon>
+                  </td>
+              </tr>
+          </template>
+          </tbody>
+      </table>
+      
+ 
+      <!-- Footer -->
+      <footer class="slds-modal__footer" style="padding: 0.50rem 1rem;">
+          <lightning-button class="slds-p-right_small" variant="destructive" label="delete all rows" title="delete all rows" icon-name="utility:recycle_bin_full" onclick={removeAllRows}></lightning-button>
+          <lightning-button  class="slds-p-right_small" variant="neutral" label="add additional row" title="add additional row" icon-name="utility:add" onclick={addNewRow}></lightning-button>
+          <lightning-button  class="slds-p-right_small" icon-name="utility:save" variant="brand" label="Save Order" title="Save Order" onclick={saveRecordsCall}></lightning-button> 
+      </footer>
+  </div>
+  <div if:true={showSearchList}> 
+    <c-cmp-list-view onitemsadded={itemsAdded} oneventcancel={cancelSearch} ></c-cmp-list-view>
+  </div>
+
+</template>

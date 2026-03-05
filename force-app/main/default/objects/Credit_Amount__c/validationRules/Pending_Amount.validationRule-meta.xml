@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pending_Amount</fullName>
+    <active>true</active>
+    <errorConditionFormula>IF(AND( ISNEW() , Sales_Invoice__r.Pending_Amount__c &lt; Amount__c ),TRUE,FALSE)</errorConditionFormula>
+    <errorDisplayField>Amount__c</errorDisplayField>
+    <errorMessage>The outstanding invoice amount should be greater than or equal to  the credit amount.</errorMessage>
+</ValidationRule>

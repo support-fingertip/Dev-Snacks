@@ -1,0 +1,176 @@
+<aura:component controller="customNewExpenseController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride"  access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    <!--<aura:attribute name="options" type="List" default="[{ label: 'Car', value: 'Car' },{ label: 'Bike', value: 'Bike' },{ label: 'Bus', value: 'Bus' },{ label: 'Auto', value: 'Auto' },{ label: 'Others', value: 'Others' }]"/>-->
+    <aura:attribute name="mindate" type="Date" />
+    <aura:attribute name="showexpense" type="boolean" default="true"/>
+    <aura:attribute name="showUpdate" type="boolean" default="false"/>
+    <aura:attribute name="yesterdayExp" type="boolean" default="false"/>
+    <aura:attribute name="showUpload" type="boolean" default="false"/>
+    <aura:attribute name="currentsetp" type="integer" default="1"/>
+    <aura:attribute name="inprogress" type="integer" />
+    <aura:attribute name="planned" type="integer" />
+    <aura:attribute name="listId" type="string"/>
+    <aura:attribute name="Expense" type="object" default="{}" /> 
+    <aura:attribute name="account" type="List" />
+    <aura:html tag="style">
+        .slds-p-around–medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .toastMessage.forceActionsText{
+        white-space : pre-line !important;
+        }
+    </aura:html>
+    
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        
+        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> <b> New Expense</b></h2>
+        <lightning:progressIndicator currentStep="{!v.currentsetp}" type="path" variant="base">
+            <lightning:progressStep label="Expense Details" value="1"/>
+            <lightning:progressStep label="Upload Bills" value="2"/>
+        </lightning:progressIndicator>
+        
+    </div>
+    
+    <div class="slds-modal__content slds-p-around--medium">
+        <div class="slds-grid">
+            <div class="slds-col slds-size_1-of-1">
+                <lightning:select aura:id="field"  label="Select Expense Type" value="{!v.Expense.Select_Expense_Entry__c}" required="true" messageWhenValueMissing="Select this field">
+                    <option  value="">choose one...</option>
+                    <option  value="General">General Entry</option>
+                    <option  value="Purcahse">Purcahse Entry</option>
+                </lightning:select>
+            </div>
+        </div>
+        
+        <aura:if isTrue="{!v.Expense.Select_Expense_Entry__c == 'General'}">
+            
+            
+            <aura:if isTrue="{!v.showexpense}">
+                <div class="slds-grid">
+                    <div class="slds-size_1-of-2">
+                        <lightning:input aura:id="field1" label="Expense Date" type="date" required="true"  value="{!v.Expense.Expense_Date__c}" min="{!v.mindate}" messageWhenValueMissing="Enter Expense Date"/>
+                    </div>
+                    &nbsp;
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input label="TA" type="number" aura:id="field1" value="{!v.Expense.TA__c}" formatter="currency" step="0.01"/>
+                    </div>
+                    
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input label="DA" type="number" aura:id="field1" value="{!v.Expense.DA__c}" formatter="currency" step="0.01"/>
+                    </div>
+                    &nbsp;
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input label="Other Expenses" type="number" aura:id="field1" value="{!v.Expense.Other_Expenses__c}" formatter="currency" step="0.01"/>
+                    </div>
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input label="Fuel Expense" aura:id="field1" type="number" value="{!v.Expense.Fuel_Expense__c}" formatter="currency" step="0.01"/>
+                    </div>
+                    &nbsp;
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input label="Food Expense" aura:id="field1" type="number" value="{!v.Expense.Food_Expense__c}" formatter="currency" step="0.01"/>
+                    </div>
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input label="Vehicle Repair Expense" aura:id="field1" type="number" value="{!v.Expense.Vehicle_Repair_Expense__c}" formatter="currency" step="0.01"/>
+                    </div>
+                    &nbsp;
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input label="Accommodation Expense" aura:id="field1" type="number" value="{!v.Expense.Accommodation_Expense__c}" formatter="currency" step="0.01"/>
+                    </div>
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:select aura:id="field1"  label="Select Expense Account" value="{!v.Expense.Expense_Account__c}" required="true" messageWhenValueMissing="Select this field">
+                            <option  value="">choose one...</option>
+                            <aura:iteration items="{!v.account}" var="item">
+                                <option  value="{!item.Id}"> {!item.Name}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                </div>
+                <!--<div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-1">
+                                     <lightning:dualListbox aura:id="field1" name="Mode of transport" 
+                                                                       label= "Mode of transport"
+                                                                       sourceLabel="Available"
+                                                                       selectedLabel="Selected"
+                                                                       options="{!v.options}"
+                                                                       value="{!v.Expense.Mode_of_transport__c}"
+                                                                       size="3" />
+                                            </div>
+                                                </div>-->
+            </aura:if>
+        </aura:if> 
+        <aura:if isTrue="{!v.Expense.Select_Expense_Entry__c == 'Purcahse'}">
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input label="Item Name" type="text" aura:id="field1" value="{!v.Expense.Item_Name__c}" />
+                </div>
+                &nbsp;
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:input label="Amount" type="number" aura:id="field1" value="{!v.Expense.Amount__c}" formatter="currency" step="0.01"/>
+                </div>
+            </div>
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select aura:id="field1"  label="Select Expense Account" value="{!v.Expense.Expense_Account__c}" required="true" messageWhenValueMissing="Select this field">
+                        <option  value="">choose one...</option>
+                        <aura:iteration items="{!v.account}" var="item">
+                            <option  value="{!item.Id}"> {!item.Name}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </div>
+        </aura:if>
+        <div class="slds-grid">
+            <div class="slds-col slds-size_1-of-1">
+                <lightning:textarea aura:id="field1" name="Expense Comments" required="true" value="{!v.Expense.Expense_Comments__c}" label="Expense Comments"  messageWhenValueMissing="Enter Expense Comments"/>
+            </div>
+        </div>
+        
+    </div>
+    
+    
+    
+    <aura:if isTrue="{!v.showUpload}">
+        <c:photoUploadComponent recordId="{!v.Expense.Id}" />
+    </aura:if>
+    
+    
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+        <aura:if isTrue="{!v.showexpense}">
+            <button class="slds-button slds-button_neutral" onclick="{!c.closeExpense}">Cancel</button>
+            <aura:if isTrue="{!!v.showUpdate}">
+                <button class="slds-button slds-button_brand" onclick="{!c.dosave}">Save and Next</button>
+            </aura:if>
+            <aura:if isTrue="{!v.showUpdate}">
+                <button class="slds-button slds-button_neutral" onclick="{!c.donext}">Next</button>
+                <button class="slds-button slds-button_brand" onclick="{!c.dosave}">Update and Next</button>
+            </aura:if>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.showUpload}">
+            <button class="slds-button slds-button_neutral" onclick="{!c.gotoRecord}">Close</button>
+            <button class="slds-button slds-button_neutral" onclick="{!c.doPrevious}">Previous</button>
+            <button class="slds-button slds-button_brand" onclick="{!c.doSubmit}">Submit for Approval</button>
+        </aura:if>
+    </div>
+    
+    
+    
+</aura:component>

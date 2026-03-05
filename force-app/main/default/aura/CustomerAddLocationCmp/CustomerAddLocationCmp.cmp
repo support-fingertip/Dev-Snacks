@@ -1,0 +1,43 @@
+<aura:component implements="force:lightningQuickAction,force:appHostable,force:hasRecordId" access="global" controller="CustomerAddLocation">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="status" type="String"/>
+    <aura:attribute name="locationApproveStatus" type="String"/>
+    <aura:attribute name="latitude" type="Decimal"/>
+    <aura:attribute name="longitude" type="Decimal"/>
+    <aura:attribute name="mapMarkers" type="Object"/>
+    <aura:attribute name="center" type="Object" />
+    <aura:attribute name="zoomLevel" type="Integer" />
+    <aura:attribute name="markersTitle" type="String" />
+    <aura:attribute name="message" type="String" />
+    <aura:attribute name="showFooter" type="Boolean" />
+    <aura:attribute name="outletObj" type="Account"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="change" value="{!v.latitude}" action="{!c.handleLatitude}" />
+    <aura:handler name="change" value="{!v.longitude}" action="{!c.handleLongitude}" />
+
+    
+    <h1 style="text-align:center;font-size:17px;color:green;">You are here at {!v.outletObj.Name}</h1>
+    <h1 style="text-align:center;font-size:17px;color:red;">Please Capture your location</h1>
+    <div style=""> 
+        
+        <lightning:map
+                       mapMarkers="{! v.mapMarkers }"
+                       center="{! v.center }"
+                       zoomLevel="{! v.zoomLevel }"
+                       markersTitle="{! v.markersTitle }"
+                       showFooter="{ !v.showFooter }" >
+        </lightning:map>
+    </div>
+    
+    
+    <lightning:recordEditForm objectApiName="Account" >
+        
+        <lightning:inputField aura:id="latId" fieldName="GeoLocation__Latitude__s" value="{!v.latitude}"  />
+        
+        <lightning:inputField aura:id="longId" fieldName="GeoLocation__Longitude__s" value="{!v.longitude}"  />
+        
+    </lightning:recordEditForm>
+    <div  style="text-align:center;">
+        <lightning:button aura:id="button" variant="brand" class="button" label="Capture Location" onclick="{!c.captureLocation}" />
+    </div>	
+</aura:component>

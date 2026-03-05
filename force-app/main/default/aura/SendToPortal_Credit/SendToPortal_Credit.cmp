@@ -1,0 +1,4 @@
+<aura:component controller="Einvoice_Send_TriggerHandler" implements="force:lightningQuickActionwithoutheader,force:appHostable,force:hasRecordId" access="global" >
+	    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+ 
+</aura:component>

@@ -1,0 +1,762 @@
+<apex:page standardController="Return__c" extensions="CreditNotePdfControllerClass" standardStylesheets="false" applyBodyTag="false" showHeader="false">
+    
+    <head>
+        <style> 
+            @page {
+            margin-top: 50px;padding:0px;margin-bottom: 90px;
+            @top-left {
+            content: element(header);
+            }                           
+            @bottom-left {   
+            content: element(footer);
+            } 
+            }
+            div.header {
+            margin-top:10px;
+            position: running(header);
+            width: 100%;
+            margin-right: 10px;
+            text-align: right;
+            }
+            div.footer {  
+            margin-top:10px;
+            position: running(footer);
+            width: 100%;
+            margin-right: 10px;
+            position: running(footer);
+            }
+            table,th,td{
+            border: 1px solid #808080;
+            border-collapse: collapse;
+            }
+            table {
+            width: 100%;
+            }
+            
+            .image-column {
+            width:19%; 
+            }
+            .image-column2 {
+            width: 23%; 
+            }
+            
+            .data-column {
+            width: 58%; 
+            }
+              .image-column2 {
+            width: 23%; 
+            }
+            @page {
+            size: A4 ;
+            }
+            
+            @media print {
+            thead {display: table-header-group;} 
+            tfoot {display: table-footer-group;}
+            button {display: none;}
+            body {margin: 0;}
+            }
+            
+        </style>
+        <script>
+        document.onkeydown = function (e) {
+            //alert(e.keyCode)
+            if ( e.keyCode == 17 ) {
+                e.preventDefault();
+                return false;
+            }
+            return false;
+        }
+        function printPage(){
+            window.print();
+        }
+        </script>
+    </head>
+    <body>
+        <div style="font-size: 15px;float:center;text-align:center">(ORIGINAL FOR RECIPIENT)</div>
+        <table>
+            <tr>
+                <td class="image-column" >
+                    <div style="font-size: 15px;float:center;text-align:left">Credit Note No:&nbsp;&nbsp;{!Return__c.Return_Full_Name__c}</div>
+                    <div style="font-size: 15px;float:center;text-align:left">Reference No:&nbsp;&nbsp;{!siname}</div>
+                    <div style="font-size: 15px;float:center;text-align:left">Credit Note Date:&nbsp;&nbsp;{!TEXT(DAY(Return__c.Return_Date__c))}/{!TEXT(MONTH(Return__c.Return_Date__c))}/{!TEXT(YEAR(Return__c.Return_Date__c))}</div>
+                    <img src="{! $Resource.Ledger_logo}" /><br/>
+                </td>
+                <td class="data-column" rowspan="5">
+                    <div style="{!IF((branchRecord.Company_Id__c == 'Dev'), 'display:block', 'display:none')}" >            
+                        <div style="font-size: 14px;float:center;text-align:center"><strong>SERAPHINE DEV IMPEX PRIVATE LIMITED</strong></div>
+                    </div>
+                    <div style="{!IF((branchRecord.Company_Id__c == 'Eva'), 'display:block', 'display:none')}" >            
+                        <div style="font-size: 14px;float:center;text-align:center"><strong>EVA Traders</strong></div>
+                    </div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>{!branchRecord.Address__c}</strong></div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>Fssai Licence No : </strong>{!branchRecord.Fssai_Licence_Number__c}</div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>State : </strong> {!branchRecord.State__c}, India</div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>GSTIN/UIN : </strong>{!branchRecord.GST_No__c}</div>
+                    <!-- <div style="font-size: 14px;float:center;text-align:center"><strong>Code : </strong>{!branchRecord.Branch_Id__c}</div>-->
+                    <!--<div style="font-size: 14px;float:center;text-align:center">CIN : </div>-->
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>Contact : </strong>{!branchRecord.Contact_Number__c}</div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>E-Mail : </strong>{!branchRecord.Emails__c}</div>
+                </td>
+                 <td class="image-column2" style="text-align:center" >
+                        <apex:outputPanel rendered="{!NOT(ISBLANK(invoiceQRURL))}">
+                            <img src="{!invoiceQRURL}" height="100%" width="100%"/>
+                            <div style="font-size:9px;overflow-wrap: break-word; word-break: break-word;text-align:center"><b>IRN No:</b>{!Return__c.IRN_Number__c}</div>
+                  
+                     </apex:outputPanel>
+                    </td>
+            </tr>
+        </table>
+        <div style="font-size: 15px;float:center;text-align:center">
+            <b>Credit Note</b>
+        </div>
+        <table>
+            <tr>
+                <td colspan="2" style="font-size: 14px;text-align:center;  height: 100px;vertical-align: top;text-align: -webkit-center" width="25%"> <b>Customer Billing Address</b>
+                    <div>
+                        <table style="border:0px;width:70%">
+                            <tr>
+                                <th style="width:20%;border:0px;text-align:center">Name:</th>
+                                <td style="width:80%;border:0px;text-align:left">{!custmerdeatil} ({!custmerdeatil2})</td>
+                            </tr>
+                            
+                            <tr>
+                                <th style="width:20%;border:0px;text-align:center">Address:</th>
+                                <td style="width:80%;border:0px;text-align:left">{!billingAddress1}<br/>
+                                    {!billingAddress2}</td>                            
+                            </tr>
+                            <apex:outputPanel rendered="{!NOT(ISBLANK(billGST))}">
+                                <tr> 
+                                    <th style="width:20%;border:0px;text-align:center">GST:</th>
+                                    <td style="width:80%;border:0px;text-align:left">{!billGST}</td>
+                                </tr>
+                            </apex:outputPanel>
+                        </table>
+                        
+                    </div>
+                </td>
+                <td colspan="2" style="font-size: 14px;text-align:center;  height: 100px;vertical-align: top;text-align: -webkit-center" width="25%"> <b>Customer Shipping Address</b>
+                    <div>
+                        <table style="border:0px;width:70%">
+                            <tr>
+                                <th style="width:20%;border:0px;text-align:center">Name:</th> 
+                                <td style="width:80%;border:0px;text-align:left">{!custmerdeatil} ({!custmerdeatil2})</td>
+                            </tr>
+                            
+                            <tr>
+                                <th style="width:20%;border:0px;text-align:center">Address:</th>
+                                <td style="width:80%;border:0px;text-align:left">{!shippingAddress1}<br/>
+                                    {!shippingAddress2}</td>                            
+                            </tr>
+                            <apex:outputPanel rendered="{!NOT(ISBLANK(shipGST))}">
+                                <tr> 
+                                    <th style="width:20%;border:0px;text-align:center">GST:</th>
+                                    <td style="width:80%;border:0px;text-align:left">{!shipGST}</td>
+                                </tr>
+                            </apex:outputPanel>
+                        </table>
+                        
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br/>
+        <apex:outputPanel rendered="{!Return__c.New_Flow__c}">
+            <apex:outputPanel rendered="{!rateVar}">
+                <table>
+                    <tr style="text-align:center;font-size:14px;float:center;">
+                         <th width="5%">Sl.No.</th>
+                            <th width="20%">Description of Goods</th> 
+                            <th width="10%">HSN/SAC</th>
+                            <th width="9%">MRP</th>
+                            <th width="9%">Quantity</th>
+                            <th width="9%">Rate</th>
+                             <th width="10%">Amount</th>
+                            <th width="4%">Disc %</th>
+                            <th width="7%">Discounted Rate</th>
+                            <th width="7%">Discounted Amount</th>
+                            <th width="6%">GST %</th>
+                            <th width="10%">Total</th>
+                    </tr>
+                    <apex:variable var="rowNumber" value="{!1}"/> 
+                    <apex:repeat value="{!returnItem}" var="item">
+                        
+                        <tr style="text-align:center;font-size:14px;float:center;">
+                            <td width="5%">{!round(rowNumber,0)}</td>
+                            <td width="20%">{!item.Product__r.Name}</td> 
+                            <td width="10%">{!item.Product__r.HSN_Code__c}</td>
+                            <td width="9%">{!item.Stock__r.Price__c}</td>
+                            <td width="9%">{!item.Quantity__c}</td>
+                             <td width="9%">{!round(item.Rate__c, 2)}</td> 
+                                 <td width="9%">{!(item.Quantity__c * item.Rate__c)}</td>
+                            <td width="4%">
+                                <apex:outputPanel rendered="{!NOT(ISBLANK(item.Cash_Discount__c))}">{!item.Cash_Discount__c}%</apex:outputPanel>
+                            </td>
+                            <td width="9%">{!round(item.Unit_Price__c, 2)}</td>  
+                            <td width="10%">{!round(item.Total_Unit_Price__c,2)}</td>
+                          
+                            <td width="6%"><apex:outputText value="{0,number,0}">
+                                <apex:param value="{!item.Sales_Tax__c}" />
+                                </apex:outputText></td>
+                            
+                            <td width="10%">{!round(item.Total__c,2)}</td>
+                        </tr>
+                        <apex:variable var="rowNumber" value="{!rowNumber + 1}"/>
+                    </apex:repeat>
+                     <tr style="text-align:center;font-size:14px;float:center;">
+                        <th colspan='11' width="20%;" style="text-align: right">TOTAL</th>   
+                        
+                        <th width="10%">{!round(Return__c.Grand_Total_Discounted__c,2)}</th>
+                    </tr>
+                    <apex:outputPanel rendered="{!Return__c.Round_off__c != 0}">
+                        <tr  style="text-align:right;font-size:14px;">
+                            <th  colspan="11"  width="10%">Roundoff</th> 
+                            <td width="5%">{!Return__c.Round_off__c}</td>       
+                        </tr>
+                        <tr  style="text-align:right;font-size:14px;">
+                            <th  colspan="11"  width="10%">Total</th> 
+                            <th width="5%" > {!Return__c.Return_Total__c}</th>
+                        </tr>
+                    </apex:outputPanel>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!rateVar == false}">
+                <table>
+                    <tr style="text-align:center;font-size:14px;float:center;">
+                        <th width="5%">Sl.No.</th>
+                        <th width="20%">Description of Goods</th> 
+                        <th width="10%">HSN/SAC</th>
+                        <th width="9%">MRP</th>
+                        <th width="9%">Quantity</th>
+                        <th width="9%">Rate</th>
+                        <th width="10%">Amount</th>
+                        <th width="4%">Disc %</th>
+                        <th width="8%">Disc. Amount</th>
+                        <th width="6%">GST %</th>
+                        <th width="10%">Total</th>
+                    </tr>
+                    <apex:variable var="rowNumber" value="{!1}"/> 
+                    <apex:repeat value="{!returnItem}" var="item">
+                        
+                        <tr style="text-align:center;font-size:14px;float:center;">
+                            <td width="5%">{!round(rowNumber,0)}</td>
+                            <td width="20%">{!item.Product__r.Name}</td> 
+                            <td width="10%">{!item.Product__r.HSN_Code__c}</td>
+                            <td width="9%">{!item.Stock__r.Price__c}</td>
+                            <td width="9%">{!item.Quantity__c}</td>
+                            <td width="9%">{!round(item.Unit_Price__c, 2)}</td>  
+                            <td width="10%">{!round(item.Total_Unit_Price__c,2)}</td>
+                            <td width="4%">
+                                <apex:outputPanel rendered="{!NOT(ISBLANK(item.Cash_Discount__c))}">{!item.Cash_Discount__c}%</apex:outputPanel>
+                            </td>
+                            <td width="8%">
+                                <apex:outputPanel rendered="{!NOT(ISBLANK(item.Customer_Discount__c))}">{!item.Customer_Discount__c}</apex:outputPanel>
+                            </td>
+                            <td width="6%"><apex:outputText value="{0,number,0}">
+                                <apex:param value="{!item.Sales_Tax__c}" />
+                                </apex:outputText></td>
+                            
+                            <td width="10%">{!round(item.Total__c,2)}</td>
+                        </tr>
+                        <apex:variable var="rowNumber" value="{!rowNumber + 1}"/>
+                    </apex:repeat>
+                    <tr style="text-align:center;font-size:14px;float:center;">
+                        <th colspan='10' width="20%;" style="text-align: right">TOTAL</th>   
+                        
+                        <th width="10%">{!round(Return__c.Grand_Total_Discounted__c,2)}</th>
+                    </tr>
+                    <apex:outputPanel rendered="{!Return__c.Round_off__c != 0}">
+                        <tr  style="text-align:right;font-size:14px;">
+                            <th  colspan="10"  width="10%">Roundoff</th> 
+                            <td width="5%">{!Return__c.Round_off__c}</td>       
+                        </tr>
+                        <tr  style="text-align:right;font-size:14px;">
+                            <th  colspan="10"  width="10%">Total</th> 
+                            <th width="5%" > {!Return__c.Return_Total__c}</th>
+                        </tr>
+                    </apex:outputPanel>
+                </table>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Return__c.New_Flow__c == false}">
+        <table>
+            <tr style="text-align:center;font-size:14px;float:center;">
+                <th width="5%">Sl.No.</th>
+                <th width="20%">Description of Goods</th> 
+                <th width="10%">HSN/SAC</th>
+                <th width="9%">MRP</th>
+                <th width="9%">Quantity</th>
+                <th width="9%">Rate</th>
+               <th width="10%">Amount</th>
+                <th width="9%">GST %</th>
+                 <th width="9%">Disc %</th>
+                <th width="10%">Total</th>
+            </tr>
+            <apex:variable var="rowNumber" value="{!1}"/> 
+            <apex:repeat value="{!returnItem}" var="item">
+                
+                <tr style="text-align:center;font-size:14px;float:center;">
+                    <td width="5%">{!round(rowNumber,0)}</td>
+                    <td width="20%">{!item.Product__r.Name}</td> 
+                    <td width="10%">{!item.Product__r.HSN_Code__c}</td>
+                    <td width="9%">{!item.Stock__r.Price__c}</td>
+                    <td width="9%">{!item.Quantity__c}</td>
+                    <td width="9%">{!round(item.Unit_Price__c, 2)}</td>  
+                    <td width="10%">{!round(item.Total_Unit_Price__c,2)}</td>
+                    <td width="9%"><apex:outputText value="{0,number,0}">
+                        <apex:param value="{!item.Sales_Tax__c}" />
+                        </apex:outputText></td>
+                    <td width="9%">
+                        <apex:outputPanel rendered="{!AND(NOT(ISBLANK(Return__c.Customer__r.Cash_Discount__c)),Return__c.Sales_Invoice__r.Payment_Type__c == 'Immediate')}">
+                            {!item.Return__r.Customer__r.Cash_Discount__c}%
+                        </apex:outputPanel>
+                    </td>
+                    <td width="10%">{!round(item.Total__c,2)}</td>
+                </tr>
+                <apex:variable var="rowNumber" value="{!rowNumber + 1}"/>
+            </apex:repeat>
+            <tr style="text-align:center;font-size:14px;float:center;">
+                <th colspan='8' width="20%;" style="text-align: right">TOTAL</th> 	
+                <th width="10%">
+                    <apex:outputPanel rendered="{!AND(NOT(ISBLANK(Return__c.Customer__r.Cash_Discount__c)),Return__c.Sales_Invoice__r.Payment_Type__c == 'Immediate')}">
+                        {!round(totalCashDiscount,2)} ({!Return__c.Customer__r.Cash_Discount__c}%)
+                    </apex:outputPanel></th>
+                <th width="10%">{!round(Return__c.Grand_Total_Discounted__c,2)}</th>
+            </tr>
+            <apex:outputPanel rendered="{!Return__c.Round_off__c != 0}">
+                <tr  style="text-align:right;font-size:14px;">
+                    <th  colspan="9"  width="10%">Roundoff</th> 
+                    <td width="5%">{!Return__c.Round_off__c}</td>       
+                </tr>
+                <tr  style="text-align:right;font-size:14px;">
+                    <th  colspan="9"  width="10%">Total</th> 
+                    <th width="5%" > {!Return__c.Return_Total__c}</th>
+                </tr>
+            </apex:outputPanel>
+        </table>
+        </apex:outputPanel>
+        <div style="text-align:left;font-size:14px;float:center;"><b>Amount(in words)</b>:&nbsp;&nbsp;&nbsp;{!numToWord}&nbsp;Rupees Only</div><br/>
+        <table>
+            <tr style="text-align:center;font-size:12px;float:center;">
+                <th rowspan="2" width="12%">HSN/SAC</th> 
+                <th rowspan="2" width="12%">TAXABLE VALUE</th> 
+                <th colspan="2" width="20%">CENTRAL TAX</th>
+                <th colspan="2" width="20%">STATE TAX</th>
+                <th colspan="2" width="20%">INTEGRATED TAX</th>
+                <th rowspan="2" width="16%">TOTAL TAX AMOUNT</th>
+                
+            </tr>
+            <tr style="text-align:center;font-size:12px;float:center;">
+                <th width="10%">Rate</th> 
+                <th width="10%">Amount</th>
+                <th width="10%">Rate</th> 
+                <th width="10%">Amount</th>
+                <th width="10%">Rate</th> 
+                <th width="10%">Amount</th>
+            </tr>
+            <apex:repeat value="{!hsnGroupedItemList}" var="hsnGroup" id="theRepeat">
+                <tr style="text-align:right;font-size:12px;">
+                    <td style="text-align:center;" width="10%">{!hsnGroup.hsnNumber}</td> 
+                    <th width="12%">{!hsnGroup.unitPrice}</th>
+                    <td  width="12%">{!hsnGroup.centralTaxPercent}</td>
+                    <td  width="10%">{!round(hsnGroup.centralTax,2)}</td>
+                    <td width="10%">{!hsnGroup.stateTaxPercent}</td>
+                    <td  width="10%">{!round(hsnGroup.stateTax,2)}</td>
+                    <td width="10%">{!hsnGroup.integratedTaxPercent}</td>
+                    <td  width="10%">{!round(hsnGroup.integratedTax,2)}</td> 
+                    <th width="16%">{!round(hsnGroup.totalTaxAmount,2)}</th> 
+                    
+                </tr>
+            </apex:repeat>
+            <tr style="text-align:right;font-size:14px;">
+                <th width="10%">Total</th> 
+                <th width="10%">{!round(sumOfTaxableValues,2)} </th>
+                <th  width="10%"></th>
+                <th  width="10%">{!round(sumOfTaxAmountNormal,2)} </th>
+                <th width="10%"></th> 
+                <th  width="10%">{!round(sumOfTaxAmountNormal,2)} </th> 
+                <th width="10%"></th>
+                <th  width="10%">{!round(sumOfTaxAmountSez,2)} </th>
+                <th width="10%">{!round(sumOfTotalTaxAmounts,2)}</th>
+                
+            </tr> 
+            <!-- <apex:outputPanel rendered="{!roundoff != 0}">
+<tr  style="text-align:right;font-size:14px;">
+<th  colspan="8"  width="10%">Roundoff</th> 
+<th width="5%">{!round(roundoff,2)}</th>        
+</tr>
+<tr  style="text-align:right;font-size:14px;">
+<th  colspan="8"  width="10%">Total</th> 
+
+<th width="5%" > {!round(totalafterroundoff,2)} </th>
+</tr>
+</apex:outputPanel>-->
+        </table>
+        <div style="text-align:left;font-size:14px;float:center;"><b>Tax Amount(in words)</b>:&nbsp;&nbsp;&nbsp;{!sumOfTotalTaxAmountsInWords}&nbsp;Rupees Only</div><br/>
+        <table>
+            <tr>
+                <td colspan="2" style="font-size: 12px;text-align:left;vertical-align: top;height: 60px;" width="75%">Declaration :Certified that all the particulars shown in the above Tax invoice are true and correct in all respect and goods on which the tax charged and collected are in accordance with the provisions of GST Act 2017 and the rules made thereunder. itis also certified that my/our registration under GST Act 2017 is not subject to any suspension/ cancellation and it is valid as on the date of this bill.I/We hereby certify that the food /foods mentioned in this invoice is/are warranted to be of the nature and quality which it/there purpose to be.</td>
+                <td colspan="2" style="font-size: 12px;text-align:center;  height: 60px;vertical-align: top;" width="25%">
+                    <div style="{!IF((branchRecord.Company_Id__c == 'Dev'), 'display:block', 'display:none')}" >            
+                        for SERAPHINE DEV IMPEX PVT LTD
+                    </div>
+                    <div style="{!IF((branchRecord.Company_Id__c == 'Eva'), 'display:block', 'display:none')}" >            
+                        for EVA Traders
+                    </div>
+                    
+                </td>
+            </tr>
+        </table>
+        
+        
+        <!-- DUPLICATE -->
+        
+        
+        
+        <apex:variable var="rowNumber2" value="{!1}"/> 
+        <div style="font-size: 15px;float:center;text-align:center;page-break-before: always">(DUPLICATE COPY)</div>
+        <table>
+            <tr>
+                <td class="image-column" >
+                    <div style="font-size: 15px;float:center;text-align:left">Credit Note No:&nbsp;&nbsp;{!Return__c.Return_Full_Name__c}</div>
+                    <div style="font-size: 15px;float:center;text-align:left">Reference No:&nbsp;&nbsp;{!siname}</div>
+                      <div style="font-size: 15px;float:center;text-align:left">Credit Note Date:&nbsp;&nbsp;{!TEXT(DAY(Return__c.Return_Date__c))}/{!TEXT(MONTH(Return__c.Return_Date__c))}/{!TEXT(YEAR(Return__c.Return_Date__c))}</div>
+                    <img src="{! $Resource.Ledger_logo}" /><br/>
+                </td>
+                <td class="data-column" rowspan="5">
+                    <div style="{!IF((branchRecord.Company_Id__c == 'Dev'), 'display:block', 'display:none')}" >            
+                        <div style="font-size: 14px;float:center;text-align:center"><strong>SERAPHINE DEV IMPEX PRIVATE LIMITED</strong></div>
+                    </div>
+                    <div style="{!IF((branchRecord.Company_Id__c == 'Eva'), 'display:block', 'display:none')}" >            
+                        <div style="font-size: 14px;float:center;text-align:center"><strong>EVA Traders</strong></div>
+                    </div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>{!branchRecord.Address__c}</strong></div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>Fssai Licence No : </strong>{!branchRecord.Fssai_Licence_Number__c}</div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>State : </strong> {!branchRecord.State__c}, India</div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>GSTIN/UIN : </strong>{!branchRecord.GST_No__c}</div>
+                    <!-- <div style="font-size: 14px;float:center;text-align:center"><strong>Code : </strong>{!branchRecord.Branch_Id__c}</div>-->
+                    <!--<div style="font-size: 14px;float:center;text-align:center">CIN : </div>-->
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>Contact : </strong>{!branchRecord.Contact_Number__c}</div>
+                    <div style="font-size: 14px;float:center;text-align:center"><strong>E-Mail : </strong>{!branchRecord.Emails__c}</div>
+                </td>
+              <td class="image-column2" style="text-align:center" >
+                        <apex:outputPanel rendered="{!NOT(ISBLANK(invoiceQRURL))}">
+                            <img src="{!invoiceQRURL}" height="100%" width="100%"/>
+                            <div style="font-size:9px;overflow-wrap: break-word; word-break: break-word;text-align:center"><b>IRN No:</b>{!Return__c.IRN_Number__c}</div>
+                  
+                     </apex:outputPanel>
+                    </td>
+            </tr>
+        </table>
+        <div style="font-size: 15px;float:center;text-align:center">
+            <b>Credit Note</b>
+        </div>
+        <table>
+            <tr>
+                <td colspan="2" style="font-size: 14px;text-align:center;  height: 100px;vertical-align: top;text-align: -webkit-center" width="25%"> <b>Customer Billing Address</b>
+                    <div>
+                        <table style="border:0px;width:70%">
+                            <tr>
+                                <th style="width:20%;border:0px;text-align:center">Name:</th>
+                                <td style="width:80%;border:0px;text-align:left">{!custmerdeatil} ({!custmerdeatil2})</td>
+                            </tr>
+                            
+                            <tr>
+                                <th style="width:20%;border:0px;text-align:center">Address:</th>
+                                <td style="width:80%;border:0px;text-align:left">{!billingAddress1}<br/>
+                                    {!billingAddress2}</td>                            
+                            </tr>
+                            <apex:outputPanel rendered="{!NOT(ISBLANK(billGST))}">
+                                <tr> 
+                                    <th style="width:20%;border:0px;text-align:center">GST:</th>
+                                    <td style="width:80%;border:0px;text-align:left">{!billGST}</td>
+                                </tr>
+                            </apex:outputPanel>
+                        </table>
+                        
+                    </div>
+                </td>
+                <td colspan="2" style="font-size: 14px;text-align:center;  height: 100px;vertical-align: top;text-align: -webkit-center" width="25%"> <b>Customer Shipping Address</b>
+                    <div>
+                        <table style="border:0px;width:70%">
+                            <tr>
+                                <th style="width:20%;border:0px;text-align:center">Name:</th> 
+                                <td style="width:80%;border:0px;text-align:left">{!custmerdeatil} ({!custmerdeatil2})</td>
+                            </tr>
+                            
+                            <tr>
+                                <th style="width:20%;border:0px;text-align:center">Address:</th>
+                                <td style="width:80%;border:0px;text-align:left">{!shippingAddress1}<br/>
+                                    {!shippingAddress2}</td>                            
+                            </tr>
+                            <apex:outputPanel rendered="{!NOT(ISBLANK(shipGST))}">
+                                <tr> 
+                                    <th style="width:20%;border:0px;text-align:center">GST:</th>
+                                    <td style="width:80%;border:0px;text-align:left">{!shipGST}</td>
+                                </tr>
+                            </apex:outputPanel>
+                        </table>
+                        
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br/>
+          <apex:outputPanel rendered="{!Return__c.New_Flow__c}">
+          <apex:outputPanel rendered="{!rateVar}">
+                 <table>
+                    <tr style="text-align:center;font-size:14px;float:center;">
+                         <th width="5%">Sl.No.</th>
+                            <th width="20%">Description of Goods</th> 
+                            <th width="10%">HSN/SAC</th>
+                            <th width="9%">MRP</th>
+                            <th width="9%">Quantity</th>
+                            <th width="9%">Rate</th>
+                             <th width="10%">Amount</th>
+                            <th width="4%">Disc %</th>
+                            <th width="7%">Discounted Rate</th>
+                            <th width="7%">Discounted Amount</th>
+                            <th width="6%">GST %</th>
+                            <th width="10%">Total</th>
+                    </tr>
+                    <apex:variable var="rowNumber" value="{!1}"/> 
+                    <apex:repeat value="{!returnItem}" var="item">
+                        
+                        <tr style="text-align:center;font-size:14px;float:center;">
+                            <td width="5%">{!round(rowNumber,0)}</td>
+                            <td width="20%">{!item.Product__r.Name}</td> 
+                            <td width="10%">{!item.Product__r.HSN_Code__c}</td>
+                            <td width="9%">{!item.Stock__r.Price__c}</td>
+                            <td width="9%">{!item.Quantity__c}</td>
+                             <td width="9%">{!round(item.Rate__c, 2)}</td> 
+                                 <td width="9%">{!(item.Quantity__c * item.Rate__c)}</td>
+                            <td width="4%">
+                                <apex:outputPanel rendered="{!NOT(ISBLANK(item.Cash_Discount__c))}">{!item.Cash_Discount__c}%</apex:outputPanel>
+                            </td>
+                            <td width="9%">{!round(item.Unit_Price__c, 2)}</td>  
+                            <td width="10%">{!round(item.Total_Unit_Price__c,2)}</td>
+                          
+                            <td width="6%"><apex:outputText value="{0,number,0}">
+                                <apex:param value="{!item.Sales_Tax__c}" />
+                                </apex:outputText></td>
+                            
+                            <td width="10%">{!round(item.Total__c,2)}</td>
+                        </tr>
+                        <apex:variable var="rowNumber" value="{!rowNumber + 1}"/>
+                    </apex:repeat>
+                     <tr style="text-align:center;font-size:14px;float:center;">
+                        <th colspan='11' width="20%;" style="text-align: right">TOTAL</th>   
+                        
+                        <th width="10%">{!round(Return__c.Grand_Total_Discounted__c,2)}</th>
+                    </tr>
+                    <apex:outputPanel rendered="{!Return__c.Round_off__c != 0}">
+                        <tr  style="text-align:right;font-size:14px;">
+                            <th  colspan="11"  width="10%">Roundoff</th> 
+                            <td width="5%">{!Return__c.Round_off__c}</td>       
+                        </tr>
+                        <tr  style="text-align:right;font-size:14px;">
+                            <th  colspan="11"  width="10%">Total</th> 
+                            <th width="5%" > {!Return__c.Return_Total__c}</th>
+                        </tr>
+                    </apex:outputPanel>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!rateVar == false}">
+                <table>
+                    <tr style="text-align:center;font-size:14px;float:center;">
+                        <th width="5%">Sl.No.</th>
+                        <th width="20%">Description of Goods</th> 
+                        <th width="10%">HSN/SAC</th>
+                        <th width="9%">MRP</th>
+                        <th width="9%">Quantity</th>
+                        <th width="9%">Rate</th>
+                        <th width="10%">Amount</th>
+                        <th width="4%">Disc %</th>
+                        <th width="8%">Disc. Amount</th>
+                        <th width="6%">GST %</th>
+                        <th width="10%">Total</th>
+                    </tr>
+                    <apex:variable var="rowNumber" value="{!1}"/> 
+                    <apex:repeat value="{!returnItem}" var="item">
+                        
+                        <tr style="text-align:center;font-size:14px;float:center;">
+                            <td width="5%">{!round(rowNumber,0)}</td>
+                            <td width="20%">{!item.Product__r.Name}</td> 
+                            <td width="10%">{!item.Product__r.HSN_Code__c}</td>
+                            <td width="9%">{!item.Stock__r.Price__c}</td>
+                            <td width="9%">{!item.Quantity__c}</td>
+                            <td width="9%">{!round(item.Unit_Price__c, 2)}</td>  
+                            <td width="10%">{!round(item.Total_Unit_Price__c,2)}</td>
+                            <td width="4%">
+                                <apex:outputPanel rendered="{!NOT(ISBLANK(item.Cash_Discount__c))}">{!item.Cash_Discount__c}%</apex:outputPanel>
+                            </td>
+                            <td width="8%">
+                                <apex:outputPanel rendered="{!NOT(ISBLANK(item.Customer_Discount__c))}">{!item.Customer_Discount__c}</apex:outputPanel>
+                            </td>
+                            <td width="6%"><apex:outputText value="{0,number,0}">
+                                <apex:param value="{!item.Sales_Tax__c}" />
+                                </apex:outputText></td>
+                            
+                            <td width="10%">{!round(item.Total__c,2)}</td>
+                        </tr>
+                        <apex:variable var="rowNumber" value="{!rowNumber + 1}"/>
+                    </apex:repeat>
+                    <tr style="text-align:center;font-size:14px;float:center;">
+                        <th colspan='10' width="20%;" style="text-align: right">TOTAL</th>   
+                        
+                        <th width="10%">{!round(Return__c.Grand_Total_Discounted__c,2)}</th>
+                    </tr>
+                    <apex:outputPanel rendered="{!Return__c.Round_off__c != 0}">
+                        <tr  style="text-align:right;font-size:14px;">
+                            <th  colspan="10"  width="10%">Roundoff</th> 
+                            <td width="5%">{!Return__c.Round_off__c}</td>       
+                        </tr>
+                        <tr  style="text-align:right;font-size:14px;">
+                            <th  colspan="10"  width="10%">Total</th> 
+                            <th width="5%" > {!Return__c.Return_Total__c}</th>
+                        </tr>
+                    </apex:outputPanel>
+                </table>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Return__c.New_Flow__c == false}">
+        <table>
+            <tr style="text-align:center;font-size:14px;float:center;">
+                <th width="5%">Sl.No.</th>
+                <th width="20%">Description of Goods</th> 
+                <th width="10%">HSN/SAC</th>
+                <th width="9%">MRP</th>
+                <th width="9%">Quantity</th>
+                <th width="9%">Rate</th>
+               <th width="10%">Amount</th>
+                <th width="9%">GST %</th>
+                 <th width="9%">Disc %</th>
+                <th width="10%">Total</th>
+            </tr>
+            <apex:variable var="rowNumber" value="{!1}"/> 
+            <apex:repeat value="{!returnItem}" var="item">
+                
+                <tr style="text-align:center;font-size:14px;float:center;">
+                    <td width="5%">{!round(rowNumber,0)}</td>
+                    <td width="20%">{!item.Product__r.Name}</td> 
+                    <td width="10%">{!item.Product__r.HSN_Code__c}</td>
+                    <td width="9%">{!item.Stock__r.Price__c}</td>
+                    <td width="9%">{!item.Quantity__c}</td>
+                    <td width="9%">{!round(item.Unit_Price__c, 2)}</td>  
+                    <td width="10%">{!round(item.Total_Unit_Price__c,2)}</td>
+                    <td width="9%"><apex:outputText value="{0,number,0}">
+                        <apex:param value="{!item.Sales_Tax__c}" />
+                        </apex:outputText></td>
+                    <td width="9%">
+                        <apex:outputPanel rendered="{!AND(NOT(ISBLANK(Return__c.Customer__r.Cash_Discount__c)),Return__c.Sales_Invoice__r.Payment_Type__c == 'Immediate')}">
+                            {!item.Return__r.Customer__r.Cash_Discount__c}%
+                        </apex:outputPanel>
+                    </td>
+                    <td width="10%">{!round(item.Total__c,2)}</td>
+                </tr>
+                <apex:variable var="rowNumber" value="{!rowNumber + 1}"/>
+            </apex:repeat>
+            <tr style="text-align:center;font-size:14px;float:center;">
+                <th colspan='8' width="20%;" style="text-align: right">TOTAL</th> 	
+                <th width="10%">
+                    <apex:outputPanel rendered="{!AND(NOT(ISBLANK(Return__c.Customer__r.Cash_Discount__c)),Return__c.Sales_Invoice__r.Payment_Type__c == 'Immediate')}">
+                        {!round(totalCashDiscount,2)} ({!Return__c.Customer__r.Cash_Discount__c}%)
+                    </apex:outputPanel></th>
+                <th width="10%">{!round(Return__c.Grand_Total_Discounted__c,2)}</th>
+            </tr>
+            <apex:outputPanel rendered="{!Return__c.Round_off__c != 0}">
+                <tr  style="text-align:right;font-size:14px;">
+                    <th  colspan="9"  width="10%">Roundoff</th> 
+                    <td width="5%">{!Return__c.Round_off__c}</td>       
+                </tr>
+                <tr  style="text-align:right;font-size:14px;">
+                    <th  colspan="9"  width="10%">Total</th> 
+                    <th width="5%" > {!Return__c.Return_Total__c}</th>
+                </tr>
+            </apex:outputPanel>
+        </table>
+        </apex:outputPanel>
+        <div style="text-align:left;font-size:14px;float:center;"><b>Amount(in words)</b>:&nbsp;&nbsp;&nbsp;{!numToWord}&nbsp;Rupees Only</div><br/>
+        <table>
+            <tr style="text-align:center;font-size:12px;float:center;">
+                <th rowspan="2" width="12%">HSN/SAC</th> 
+                <th rowspan="2" width="12%">TAXABLE VALUE</th> 
+                <th colspan="2" width="20%">CENTRAL TAX</th>
+                <th colspan="2" width="20%">STATE TAX</th>
+                <th colspan="2" width="20%">INTEGRATED TAX</th>
+                <th rowspan="2" width="16%">TOTAL TAX AMOUNT</th>
+                
+            </tr>
+            <tr style="text-align:center;font-size:12px;float:center;">
+                <th width="10%">Rate</th> 
+                <th width="10%">Amount</th>
+                <th width="10%">Rate</th> 
+                <th width="10%">Amount</th>
+                <th width="10%">Rate</th> 
+                <th width="10%">Amount</th>
+            </tr>
+            <apex:repeat value="{!hsnGroupedItemList}" var="hsnGroup" id="theRepeat2">
+                <tr style="text-align:right;font-size:12px;">
+                    <td style="text-align:center;" width="10%">{!hsnGroup.hsnNumber}</td> 
+                    <th width="12%">{!hsnGroup.unitPrice}</th>
+                    <td  width="12%">{!hsnGroup.centralTaxPercent}</td>
+                    <td  width="10%">{!round(hsnGroup.centralTax,2)}</td>
+                    <td width="10%">{!hsnGroup.stateTaxPercent}</td>
+                    <td  width="10%">{!round(hsnGroup.stateTax,2)}</td>
+                    <td width="10%">{!hsnGroup.integratedTaxPercent}</td>
+                    <td  width="10%">{!round(hsnGroup.integratedTax,2)}</td> 
+                    <th width="16%">{!round(hsnGroup.totalTaxAmount,2)}</th> 
+                    
+                </tr>
+            </apex:repeat>
+            <tr style="text-align:right;font-size:14px;">
+                <th width="10%">Total</th> 
+                <th width="10%">{!round(sumOfTaxableValues,2)} </th>
+                <th  width="10%"></th>
+                <th  width="10%">{!round(sumOfTaxAmountNormal,2)} </th>
+                <th width="10%"></th> 
+                <th  width="10%">{!round(sumOfTaxAmountNormal,2)} </th> 
+                <th width="10%"></th>
+                <th  width="10%">{!round(sumOfTaxAmountSez,2)} </th>
+                <th width="10%">{!round(sumOfTotalTaxAmounts,2)}</th>
+                
+            </tr> 
+            <!-- <apex:outputPanel rendered="{!roundoff != 0}">
+<tr  style="text-align:right;font-size:14px;">
+<th  colspan="8"  width="10%">Roundoff</th> 
+<th width="5%">{!round(roundoff,2)}</th>        
+</tr>
+<tr  style="text-align:right;font-size:14px;">
+<th  colspan="8"  width="10%">Total</th> 
+
+<th width="5%" > {!round(totalafterroundoff,2)} </th>
+</tr>
+</apex:outputPanel>-->
+        </table>
+        <div style="text-align:left;font-size:14px;float:center;"><b>Tax Amount(in words)</b>:&nbsp;&nbsp;&nbsp;{!sumOfTotalTaxAmountsInWords}&nbsp;Rupees Only</div><br/>
+        <table>
+            <tr>
+                <td colspan="2" style="font-size: 12px;text-align:left;vertical-align: top;height: 60px;" width="75%">Declaration :Certified that all the particulars shown in the above Tax invoice are true and correct in all respect and goods on which the tax charged and collected are in accordance with the provisions of GST Act 2017 and the rules made thereunder. itis also certified that my/our registration under GST Act 2017 is not subject to any suspension/ cancellation and it is valid as on the date of this bill.I/We hereby certify that the food /foods mentioned in this invoice is/are warranted to be of the nature and quality which it/there purpose to be.</td>
+                <td colspan="2" style="font-size: 12px;text-align:center;  height: 60px;vertical-align: top;" width="25%">
+                    <div style="{!IF((branchRecord.Company_Id__c == 'Dev'), 'display:block', 'display:none')}" >            
+                        for SERAPHINE DEV IMPEX PVT LTD
+                    </div>
+                    <div style="{!IF((branchRecord.Company_Id__c == 'Eva'), 'display:block', 'display:none')}" >            
+                        for EVA Traders
+                    </div>
+                    
+                </td>
+            </tr>
+        </table>
+        
+        <div style="width: 100%;text-align: center;">
+            
+            <button onclick="printPage();" style="height: 30px;margin-top: 10px;">
+                Print
+            </button>
+            
+        </div>
+        
+    </body>
+    
+</apex:page>

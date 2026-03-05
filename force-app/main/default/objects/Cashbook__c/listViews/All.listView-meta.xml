@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <booleanFilter>1 OR 2</booleanFilter>
+    <columns>NAME</columns>
+    <columns>Route__c</columns>
+    <columns>Branch__c</columns>
+    <columns>Opening_Balance__c</columns>
+    <columns>Closing_Balance__c</columns>
+    <columns>Date__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Opening_Balance__c</field>
+        <operation>notEqual</operation>
+        <value>0</value>
+    </filters>
+    <filters>
+        <field>Closing_Balance__c</field>
+        <operation>notEqual</operation>
+        <value>0</value>
+    </filters>
+    <label>All</label>
+</ListView>

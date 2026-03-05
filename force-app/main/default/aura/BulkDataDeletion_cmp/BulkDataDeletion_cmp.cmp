@@ -1,0 +1,172 @@
+<aura:component controller="DeleteRecords"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >>
+    
+    <aura:attribute name="objectName" type="String" default=""/>
+    <aura:attribute name="startDate" type="Date" default=""/>
+    <aura:attribute name="endDate" type="Date" default=""/>
+    <aura:attribute name="records" type="List" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="selectedRows" type="List" />
+        <aura:attribute name="selectedRowsCount" type="Integer" default="0"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="false"/>
+    <aura:attribute name="PageNumber" type="integer" default="1"/>
+    <aura:attribute name="TotalPages" type="integer" default="0"/>
+    <aura:attribute name="TotalRecords" type="integer" default="0"/>
+    <aura:attribute name="RecordStart" type="integer" default="0"/>
+    <aura:attribute name="RecordEnd" type="integer" default="0"/>
+ <aura:attribute name="showAlertSelected" type="Boolean" default="false" />
+    <aura:attribute name="showRecords" type="Boolean" default="false" />
+    <aura:attribute name="showAlert" type="Boolean" default="false" />
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    
+    <lightning:card title="Delete Records within Date Range">
+        
+        <div class="slds-p-around_medium">
+            <span class="slds-text-color_error" style="font-size:10.5px;">Note: *if the start date is April 1st and the end date is April 4th, data from the 1st, 2nd, and 3rd days will be deleted.*</span>
+            <br/>
+            <lightning:messages />  
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-size_1-of-3 slds-p-horizontal--xx-small">
+                    <lightning:select name="object" label="Object Name" value="{!v.objectName}"  aura:id="rec"  required="true" messageWhenValueMissing="Complete this field">
+                        <option value="">choose one...</option>
+                        <option value="DailyLog__c" class="slds-text-color_destructive">DailyLog</option>
+                        <option value="Error_Log__c" class="slds-text-color_destructive">Error Log</option>
+                        <option value="Log__c" class="slds-text-color_destructive">Log</option>
+                        <option value="Rack_Stock__c" class="slds-text-color_destructive">Rack Stock</option>
+                        <option value="Stock_History__c" class="slds-text-color_destructive">Stock History</option>
+                        <option value="Visit__c" class="slds-text-color_destructive">Visit</option>
+                        <option value="Stock_Request__c" class="slds-text-color_destructive">Stock_Request</option>
+                        <option value="Sales_Order__c" class="slds-text-color_destructive">Converted Sales Orders</option>
+                         <option value="Stock_Transfer__c" class="slds-text-color_destructive">Stock Transfers</option>
+                         <option value="Cashbook__c" class="slds-text-color_destructive">Cashbook</option>
+                         <option value="Customer_Cashbook__c" class="slds-text-color_destructive">Customer Cashbook</option>
+                    </lightning:select>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-horizontal--xx-small">
+                    <lightning:input name="startDate" label="Start Date" type="date" value="{!v.startDate}" aura:id="rec"  required="true"  messageWhenValueMissing="Complete this field"/>
+                    <lightning:helptext content="The data created on the start date and the data between the created date and the end date will be deleted." />
+                </div>
+                <div class="slds-size_1-of-3 slds-p-horizontal--xx-small">
+                    <lightning:input name="endDate" label="End Date" type="date" value="{!v.endDate}"  aura:id="rec"  required="true"  messageWhenValueMissing="Complete this field"/>
+                    <lightning:helptext content="The data created on the start date and the data between the created date and the end date will be deleted."   />
+                </div>
+            </div>
+            <br/>
+            <div class="slds-align_absolute-center"> 
+                <div class="slds-grid slds-wrap slds-gutters slds-p-top_xx-small">
+                    <div class="slds-size_2-of-3 slds-max-small-size_1-of-1">
+                        <lightning:button label="Delete All" onclick="{!c.handleDeleteAlert}" variant="destructive" iconName="utility:delete"  class="btn btndown slds-m-top_medium"/>
+                    </div>
+                    <div class="slds-size_1-of-3 slds-max-small-size_1-of-1">
+                        <lightning:button label="Preview" onclick="{!c.handlePreview}" iconName="utility:preview"   class="btn btndown slds-m-top_medium" />
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </lightning:card>
+    
+     <aura:if isTrue="{!v.showRecords}">
+    <div class="slds-var-p-around_small ">
+        <lightning:card title="Records to be Deleted">
+              <div class="slds-p-around_medium">
+            Selected data: {! v.selectedRowsCount }
+            </div>
+                <aura:set attribute="actions"> 
+            <div class="slds-float_right slds-p-bottom_small">
+            <ui:inputSelect aura:id="pageSize"  class="dynamic" label="Display Records Per Page: " change="{!c.onSelectChange}">
+                <ui:inputSelectOption text="25" label="25" value="true"/>
+                <ui:inputSelectOption text="50" label="50"/>
+                <ui:inputSelectOption text="100" label="100"/>
+            </ui:inputSelect>
+        </div>
+            </aura:set>
+         
+            <div class="slds-p-around_medium" style="height:20rem;">
+                
+             
+                <lightning:datatable class="slds-table slds-table_col-bordered slds-p-horizontal_xxx-small" role="grid"
+                                     columns="{! v.columns }"
+                                     data="{! v.records }"
+                                     keyField="id"
+                                     onrowaction="{!c.handleRowAction }"
+
+                                      onrowselection="{! c.updateSelectedData}"
+                                     showRowNumberColumn="true"
+                                     hideCheckboxColumn="false"/>
+                
+            </div>
+                  <div class="slds-page-footer ">  
+                <!-- =================== Data Table(Pagination) ======================= -->
+                
+                <p class="slds-var-p-around_small">
+                    <!--  Pagination Buttons Start -->
+                    <div class="slds-align_absolute-left">
+                        <lightning:button disabled="{!v.PageNumber == 1}" variant="brand" aura:id="prevPage" label="Prev" onclick="{!c.handlePrev}" />  
+                        
+                        <span class="slds-badge slds-badge_lightest"
+                              style="margin-right: 10px;margin-left: 10px;">
+                            {!v.RecordStart}-{!v.RecordEnd} of {!v.TotalRecords} | Page {!v.PageNumber} of {!v.TotalPages}
+                        </span>
+                        <lightning:button disabled="{!v.PageNumber == v.TotalPages}" aura:id="nextPage" variant="brand" label="Next" onclick="{!c.handleNext}"/>
+                         <aura:if isTrue="{! v.selectedRowsCount !=0}">
+                        <span>  <lightning:button label="Delete Selected" onclick="{!c.handleDeleteSelectedAlert}" variant="destructive" iconName="utility:delete"  class="btn btndown slds-m-around_medium"/></span>
+                        </aura:if>
+                        </div>   
+                     
+                </p>
+  
+                <!--==================================================== --> 
+        </div>
+             
+        </lightning:card>
+  
+             
+    </div>
+         </aura:if>
+        <aura:if isTrue="{!v.showAlert}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse"   title="Close" onclick="{!c.closeDeteAlert}">X <span class="slds-assistive-text">Close</span> </button>
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Delete Data</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_large slds-text-align--center" id="modal-content-id-1">
+                       Please confirm if you want to proceed with data deletion.
+                        <div class="slds-p-vertical_x-small slds-grid ">
+                               <p>
+                                    <span><lightning:icon iconName="action:priority" alternativeText="Cause" title="Delete" size="xx-small"/></span> &nbsp;
+                                   <span class="slds-text-color_error" style="font-size:10.5px;">   <lightning:formattedText value="Note:*This action will result in permanent data deletion, and recovery will not be possible.*" /></span></p>
+                        </div>                               
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.closeDeteAlert}">No</button>
+                        <button class="slds-button slds-button_neutral slds-button_brand" variant="brand" onclick="{!c.handleDelete}">Confirm</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    
+    
+           <aura:if isTrue="{!v.showAlertSelected}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse"   title="Close" onclick="{!c.closeSelectedDeteAlert}">X <span class="slds-assistive-text">Close</span> </button>
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Delete Data</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_large slds-text-align--center" id="modal-content-id-1">
+                       Please confirm if you want to proceed with data deletion.
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.closeSelectedDeteAlert}">No</button>
+                        <button class="slds-button slds-button_neutral slds-button_brand" variant="brand" onclick="{!c.handleDeleteSelected}">Confirm</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+   
+    </aura:component>

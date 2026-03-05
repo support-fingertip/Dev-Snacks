@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Beat_Ends_On__c</fullName>
+    <defaultValue>&apos;7 Days&apos;</defaultValue>
+    <externalId>false</externalId>
+    <label>Beat Ends On</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Day 1</fullName>
+                <default>false</default>
+                <label>Day 1</label>
+            </value>
+            <value>
+                <fullName>Day 2</fullName>
+                <default>false</default>
+                <label>Day 2</label>
+            </value>
+            <value>
+                <fullName>Day 3</fullName>
+                <default>false</default>
+                <label>Day 3</label>
+            </value>
+            <value>
+                <fullName>Day 4</fullName>
+                <default>false</default>
+                <label>Day 4</label>
+            </value>
+            <value>
+                <fullName>Day 5</fullName>
+                <default>false</default>
+                <label>Day 5</label>
+            </value>
+            <value>
+                <fullName>Day 6</fullName>
+                <default>false</default>
+                <label>Day 6</label>
+            </value>
+            <value>
+                <fullName>Day 7</fullName>
+                <default>false</default>
+                <label>Day 7</label>
+            </value>
+            <value>
+                <fullName>Day 8</fullName>
+                <default>false</default>
+                <label>Day 8</label>
+            </value>
+            <value>
+                <fullName>Day 9</fullName>
+                <default>false</default>
+                <label>Day 9</label>
+            </value>
+            <value>
+                <fullName>Day 10</fullName>
+                <default>false</default>
+                <label>Day 10</label>
+            </value>
+            <value>
+                <fullName>Day 11</fullName>
+                <default>false</default>
+                <label>Day 11</label>
+            </value>
+            <value>
+                <fullName>Day 12</fullName>
+                <default>false</default>
+                <label>Day 12</label>
+            </value>
+            <value>
+                <fullName>Day 13</fullName>
+                <default>false</default>
+                <label>Day 13</label>
+            </value>
+            <value>
+                <fullName>Day 14</fullName>
+                <default>false</default>
+                <label>Day 14</label>
+            </value>
+            <value>
+                <fullName>Day 15</fullName>
+                <default>false</default>
+                <label>Day 15</label>
+            </value>
+            <value>
+                <fullName>Day 16</fullName>
+                <default>false</default>
+                <label>Day 16</label>
+            </value>
+            <value>
+                <fullName>Day 17</fullName>
+                <default>false</default>
+                <label>Day 17</label>
+            </value>
+            <value>
+                <fullName>Day 18</fullName>
+                <default>false</default>
+                <label>Day 18</label>
+            </value>
+            <value>
+                <fullName>Day 20</fullName>
+                <default>false</default>
+                <label>Day 20</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

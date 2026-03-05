@@ -1,0 +1,25 @@
+.THIS .divshadw{
+    box-shadow: 0px 0px 2px 0px rgb(116 160 163);
+}
+.THIS .itemgrid{
+ display:flex;
+    flex-wrap:wrap;
+}
+.THIS .itemgrid > div{
+ width:33.3333%;
+}
+.THIS .totaldiv {
+ font-size: 15px;
+    font-weight: bold;
+    color: black !important;
+}
+.THIS .d-pad-left{
+    text-align:left !important;
+    border-block-end-width: var(--slds-c-modal-sizing-border, var(--slds-g-sizing-border-2));
+    border-block-end-style: solid;
+    border-block-end-color: var(--slds-c-modal-color-border, var(--slds-g-color-border-1));
+                      border-block-end-color: #dadada;
+    padding-block-end: var(--slds-c-modal-footer-spacing-blockstart, var(--slds-g-spacing-3));
+    padding-inline-end: var(--slds-c-modal-footer-spacing-inlinestart, var(--slds-g-spacing-4));
+
+}

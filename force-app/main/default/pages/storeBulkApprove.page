@@ -1,0 +1,2 @@
+<apex:page standardController="account" recordSetVar="getIDs"  extensions="storeBulkApproveController" action="{!approveStores}" >
+</apex:page>

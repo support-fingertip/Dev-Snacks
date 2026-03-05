@@ -1,0 +1,38 @@
+<aura:component controller="reportGenerator" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+	 <aura:attribute name="period" type="String" default="Select"/>
+    <aura:attribute name="fromdate" type="Date" default="Select"/>
+    <aura:attribute name="todate" type="Date" default="Select"/>
+    <aura:attribute name="selroute" type="String" default="Select"/>
+    <aura:attribute name="filterby" type="String" default="Select"/>
+    <aura:attribute name="filtervalue" type="String" default="Select"/>
+     <aura:attribute name="iframeurl" type="String" default=""/>
+    <aura:attribute name="routes" type="object[]" default="[]"/>
+      <aura:handler name="init" value="{!this}"  action="{!c.doInit}"/> 
+    
+    <div style="width:100%">
+      <div  style="width:100% ;margin-left: 200px;">
+         <div class="slds-grid">  
+           <div class="slds-col slds-wrap slds-size_1-of-6 slds-p-around_small">  
+             
+			<lightning:input type="date" name="input2" label="From" value="{!v.fromdate}" onchange="{! c.loadDetails }"/> 
+               <lightning:input type="date" name="input2" label="To" value="{!v.todate}"/>
+           </div>  
+           <div class="slds-col slds-wrap slds-size_1-of-6   slds-p-around_small">  
+             <lightning:select label="Select Route"  onchange="{!c.selectRoute}"  value="{!v.selroute}"> 
+                        <aura:iteration items="{!v.routes}" var="item">
+            <option value="{!item}">{!item}</option>
+         </aura:iteration>
+              </lightning:select>
+            </div>
+          
+        </div>
+        
+      </div>
+      <div  style="width:100%;text-align: center;height:1200px">
+          <iframe src="{!v.iframeurl}" frameborder="0" width="80%" height="100%" > </iframe> 
+        
+     </div>
+    
+    </div>
+    
+</aura:component>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Deduct_amount</fullName>
+    <active>true</active>
+    <errorConditionFormula>if(AND(text(Type__c) ==&apos;Against Customer&apos;, Grand_Total__c &lt; Credit_value__c ),TRUE,FALSE)</errorConditionFormula>
+    <errorMessage>The return amount has already been deducted from the invoice.</errorMessage>
+</ValidationRule>

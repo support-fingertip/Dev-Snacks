@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Discount__c</fullName>
+    <externalId>false</externalId>
+    <formula>if(Rate__c !=null,(Cash_Discount__c + Product_Discount__c), 
+			((if(Sales_Invoice__r.Customer__r.Cash_Discount__c ==null,Sales_Invoice__r.Customer__r.Cash_Discount__c,Sales_Invoice__r.Customer__r.Cash_Discount__c)*100) + Product__r.Discount__c ))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Total Discount</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

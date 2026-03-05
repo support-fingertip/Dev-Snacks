@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>On_Account_Value_more_than_zero</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(  ISNEW() , ISPICKVAL( Type__c , &apos;On Account&apos;),  NOT(ISBLANK(On_Account_Value__c )), On_Account_Value__c &lt;= 0  )</errorConditionFormula>
+    <errorDisplayField>On_Account_Value__c</errorDisplayField>
+    <errorMessage>Enter Valid On Account Value</errorMessage>
+</ValidationRule>

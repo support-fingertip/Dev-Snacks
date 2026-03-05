@@ -1,0 +1,44 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" controller="ResetTripHandler">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    <aura:attribute name="data" type="Contact[]" />  
+    <aura:attribute name="UnfilteredData" type="Contact[]" />  
+    <aura:attribute name="filter" type="String" />  
+    <aura:attribute name="onsearch" type="Boolean" default="false"/>  
+    <aura:handler name="change" value="{!v.filter}" action="{!c.doFilter}" />  
+    <!--<div class="slds-page-header">|⌛|  𝗥𝗘𝗦𝗘𝗧 𝗥𝗘𝗦𝗘𝗧</div>-->
+    <lightning:card title="⌛ Restart Trip">
+        <div class="slds-m-around_medium">
+            <lightning:input name="x" value="{!v.filter}" label="Filter" placeholder="Search User Name ... "/>  
+            <br/>
+            <aura:if isTrue="{!v.onsearch}">
+                <table class="slds-table slds-table--bordered">  
+                    <thead>  
+                        <tr>  
+                            <th>Employee Name</th>  
+                        </tr>  
+                    </thead>  
+                    <tbody>  
+                        <aura:iteration items="{!v.data}" var="row" indexVar="rowIndex">  
+                            <tr>  
+                                <td>{!row.Name}</td>
+                                <td style="text-align: center;">
+                                    <div onclick="{!c.removeItem}" data-value="{!row}" >
+                                        <button class="button" type="button" onclick="{!c.resetTrip}" id="{!row.Id}" style="padding: 7px;border: none;border-radius: 10px;
+                                                                                                                            background-color:rgb(1,118,211);color: white;text-align: center;
+                                                                                                                            box-shadow: rgba(0, 0, 0, 0.15) 2px 2px 2.6px;width: 80px;">Restart Trip</button> 
+                                        <!--<lightning:button variant="brand" label="Reset Trip" title="Save" value="{!row}" onclick="{!c.resetTrip}" />-->
+                                    </div>
+                                </td>
+                                <!--<c:resetEmployeeHelper CId="{!row.Id}" CName="{!row.Name}"/>-->
+                                
+                            </tr>  
+                            
+                        </aura:iteration>  
+                        
+                    </tbody>  
+                    
+                </table> 
+            </aura:if>
+        </div>
+    </lightning:card>
+</aura:component>

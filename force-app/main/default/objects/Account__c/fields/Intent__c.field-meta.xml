@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Intent__c</fullName>
+    <externalId>false</externalId>
+    <label>Intent</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Ready to explore</fullName>
+                <default>false</default>
+                <label>Ready to explore</label>
+            </value>
+            <value>
+                <fullName>Actively looking</fullName>
+                <default>false</default>
+                <label>Actively looking</label>
+            </value>
+            <value>
+                <fullName>Not interested</fullName>
+                <default>false</default>
+                <label>Not interested</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

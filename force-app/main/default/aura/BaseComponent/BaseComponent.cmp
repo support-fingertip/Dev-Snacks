@@ -1,0 +1,6 @@
+<aura:component access="public"  extensible="true">
+	{!v.body}
+    <aura:attribute access="public" name="chartjs" type="String" default="/resource/Field_chart/chart/Chart.min.js"/>
+    <aura:attribute access="public" name="jQuery" type="String" default="/resource/Field_chart/chart/jquery-3.1.1.min.js"/>
+    
+</aura:component>

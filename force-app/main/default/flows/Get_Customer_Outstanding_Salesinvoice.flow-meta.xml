@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Get_Customer_Outstanding</name>
+        <label>Get Customer Outstanding</label>
+        <locationX>242</locationX>
+        <locationY>384</locationY>
+        <actionName>SAPgetUpdatedData</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>recordIds</name>
+            <value>
+                <elementReference>$Record.Customer__c</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>SAPgetUpdatedData</nameSegment>
+    </actionCalls>
+    <apiVersion>59.0</apiVersion>
+    <decisions>
+        <name>Oustanding_Amount</name>
+        <label>Oustanding Amount</label>
+        <locationX>374</locationX>
+        <locationY>276</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>get_Amount</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sent_to_SAP__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Customer__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue></stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Customer_Outstanding</targetReference>
+            </connector>
+            <label>get Amount</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>Get Customer Outstanding -Salesinvoice {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Get Customer Outstanding -Salesinvoice</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <filterLogic>1 OR  (2 AND 1 )</filterLogic>
+        <filters>
+            <field>Sent_to_SAP__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Cancellation_Req_Send_To_SAP__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Sales_Invoice__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <scheduledPaths>
+            <name>Get_Outstanding</name>
+            <connector>
+                <targetReference>Oustanding_Amount</targetReference>
+            </connector>
+            <label>Get Outstanding</label>
+            <offsetNumber>1</offsetNumber>
+            <offsetUnit>Minutes</offsetUnit>
+            <recordField>Outstanding_API_Last_Synchronized_Date__c</recordField>
+            <timeSource>RecordField</timeSource>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

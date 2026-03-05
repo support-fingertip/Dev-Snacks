@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Send_Custom_Notification_for_Rent_Expiry</name>
+        <label>Send Custom Notification for Rent Expiry</label>
+        <locationX>50</locationX>
+        <locationY>756</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <connector>
+            <targetReference>X15DaysEmailAlert</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>Get_Custom_Notification_Type.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <stringValue>{!$Record.Name}&apos;s Rent will be expired in 15 Days</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <elementReference>$Record.Rent_End_Date__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>varUserId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderId</name>
+            <value>
+                <elementReference>$Record.Owner:User.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>customNotificationAction</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>X15DaysEmailAlert</name>
+        <label>15DaysEmailAlert</label>
+        <locationX>50</locationX>
+        <locationY>876</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>EmailForVehicleTrigger</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>rahul.mahendrakar@fingertipplus.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <elementReference>$Record.Owner:User.Email</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Your Vehicle Rent is Expiring in 15 Days</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>57.0</apiVersion>
+    <assignments>
+        <description>Add User ID to the list</description>
+        <name>Add_User_ID_to_the_list</name>
+        <label>Add User ID to the list</label>
+        <locationX>50</locationX>
+        <locationY>636</locationY>
+        <assignmentItems>
+            <assignToReference>varUserId</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Custom_Notification_for_Rent_Expiry</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>CheckDaysRemaining</name>
+        <label>CheckDaysRemaining</label>
+        <locationX>380</locationX>
+        <locationY>276</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>X15DaysCalculator</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>RemainingDays</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>15.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Custom_Notification_Type</targetReference>
+            </connector>
+            <label>15DaysCalculator</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Notification_is_found</name>
+        <label>Notification is found ?</label>
+        <locationX>182</locationX>
+        <locationY>516</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Notification_is_found_or_not</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Custom_Notification_Type</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Add_User_ID_to_the_list</targetReference>
+            </connector>
+            <label>Notification is found or not ?</label>
+        </rules>
+    </decisions>
+    <description>Vehicle Rent Expiry Date Reminder</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>RemainingDays</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.Rent_End_Date__c} - TODAY()</expression>
+        <scale>0</scale>
+    </formulas>
+    <interviewLabel>Vehicle Rent Expiry Date Reminder {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Vehicle Rent Expiry Date Reminder</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Custom_Notification_Type</name>
+        <label>Get Custom Notification Type</label>
+        <locationX>182</locationX>
+        <locationY>396</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Notification_is_found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Rent_Expiry_Alert</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>254</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>CheckDaysRemaining</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Rent_End_Date__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Vehicle_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Rent Vehicle</stringValue>
+            </value>
+        </filters>
+        <object>Vehicle__c</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2023-04-28</startDate>
+            <startTime>12:52:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>EmailForVehicleTrigger</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Hi,
+
+Your Vehicle Rent will expired in the next 15 Days i.e on {!$Record.Rent_End_Date__c} !
+
+Here are the Vehicle Details,
+-----------------------------------------------------
+Vehicle Name - {!$Record.Name}
+Vehicle Number - {!$Record.Vehicle_Number__c}
+Agreement Start Date - {!$Record.Agreement_Start_Date__c}
+Agreement End Date - {!$Record.Agreement_End_Date__c}</text>
+    </textTemplates>
+    <variables>
+        <name>varUserId</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

@@ -1,0 +1,756 @@
+<aura:component controller="VisitManager" extends="c:BaseComponent" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">    
+    
+    
+    <aura:attribute name="data" type="object" />
+    <aura:attribute name="showall" type="boolean" default="false"/>
+    <aura:attribute name="onlineStatus" type="boolean" default="true"/>
+    <aura:attribute name="offlineCount" type="Integer" default="0"/>
+     <aura:attribute name="checkedlot" type="String" default=""/>
+     <aura:attribute name="checkedlon" type="String" default=""/>
+    <aura:attribute name="checkedInMissed" type="object" />
+    <aura:attribute name="approvalStatus" type="String" default=""/>
+    <aura:attribute name="EIdFormat" type="String" default=""/>
+    <aura:attribute name="checkout" type="boolean" default="false"/>
+    <aura:attribute name="checkin" type="boolean" default="false"/>
+    
+    <aura:attribute name="newvisit" type="boolean" default="false"/>
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    <aura:attribute name="noPending" type="boolean" default="true"/>
+    <aura:attribute name="Postoned" type="boolean" default="false"/>
+    <aura:attribute name="todayVisit" type="boolean" default="true"/>
+    <aura:attribute name="StatePicklist" type="String[]" />
+    <aura:attribute name="Today" type="Datetime" /> 
+    <aura:attribute name="DistPicklist" type="String[]" default="--None--"/> 
+    <aura:attribute name="selectedItem" type="Object"/>  
+    <aura:attribute name="visit" type="object" default="{}"/>
+    <aura:attribute name="account" type="object" default="{}" /> 
+    <!-- lookup attributes -->
+    
+    <aura:attribute name="storeName" type="string" default=""/>
+    <aura:attribute name="status" type="string" default=""/>
+    <aura:attribute name="value" type="string" default=""/>
+     <aura:attribute name="accounts" type="object[]" default="[]"/>
+    <aura:attribute name="searchText" type="string" default=""/>
+    <aura:attribute name="matchaccounts" type="object[]" default="[]"/>
+    <aura:handler name="change" value="{!v.searchText}" action="{!c.searchText}"></aura:handler> 
+    
+    <!-- Popup attributes -->
+     <aura:attribute name="showEndDay" type="boolean" default="false"/>
+     <aura:attribute name="showDayWarning" type="boolean" default="false"/>
+    <aura:attribute name="showVisit" type="boolean" default="false"/>
+    <aura:attribute name="visitsView" type="boolean" default="true"/>
+    <aura:attribute name="showStore" type="boolean" default="false"/>
+    <aura:attribute name="showPostpone" type="boolean" default="false"/>
+    <aura:attribute name="isPopup" type="boolean" default="false"/>
+    <aura:attribute name="isPopup2" type="boolean" default="false"/>
+    <aura:attribute name="isPopup3" type="boolean" default="false"/>
+    <aura:attribute name="showPhotos" type="boolean" default="false"/>
+    <aura:attribute name="showPhotosButtonLable" type="string" default="Show Photos"/>
+    <!-- this code for multiple line toast -->
+    <aura:html tag="style">.toastMessage.forceActionsText{
+        white-space : pre-line !important;
+        }</aura:html>
+    
+    <!-- Map attributes -->
+    
+    <aura:attribute name="lcHost" type="String" />    
+    <aura:attribute name="showMap" type="Boolean" default="false"/>
+    <aura:attribute name="mapData" type="Object[]"/>
+    <aura:attribute name="mapOptionsCenter" type="Object"/>
+    <aura:attribute name="showMapButton" type="boolean" default="true"/>
+    <aura:attribute name="gmapPoints" type="String" default="[]"/>
+    <aura:attribute name="refreshMap" type="boolean" default="true"/>
+    <aura:attribute name="selectedItem1" type="Object"/>   
+    <aura:attribute name="vfHost" type="String" default="" />
+    <aura:attribute name="recordId" type="ID" />
+    <aura:attribute name="mapOptions" type="Object" default='{"zoom": 12},{"mapTypeId": google.maps.MapTypeId.ROADMAP}' />
+    <aura:attribute name="loadMap" type="Boolean" default="false" />
+     <!-- Handler  Attributes -->
+     <aura:attribute name="checkedIn" type="object" />
+    <aura:attribute name="checkedOut" type="object" />
+    <aura:attribute name="clockIn" type="object" />
+    <aura:attribute name="clockOut" type="object" />
+    
+    
+    <!-- Handlers -->
+   <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    <aura:handler name="change" value="{!v.checkedIn}" action="{!c.checkinClick}"></aura:handler>
+    <aura:handler name="change" value="{!v.checkedOut}" action="{!c.checkoutClick}"></aura:handler>
+    <aura:handler name="change" value="{!v.clockIn}" action="{!c.startDayClick}"></aura:handler>
+    <aura:handler name="change" value="{!v.clockOut}" action="{!c.endDayClick}"></aura:handler>
+   
+    
+   
+            <div aura:id="visitMnager" class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                <div class="slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12 slds-p-horizontal_x-small">
+                    
+                    <!-- Buttons section -->
+                    <div class="slds-tabs_card">
+                        <div class="slds-grid slds-wrap tm-mob-mode">   
+                            <div class="slds-align-bottom tm-top-right--block">
+                                <aura:if isTrue="{!or(v.data.dailyLog == null,v.data.dailyLog.Clock_In__c == null)}">
+                                    <lightning:button  class="slds-box_x-small slds-text-align_center slds-p-top_none slds-p-bottom_none" iconPosition="left" iconName="utility:clock" variant="brand" label="Start Day" onclick="{!c.showDayWarning}"/>
+                                </aura:if>
+                                <aura:if isTrue="{!and(v.data.dailyLog != null,v.data.dailyLog.Clock_Out__c  == null)}">
+                                    <lightning:button class="slds-box slds-box_x-small slds-text-align_center slds-p-top_none slds-p-bottom_none" iconPosition="left"  variant="brand" label="End Day" onclick="{!c.showEndDayWarning}"/>
+                                </aura:if>
+                                <lightning:button class="slds-box slds-box_x-small slds-text-align_center slds-p-top_none slds-p-bottom_none" label="Visit"  onclick="{!c.newVisit}" iconPosition="left" />
+                                
+                                <!--<lightning:button class="slds-box slds-box_x-small slds-text-align_center slds-p-top_none slds-p-bottom_none" label="Store" onclick="{!c.newStore}" iconPosition="left" /> -->
+                                <aura:if isTrue="{!v.onlineStatus}">
+                                    <lightning:button class="slds-box slds-box_x-small slds-text-align_center slds-p-top_none slds-p-bottom_none" label="Sync"  onclick="{!c.syncNow}" iconPosition="left" />
+                                    <aura:set attribute="else">
+                                        <lightning:button  class="slds-box slds-box_x-small slds-text-align_center slds-p-top_none slds-p-bottom_none" label="Sync"  onclick="{!c.syncNow}" iconPosition="left" variant="destructive"/>
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </div>
+                        </div> 
+                    </div>
+                    
+                    <!-- Today Summary section -->
+                    <div class="slds-card slds-m-bottom--small ft-slds-card">
+                        <div class="slds-card__header slds-grid">
+                            <div class="slds-col slds-size_1-of-2">
+                                <h2 style="font-size:11px;" class="slds-card__header-title">Today Summary</h2>
+                            </div>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                                <div class="slds-size_1-of-3 slds-p-horizontal_x-small" style="font-size:12px;">
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-icon_container slds-icon-action-email slds-m-right--x-small">
+                                            <lightning:icon size="x-small" iconName="utility:richtextnumberedlist" />
+                                        </div>
+                                        <div class="slds-has-flexi-truncate">
+                                            <label style="font-size:10px;" class="slds-form-element__label">&nbsp;No of Visits</label><br/>
+                                            <ui:outputText value="{!v.data.summaryCount.visitCount}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-size_1-of-3 slds-p-horizontal_x-small" style="font-size:12px;">
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-icon_container slds-icon-action-add-relationship slds-m-right--x-small">
+                                            <lightning:icon size="x-small" iconName="utility:event" />
+                                        </div>
+                                        
+                                        <div class="slds-has-flexi-truncate">
+                                            <label style="font-size:10px;" class="slds-form-element__label">&nbsp;Planned</label><br/>
+                                            <ui:outputText value="{!v.data.summaryCount.plannedVisits}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-size_1-of-3 slds-p-horizontal_x-small" style="font-size:12px;">
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-icon_container slds-icon-action-new-task slds-m-right--x-small">
+                                            <lightning:icon size="x-small" iconName="utility:like" />
+                                        </div>
+                                        <div class="slds-has-flexi-truncate" >
+                                            <label style="font-size:10px;" class="slds-form-element__label">&nbsp;Completed </label><br/>
+                                            <ui:outputText value="{!v.data.summaryCount.completedVisits}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-size_1-of-3 slds-p-horizontal_x-small" style="font-size:12px;">
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-icon_container slds-icon-action-announcement slds-m-right--x-small">
+                                            <lightning:icon size="x-small" iconName="utility:refresh" />
+                                        </div>
+                                        
+                                        <div class="slds-has-flexi-truncate" >
+                                            <label style="font-size:10px;" class="slds-form-element__label">&nbsp;InProgress </label><br/>
+                                            <ui:outputText value="{!v.data.summaryCount.InProgress}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-size_1-of-3 slds-p-horizontal_x-small" style="font-size:12px;">
+                                    <div class="slds-grid slds-wrap">
+                                        
+                                        
+                                        <lightning:icon size="x-small" class="slds-m-right--x-small" iconName="action:defer"/>
+                                        
+                                        <div class="slds-has-flexi-truncate" >
+                                            <label style="font-size:10px;" class="slds-form-element__label">&nbsp;Missed </label><br/>
+                                            <ui:outputText value="{!v.data.summaryCount.Postponed}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-size_1-of-3 slds-p-horizontal_x-small" style="font-size:12px;">
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-icon_container slds-icon-action-close slds-m-right--x-small">
+                                            <lightning:icon size="x-small" iconName="utility:upload" />
+                                        </div>
+                                        <div class="slds-has-flexi-truncate" >
+                                            <label style="font-size:10px;" class="slds-form-element__label">&nbsp;Offline </label><br/>
+                                            <ui:outputText value="{!v.offlineCount}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Current visit section -->
+                    <aura:if isTrue="{!v.visitsView}">
+                    <div class="slds-card meeting-manager-blk">
+                        <div class="slds-card__header slds-p-around--medium">
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-has-flexi-truncate">
+                                    <label class="slds-checkbox_toggle">
+                                        <ui:inputCheckbox change="{!c.selectChange}" value="{!v.showall}"/>
+                                        <span id="toggle-desc" class="slds-checkbox_faux_container" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-checkbox_on">Hide List</span>
+                                            <span class="slds-checkbox_off">Show List</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <aura:if isTrue="{!and( !empty( v.data.currentvisit)  > 0, not(v.showall))}">                            <div class="slds-media">
+                                <!-- <div class="slds-media__figure">
+                            <lightning:icon iconName="standard:account" size="small"/>
+                        </div>  -->
+                                <div class="slds-media__body">
+                                    <div style="position:relative;">
+                                        <div class="slds-text-heading_small slds-truncate" style="padding:0.3rem;border-radius: 5%;background:#85adad">
+                                            
+                                            <span ><aura:if isTrue="{!v.data.currentvisit.Account_Name__c != null}">
+                                                <ui:outputText value="{!v.data.currentvisit.Account_Name__c}" />
+                                                <aura:set attribute="else">
+                                                    <ui:outputText value="{!v.data.currentvisit.AccountName__c}" />
+                                                </aura:set>
+                                                </aura:if></span>
+                                            
+                                        </div>
+                                        <aura:if isTrue="{!(v.data.currentvisit.Status__c != 'In Progress')}">
+                                            <div>
+                                                <b>Conatct Person:</b>&nbsp;<ui:outputText value="{!v.data.currentvisit.Account1__r.Contact_Person__c}" /><br/>
+                                                <b>Phone:&nbsp;</b><lightning:formattedPhone value="{!v.data.currentvisit.Account1__r.Phone}"></lightning:formattedPhone>
+                                                
+                                            </div>
+                                        </aura:if>
+                                        <div class="visitlayout">
+                                            <b>Status:</b>
+                                            <ui:outputText value="{!v.data.currentvisit.Status__c}" /><br/>
+                                            
+                                        </div>   
+                                        <aura:if isTrue="{!and(v.data.currentvisit.Actual_Start_Time__c != null)}">
+                                            <div class="visitlayout">
+                                                <b>CheckIn:</b>
+                                                <lightning:formattedDateTime value="{!v.data.currentvisit.Actual_Start_Time__c}" year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                                                             minute="2-digit"  hour12="true"/>
+                                            </div> 
+                                        </aura:if>
+                                        <aura:if isTrue="{!and(v.data.currentvisit.Actual_End_Time__c != null)}">
+                                            <div class="visitlayout">
+                                                <b>CheckOut:</b>
+                                                <lightning:formattedDateTime value="{!v.data.currentvisit.Actual_End_Time__c}" year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                                                             minute="2-digit"  hour12="true"/>
+                                            </div> 
+                                        </aura:if> 
+                                        
+                                        <aura:if isTrue="{!and(v.data.currentvisit.Actual_Start_Time__c != null,v.data.currentvisit.Actual_End_Time__c == null)}">
+                                            <div class="visitlayout"> 
+                                                
+                                                <lightning:select aura:id="field"  name="Meet and greet" label="Meet and greet shop owners and shop Staff" value="{!v.data.currentvisit.Meet_and_greet__c}" required="true" messageWhenValueMissing="Select this field" class="{! (v.data.currentvisit.Meet_and_greet__c == '') ? ' field-title2 ' : (v.data.currentvisit.Meet_and_greet__c == 'Yes') ? ' field-title3   ' : (v.data.currentvisit.Meet_and_greet__c == 'No')  ? ' field-title   ' : ''}">
+                                                    <option class="field-title2" value="">choose one...</option>
+                                                    <option class="field-title3" value="Yes">Yes</option>
+                                                    <option class="field-title" value="No">No</option>
+                                                </lightning:select>
+                                                <lightning:select aura:id="field" name="Placements"  label="Placements of product in the rack and brought all to the front line" value="{!v.data.currentvisit.Placements__c}" required="true" messageWhenValueMissing="Select this field" class="{! (v.data.currentvisit.Placements__c == '') ? ' field-title2 ' : (v.data.currentvisit.Placements__c == 'Yes') ? ' field-title3   ' : (v.data.currentvisit.Placements__c == 'No')  ? ' field-title   ' : ''}">
+                                                    <option class="field-title2" value="">choose one...</option>
+                                                    <option class="field-title3" value="Yes">Yes</option>
+                                                    <option class="field-title" value="No">No</option>
+                                                </lightning:select>
+                                                <lightning:select aura:id="field" name="Checked expiry" label="Checked the expiry dates and managed the placement in store" value="{!v.data.currentvisit.Checked_expiry__c}" required="true" messageWhenValueMissing="Select this field" class="{! (v.data.currentvisit.Checked_expiry__c == '') ? ' field-title2 ' : (v.data.currentvisit.Checked_expiry__c == 'Yes') ? ' field-title3   ' : (v.data.currentvisit.Checked_expiry__c == 'No')  ? ' field-title   ' : ''}">
+                                                    <option class="field-title2" value="">choose one...</option>
+                                                    <option class="field-title3" value="Yes">Yes</option>
+                                                    <option class="field-title" value="No">No</option>
+                                                </lightning:select>
+                                                <lightning:select aura:id="field" name="Product introduction" label="Product introduction" value="{!v.data.currentvisit.Product_introduction__c}" required="true" messageWhenValueMissing="Select this field" class="{! (v.data.currentvisit.Product_introduction__c == '') ? ' field-title2 ' : (v.data.currentvisit.Product_introduction__c == 'Yes') ? ' field-title3   ' : (v.data.currentvisit.Product_introduction__c == 'No')  ? ' field-title   ' : ''}">
+                                                    <option class="field-title2" value="">choose one...</option>
+                                                    <option class="field-title3" value="Yes">Yes</option>
+                                                    <option class="field-title" value="No">No</option>
+                                                </lightning:select>
+                                                <lightning:select aura:id="field" name="presentation" label="Product of the day presentation" value="{!v.data.currentvisit.presentation__c}" required="true" messageWhenValueMissing="Select this field" class="{! (v.data.currentvisit.presentation__c == '') ? ' field-title2 ' : (v.data.currentvisit.presentation__c == 'Yes') ? ' field-title3   ' : (v.data.currentvisit.presentation__c == 'No')  ? ' field-title   ' : ''}">
+                                                    <option class="field-title2" value="">choose one...</option>
+                                                    <option class="field-title3" value="Yes">Yes</option>
+                                                    <option class="field-title" value="No">No</option>
+                                                </lightning:select>
+                                                <lightning:select aura:id="field" name="marketing material" label="Placement and removal of marketing material in store" value="{!v.data.currentvisit.marketing_material__c}" required="true" messageWhenValueMissing="Select this field" class="{! (v.data.currentvisit.marketing_material__c == '') ? ' field-title2 ' : (v.data.currentvisit.marketing_material__c == 'Yes') ? ' field-title3   ' : (v.data.currentvisit.marketing_material__c == 'No')  ? ' field-title   ' : ''}">
+                                                    <option class="field-title2" value="">choose one...</option>
+                                                    <option class="field-title3" value="Yes">Yes</option>
+                                                    <option class="field-title" value="No">No</option>
+                                                </lightning:select>
+                                                <b>
+                                                <lightning:input type="checkbox" label="Store Photo " aura:id="field" required="true" messageWhenValueMissing="Please take photo" name="Photo"/>
+                                                
+                                                <lightning:textarea aura:id="field" label="Comments:" required="true" messageWhenValueMissing="Enter comments"  value="{!v.data.currentvisit.Comments__c}" rows="2" minlength="20" messageWhenTooShort="Please enter minimum 20 characters " class="{! if(v.data.currentvisit.Comments__c.length >= '20','','field-title2')}"/>
+                                            
+                                                </b>
+                                                </div>
+                                        </aura:if>
+                                        <aura:if isTrue="{!and(v.data.currentvisit.Actual_Start_Time__c != null,v.data.currentvisit.Actual_End_Time__c != null)}">
+                                            <div class="visitlayout"> 
+                                                Comments:
+                                                <ui:inputTextArea aura:id="comment1" disabled="True" value="{!v.data.currentvisit.Comments__c}" rows="2" />
+                                            </div>
+                                        </aura:if>
+                                        <aura:if isTrue="{!and(v.data.currentvisit.PostPoned_Start_Time__c != null)}">
+                                            <div class="visitlayout"> 
+                                                Missed Reason:
+                                                <ui:inputTextArea aura:id="comment2"  disabled="True" value="{!v.data.currentvisit.Missed_PostPone_Reason__c}" rows="2"/>
+                                            </div>
+                                        </aura:if>
+                                        <div>
+                                            <aura:if isTrue="{!v.showPhotos}">
+                                                <c:ShowPhotos visitId="{!v.data.currentvisit.Id}" />
+                                            </aura:if>
+                                            
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </aura:if>
+                            <!-- Visit list section -->
+                            <aura:if isTrue="{!v.showall}">
+                                <aura:iteration items="{!v.data.visits}" var="meet" indexVar="index">
+                                    <div class="slds-media tm-view-all-blk slds-m-bottom--medium">
+                                        <div class="slds-media__figure">
+                                            <lightning:icon iconName="standard:account" size="small"/>
+                                        </div> 
+                                        <div class="slds-media__body">
+                                            <div style="position:relative;">
+                                                <aura:if isTrue="{!meet.Status__c == 'Completed'}">
+                                                    <div data-value="{!index}" data-record="{!meet.Account__r.Id}" data-index="{!index}"  data-id="{!meet.EId__c}" onclick="{!c.navigatetovisit}" name="{!index}" class="slds-button slds-section__title-action" style="background-color:#4bc076">
+                                                        <h3>
+                                                            
+                                                            <aura:if isTrue="{!meet.Account_Name__c != null}">
+                                                                
+                                                                <b>{!meet.Account_Name__c}</b>
+                                                                <aura:set attribute="else">
+                                                                    <b>{!meet.AccountName__c}</b>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </h3>
+                                                    </div>
+                                                </aura:if>
+                                                <aura:if isTrue="{!meet.Status__c == 'Planned'}">
+                                                    <div data-value="{!index}" data-record="{!meet.Account__r.Id}" data-index="{!index}"  data-id="{!meet.EId__c}" onclick="{!c.navigatetovisit}" name="{!index}" class="slds-button slds-section__title-action" style="background-color:#62b7ed">
+                                                        <h3>
+                                                            <aura:if isTrue="{!meet.Account_Name__c != null}">
+                                                                
+                                                                <b>{!meet.Account_Name__c}</b>
+                                                                <aura:set attribute="else">
+                                                                    <b>{!meet.AccountName__c}</b>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </h3> 
+                                                        
+                                                    </div>
+                                                </aura:if>
+                                                <aura:if isTrue="{!meet.Status__c == 'In Progress'}">
+                                                    <div data-value="{!index}" data-record="{!meet.Account__r.Id}" data-index="{!index}"  data-id="{!meet.EId__c}" onclick="{!c.navigatetovisit}" name="{!index}" class="slds-button slds-section__title-action" style="background-color:#fe8f60">
+                                                        <h3>
+                                                            <aura:if isTrue="{!meet.Account_Name__c != null}">
+                                                                
+                                                                <b>{!meet.Account_Name__c}</b>
+                                                                <aura:set attribute="else">
+                                                                    <b>{!meet.AccountName__c}</b>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </h3>
+                                                    </div>
+                                                </aura:if>
+                                                <aura:if isTrue="{!meet.Status__c == 'Missed'}">
+                                                    <div data-value="{!index}" data-record="{!meet.Account__r.Id}" data-index="{!index}"  data-id="{!meet.EId__c}" onclick="{!c.navigatetovisit}" name="{!index}" class="slds-button slds-section__title-action" style="background-color:#ef7ead">
+                                                        <h3>
+                                                            <aura:if isTrue="{!meet.Account_Name__c != null}">
+                                                                
+                                                                <b>{!meet.Account_Name__c}</b>
+                                                                <aura:set attribute="else">
+                                                                    {!meet.AccountName__c}
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </h3>
+                                                    </div>
+                                                </aura:if>
+                                                <aura:if isTrue="{!meet.Actual_Start_Time__c != null}">
+                                                    <p>
+                                                        <b>CheckIn Time:</b>
+                                                        <lightning:formattedDateTime value="{!meet.Actual_Start_Time__c}" year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                                                                     minute="2-digit"  hour12="true"/>
+                                                    </p>
+                                                </aura:if>
+                                                <aura:if isTrue="{!meet.Actual_End_Time__c != null}">
+                                                    <p>
+                                                        <b>CheckOut Time: </b>
+                                                        <lightning:formattedDateTime value="{!meet.Actual_End_Time__c}" year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                                                                     minute="2-digit"  hour12="true"/>
+                                                    </p>
+                                                </aura:if>
+                                                <p>
+                                                    <b>Status:</b>
+                                                    <ui:outputText value="{!meet.Status__c}" />
+                                                </p>
+                                                
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </aura:iteration>
+                              <!--  <aura:if isTrue="{!v.showMapButton}">
+                                    <lightning:button  class="slds-m-around_medium" variant="Neutral" label="Show Map" onclick="{!c.showMap}" />
+                                </aura:if>
+                                <aura:if isTrue="{!!v.showMapButton}">
+                                    <lightning:button  class="slds-m-around_medium" variant="Neutral" label="Hide Map" onclick="{!c.showMap}" />
+                                </aura:if> -->
+                          
+                            </aura:if> 
+                             <aura:if isTrue="{!v.showMap}">
+                
+                        <aura:if isTrue="{!v.mapData.length > 0}">
+                            <aura:if isTrue="{!v.refreshMap}">
+                                <BR/>
+                                ​🔴 CHECK-OUT<BR/>
+                                <!--​🟠 PLANNED<BR/>
+                                ​🟡 INCOMPLETED<BR/>-->
+                                ​🟢 COMPLETED<BR/>
+                                ​🔵 CHECK-IN <BR/><BR/>
+                                <iframe aura:id="vfFrame" frameborder="0" src="{! '/apex/GoogleMap?lcHost=' + v.lcHost}" width="100%" height="434"/>
+                                <aura:set attribute="else"> 
+                                    <iframe aura:id="vfFrame" frameborder="0"  src="{! '/apex/GoogleMap?lcHost=' + v.lcHost}" width="100%" height="434"/> 
+                                </aura:set>
+                            </aura:if>
+                            <aura:set attribute="else">
+                                <div class="no-map">
+                                    No Visits completed or in progress.
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                   
+            </aura:if>
+                        </div>
+                        <aura:if isTrue="{!v.todayVisit}">
+                            <!-- current visits buttons section -->
+                            <div class="slds-card__footer" >
+                                
+                                <aura:if isTrue="{!and(or(v.data.currentvisit.Status__c == 'Planned', v.data.currentvisit.Status__c == 'In Progress'),v.showall == false,v.data.dailyLog.Clock_In__c != null,v.data.dailyLog.Clock_Out__c == null) }">
+                                    <aura:if isTrue="{!and(v.data.dailyLog != null,v.data.dailyLog.Clock_Out__c  == null)}">
+                                        
+                                        <aura:if isTrue="{!and(v.data.currentvisit.Actual_Start_Time__c == null, v.data.currentvisit.Status__c == 'Planned')}">
+                                            
+                                            <lightning:button variant="brand" label="Checkin" onclick="{!c.getCheckin}" />
+                                            <lightning:button variant="brand" label="Missed" onclick="{!c.PostPoneClick}" />
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!and(v.data.currentvisit.Actual_Start_Time__c != null, v.data.currentvisit.Status__c == 'In Progress')}">
+                                            <div class="visitlayout">
+                                                <lightning:button variant="brand" label="{!v.showPhotosButtonLable}" onclick="{!c.showPhotos}" />
+                                                <lightning:button variant="brand" value="Take Picture" label="Take Picture" onclick="{!c.openCamera}"/>
+                                                <aura:if isTrue="{!$Browser.formFactor != 'DESKTOP'}">
+                                                    
+                                                </aura:if> 
+                                                <lightning:button variant="brand" label="Checkout" onclick="{!c.getCheckout}" />
+                                            </div>
+                                        </aura:if>  
+                                    </aura:if>
+                                </aura:if>
+                            </div> 
+                        </aura:if>
+                         
+                    </div>
+                    </aura:if>
+                       <!-- New store view -->
+    
+                     <aura:if isTrue="{!v.showStore}"> 
+                    <header class="slds-modal__header">
+                        <h2 id="modal-heading-01" class="slds-text-heading_small slds-hyphenate"> <b>Create New Account</b></h2>
+                    </header>
+                    <div class="slds-card meeting-manager-blk">
+                         <div class="slds-modal__content slds-p-around--small">
+                            
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:input aura:id="field1" label="Store Name" type="text" required="true"  value="{!v.account.Name}" messageWhenValueMissing="Enter Store Name"/>
+                                </div>
+                                &nbsp;
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:input label="Email" type="email" aura:id="field1"  value="{!v.account.Email__c}" messageWhenTypeMismatch="Enter a valid email address"/>
+                                </div>
+                                
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:input aura:id="field1" label="Mobile" type="tel" required="true" minlength="10" maxlength="10" value="{!v.account.Phone}" messageWhenValueMissing="Enter mobile number" messageWhenTooShort="Please enter 10digit mobile number" />
+                                </div>
+                                &nbsp;
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:input aura:id="field1" label="Alternate Mobile" type="tel" minlength="10" maxlength="10" value="{!v.account.Alternate_Mobile__c}" messageWhenTooShort="Please enter 10digit mobile number" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:select aura:id="field1" name="selectCategory" label="Store Category" value="{!v.account.Store_Category__c}" required="true" messageWhenValueMissing="Select store category">
+                                        <option value="">choose one...</option>
+                                        <option value="Hyper market">Hyper market</option>
+                                        <option value="super market">super market</option>
+                                        <option value="consumer store">consumer store</option>
+                                        <option value="Hotel">Hotel</option>
+                                        <option value="Bakery">Bakery</option>
+                                        <option value="Whole sale shop">Whole sale shop</option>
+                                    </lightning:select></div> &nbsp;
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:select aura:id="field1" name="selectGrade" label="Grade"  value="{!v.account.Grade__c}" required="true" messageWhenValueMissing="Select Grade">
+                                        <option value="">choose one...</option>
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                        <option value="D">D</option>
+                                        
+                                    </lightning:select></div>
+                                
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:input label="Distributor Name" type="text"  value="{!v.account.Distributor_Name__c}" />
+                                </div>
+                                &nbsp;
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:input label="GST" type="text" aura:id="field1" minlength="15" maxlength="15" value="{!v.account.GST__c}" messageWhenTooShort="Please enter valid 15digit GST"/>
+                                </div>
+                                
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:select label="State" value="{!v.account.State__c}" onchange="{!c.getdisricts}">
+                                        <option value="">--None--</option>
+                                        <aura:iteration items="{!v.StatePicklist}" var="val">
+                                            <option value="{!val}"> {!val}</option>
+                                        </aura:iteration>
+                                    </lightning:select>  
+                                </div>
+                                &nbsp;
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:select label="District" value="{!v.account.District__c}" onchange="{!c.getdisricts}">
+                                        <option value="">--None--</option>
+                                        <aura:iteration items="{!v.DistPicklist}" var="val">
+                                            <option value="{!val}"> {!val}</option>
+                                        </aura:iteration>
+                                    </lightning:select>  
+                                </div>
+                                
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:input label="City" type="text"  value="{!v.account.City__c}" />
+                                </div>
+                                &nbsp;
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:input label="Panchayath"  type="text" value="{!v.account.Panchayath__c}" />
+                                </div>
+                                
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:textarea name="Description" value="{!v.account.Description}" label="Description"  />
+                                </div>
+                            </div>
+                        </div> 
+                      
+                      
+                        
+                        <!-- store visits buttons section -->
+                        <div class="slds-card__footer" >
+                            <button class="slds-button slds-button_neutral" onclick="{!c.closeStore}">Cancel</button>
+                            <button class="slds-button slds-button_brand" onclick="{!c.CreateStore}">CreateStore</button>
+                        </div> 
+                    </div>
+                </aura:if>
+
+                </div> 
+            </div>
+      
+    <!-- New visit popup -->
+    
+    <div>
+        <aura:if isTrue="{!v.showVisit}">
+            <aura:if isTrue="{!v.isPopup}">
+                <section role="alertdialog" tabindex="-1" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="{!v.isPopup ? 'slds-modal slds-fade-in-open ':''}">
+                    <div class="slds-modal__container" style="{!v.isPopup ? '': 'padding:0;margin:0;width:100%;'}">
+                        <header class="slds-modal__header">
+                            <aura:if isTrue="{!v.isPopup}">
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> Create New Visit</h2>
+                            </aura:if>
+                            <aura:if isTrue="{!v.isPopup}">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse modal-close-btn" onclick="{!c.closePopUp}">
+                                    <lightning:icon iconName="utility:close" size="small" />
+                                </button>
+                            </aura:if>
+                        </header>
+                        <div class="slds-modal__content slds-p-around--large">
+                            <aura:if isTrue="{!v.isPopup}">
+                                <div class="slds-form-element slds-m-bottom--medium">
+                                    <div class="slds-form-element__control"> 
+                                        <ul class="slds-lookup__list" role="listbox"> 
+                                            <lightning:input value="{!v.searchText}" aura:id="enter-search" name="enter-search" label="Store Name" type="search"/><br/>                                      
+    <aura:if isTrue="{!v.matchaccounts}">
+        <div class="{!if(not(empty(v.matchaccounts)), 'result-buttom','')}">
+            <aura:iteration items="{!v.matchaccounts}" var="item">
+                <li role="presentation">
+                    <span class="slds-lookup__item-action slds-media slds-media--center" role="option">
+                        <div class="slds-media__body">
+                            <div class="slds-input-has-icon slds-input-has-icon--right">
+                                <div class="slds-lookup__result-text" data-id="{!item.EId__c}" onclick="{!c.update }">
+                                    <a role="option" >
+                                            <lightning:icon iconName="standard:account" size="xx-small"/>&nbsp;{!item.Name}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </li>
+            </aura:iteration>
+        </div>
+    </aura:if>     
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-form-element slds-m-bottom--medium">
+                                    <lightning:input label="Select a date/time for the visit :" required="true" aura:id="field1" messageWhenValueMissing="Select date and time" min="{!v.Today}" type="datetime"  value="{!v.visit.Planned_Start_Time__c}" messageWhenRangeUnderflow="please select future date/time"/>
+                                </div>
+                            </aura:if>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <aura:if isTrue="{!v.isPopup}">
+                                <button class="slds-button slds-button_neutral" onclick="{!c.closePopUp}">Cancel</button>
+                                
+                                <button class="slds-button slds-button_brand" onclick="{!c.createVisit}">Create Visit</button>
+                            </aura:if>
+                        </div>
+                    </div>
+                </section>
+                <aura:if isTrue="{!v.isPopup}">
+                    <div class="slds-backdrop slds-backdrop--open"></div>
+                    
+                    <lightning:spinner aura:id="timeSpinner" class="slds-hide"/>
+                </aura:if> 
+            </aura:if>
+        </aura:if>
+    </div>
+    
+ 
+    <!-- Missed popup -->
+    
+    <div>
+        <aura:if isTrue="{!v.showPostpone}">
+            <aura:if isTrue="{!v.isPopup3}">
+                <section role="alertdialog" tabindex="-1" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="{!v.isPopup3 ? 'slds-modal slds-fade-in-open ':''}">
+                    <div class="slds-modal__container" style="{!v.isPopup3 ? '': 'padding:0;margin:0;width:100%;'}">
+                        <header class="slds-modal__header">
+                            <aura:if isTrue="{!v.isPopup3}">
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> Missed Visit</h2>
+                            </aura:if>
+                            <aura:if isTrue="{!v.isPopup3}">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse modal-close-btn" onclick="{!c.closePostpone}">
+                                    <lightning:icon iconName="utility:close" size="small" />
+                                </button>
+                            </aura:if>
+                        </header>
+                        <div class="slds-modal__content slds-p-around--large">
+                            <aura:if isTrue="{!v.isPopup3}">
+                                <div class="slds-form-element slds-m-bottom--medium">
+                                    <div class="slds-form-element__control"> 
+                                        <aura:if isTrue="{!v.data.currentvisit.Account_Name__c != null}">
+                                            <lightning:input label="Store Name" type="text" disabled="true" aura:id="field" value="{!v.data.currentvisit.Account_Name__c}" />
+                                            <aura:set attribute="else">
+                                                <lightning:input label="Store Name" type="text" disabled="true" aura:id="field" value="{!v.data.currentvisit.AccountName__c}" />
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                </div>
+                                <!-- 
+                                <div class="slds-form-element slds-m-bottom__medium">
+                                    <lightning:input label="Select a Postpone date/time :" type="datetime" required="true" aura:id="field" messageWhenValueMissing="Select date and time" min="{!v.Today}"  value="{!v.data.currentvisit.PostPoned_Start_Time__c}" messageWhenRangeUnderflow="please select future date/time"/>
+                                </div>-->
+                                <div class="slds-form-element slds-m-bottom--medium">  
+                                    
+                                    <lightning:textarea label="Missed Reason:" value="{!v.data.currentvisit.Missed_PostPone_Reason__c}" rows="2" required="true" aura:id="field" messageWhenValueMissing="Enter postpone reason"/>
+                                </div>                         
+                            </aura:if>
+                            
+                        </div>
+                        <div class="slds-modal__footer">
+                            <aura:if isTrue="{!v.isPopup3}">
+                                <button class="slds-button slds-button_neutral" onclick="{!c.closePostpone}">Cancel</button>
+                                
+                                <button class="slds-button slds-button_brand" onclick="{!c.doPostpone}">Save</button>
+                            </aura:if>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop--open"></div>
+                
+                <lightning:spinner aura:id="timeSpinner" class="slds-hide"/>
+            </aura:if>
+        </aura:if>
+    </div>
+    
+    <!-- day start warning --> 
+
+        <aura:if isTrue="{!v.showDayWarning}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse"
+                                title="Close" onclick="{!c.startDayNo}">
+                            X <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Start Day</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_large slds-text-align--center" id="modal-content-id-1">
+                        You are about to Start the Day, Are you Sure?
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.startDayNo}">No</button>
+                        <button class="slds-button slds-button_neutral slds-button_brand" variant="brand" onclick="{!c.getclockIn}">Yes</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+
+     <!-- day End warning --> 
+
+        <aura:if isTrue="{!v.showEndDay}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse"
+                                title="Close" onclick="{!c.EndDayNo}">
+                            X <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">End Day</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_large slds-text-align--center" id="modal-content-id-1">
+                       You are about to End the Day, Are you Sure?
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.EndDayNo}">No</button>
+                        <button class="slds-button slds-button_neutral slds-button_brand" variant="brand" onclick="{!c.getclockOut}">Yes</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    <!-- spinner -->
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+</aura:component>

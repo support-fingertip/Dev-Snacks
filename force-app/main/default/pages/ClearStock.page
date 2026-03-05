@@ -1,0 +1,23 @@
+<apex:page standardController="Route__c" recordSetVar="accs" extensions="ClearStockController" action="{!clearStock}"  lightningStylesheets="true">
+   
+     <!--<script type='text/javascript'>
+        window.onload = showToast();
+        function showToast() {
+            sforce.one.showToast({
+                "title": "Attenzione",
+                "message": "Test Message.",
+                "type": "warning"
+            });
+            
+        }
+        
+    </script>-->
+    <apex:form id="frm">
+        <apex:pageBlock rendered="{!isError}">
+            <apex:pageMessages id="showmsg"></apex:pageMessages>
+           <!--  <A HREF="javascript&colon;javascript&colon;history.go(-1)">Back to previous page</A>-->
+           
+        </apex:pageBlock>
+         
+    </apex:form>    
+</apex:page>

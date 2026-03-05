@@ -1,0 +1,65 @@
+<aura:component controller="SAPsend_TriggerHandler" implements="force:lightningQuickActionwithoutheader,force:appHostable,force:hasRecordId" access="global" >
+	 <aura:attribute name="isModalOpen" type="boolean" default="true"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="boCharge" type="decimal"/>
+    <aura:attribute name="docDate" type="date"/>
+    	    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:html tag="style">
+        .slds-modal__container{ 
+        max-width: 75rem !important;
+        width:75% !important;
+        } 
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content{
+        
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .closeIcon{
+        display:none;
+        }
+        .slds-col{
+        margin-left:5px;
+        }
+    </aura:html >
+    <aura:if isTrue="{!v.isModalOpen}">
+        <div class="slds-modal slds-fade-in-open" >
+            <div class="slds-modal__container" >
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Cheque Bouncing Charge</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_small " id="modal-content-id-1">
+                   
+                    <div class="slds-form-element slds-m-bottom--medium" style="padding:10px">
+                        <div class="slds-form-element__control"> 
+                         <lightning:input type="number" formatter="currency" step="1" min="0" name="input2" aura:id="rec" label="Bouncing Charge" value="{!v.boCharge}" required="true"/>
+                               <lightning:input type="date" name="input1" label="Bouncing Date" value="{!v.docDate}" required="true"/>
+                        </div>
+                    </div>            
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{!c.closeModel}"/>
+                    <lightning:button variant="brand" 
+                                      label="Save"
+                                      title="Save"
+                                      onclick="{!c.updateDetails}"/>
+                </footer>
+            </div>
+        </div>
+    </aura:if>
+ 
+</aura:component>

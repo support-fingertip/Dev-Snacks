@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Clear_Stock</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <height>600</height>
+    <linkType>page</linkType>
+    <masterLabel>Clear Stock</masterLabel>
+    <openType>sidebar</openType>
+    <page>ClearStock</page>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+</WebLink>

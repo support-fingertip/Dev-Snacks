@@ -1,0 +1,178 @@
+<apex:page Controller="DevSnacksPdfController" renderAs="pdf" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false" showHeader="false">
+  <head>
+    <style>
+        @page {
+            margin-top: 50px;padding:0px;margin-bottom: 90px;
+            @top-left {
+                content: element(header);
+            }                           
+            @bottom-left {   
+                content: element(footer);
+            } 
+        }
+        div.header {
+            margin-top:10px;
+            position: running(header);
+            width: 100%;
+            margin-right: 10px;
+        	text-align: right;
+        }
+        div.footer {  
+        	margin-top:10px;
+            position: running(footer);
+            width: 100%;
+        	margin-right: 10px;
+        	position: running(footer);
+        }
+      .center {
+        text-align: center;
+        font-family: sans-serif;
+        
+      }
+      .subheading {
+        text-align: center;
+        font-family: sans-serif;
+        font-size: 12px;
+        padding-top: 0px;
+        }
+      .heading {
+        font-size: 18px;
+        margin-bottom: 20px;
+        }
+        .borderline {
+        width: 25%;
+        float: right;
+        }
+		.carriedOver {
+        margin-top: 15px;
+        text-align: center;
+        }
+         table,th,td{
+            border: 1px solid #808080;
+            border-collapse: collapse;
+            }
+
+    </style>
+  </head>
+  <body>
+
+    <div class="center heading">
+        <b>SERAPHINE DEV IMPEX PVT LTD<br/></b>
+        <span style="font-size: 13px;">ARA26A ,DEW DROPS<br/>
+        AMRUTHAKULAM ,KOLLAM<br/>
+        FSSI:LicenceNo:10021041000304<br/>
+        Kerala - 691001, India<br/>
+        CIN: U15100KL2020PTC061169<br/>
+        Contact : 0474-2753119,9847800119/9188520168<br/>
+            <hr/>
+        </span>
+      </div>
+      <div class="center heading">
+        <b>4 Season Super Market, Pipinmoodu<br/></b>
+        <span style="font-size: 13px;">Ledger Account<br/>
+        TC No. 23/1146/5, Cordon Kausthubham,<br/>
+        Kerala - 695010, India<br/>
+          </span>
+          <br/>
+          <div>
+              Customer Name: &nbsp;&nbsp;{!customer}<br/>
+              {!TEXT(DAY(fDate))}/{!TEXT(MONTH(fDate))}/{!TEXT(YEAR(fDate))} to {!TEXT(DAY(tDate))}/{!TEXT(MONTH(tDate))}/{!TEXT(YEAR(tDate))}
+          </div>
+          <hr/>
+      </div>
+    
+      <table style="width:100%">
+          
+          <tr style="text-align:center">
+              <th>Date</th>
+              <th>Particulars</th>
+              <th>Vch Type</th>
+              <th>Vch No</th>
+              <th>Debit</th>
+              <th>Credit</th>
+          </tr>
+          <tr style="text-align:left;font-size:14px;float:center;">
+              <td></td>
+              <td> Cr&nbsp;| &nbsp;Opening Balance</td>
+              <td></td>
+              <td></td>
+              <td>{!OpeningBalance}</td>
+              <td></td>
+          </tr>
+         <apex:repeat value="{!wraplist}" var="w">
+              <tr style="text-align:left;font-size:14px;float:center;">
+                  <td><apex:outputText value="{0,date,dd/MM/yy}"> <apex:param value="{!w.transDate}" /> </apex:outputText></td>
+                  <td>
+                      <apex:outputText rendered="{!w.objest}">
+                          Cr&nbsp;| &nbsp;{!w.Remarks}
+                      </apex:outputText>
+                      <apex:outputText rendered="{!NOT(w.objest)}">
+                          Dr&nbsp;| &nbsp;{!w.Remarks}
+                      </apex:outputText>
+                  </td>
+                  <td>{!w.VocherType}</td>
+                  <td>{!w.VocherNum}</td>
+                  <td>{!w.Debit}</td>
+                  <td>{!w.Credit}</td>
+              </tr>
+          </apex:repeat>
+          
+          <tr style="text-align:left;font-size:14px;float:center;">
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{!totalDebit}</td>
+              <td>{!totalCredit}</td>
+          </tr>
+         
+          <tr style="text-align:left;font-size:14px;float:center;">
+              <td></td>
+              <td> Dr&nbsp;| &nbsp;Closing Balance</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{!ClosingBalance}</td>
+          </tr>
+           <tr style="text-align:left;font-size:14px;float:center;">
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{!totalDebit}</td>
+              <td>{!totalCredit + ClosingBalance}</td>
+          </tr>
+
+              <!--<tr>
+                <th width="15%">Date</th>
+                <th width="35%">Particulars</th> 
+                <th width="15%">Vch Type</th>
+                <th width="15%">Vch No.</th>
+                <th width="10%">Debit</th>
+                <th width="10%">Credit</th>
+          </tr><hr/>
+          <tr>
+            <td width="15%">06 May 2023</td>
+            <td width="35%">Smith</td>
+            <td width="15%">50000000</td>
+            <td width="15%">50000000</td>
+            <td width="10%">50000000</td>
+            <td width="10%">50000000</td>
+          </tr>-->
+	  </table>
+      <!--<div class="borderline">
+          <hr/>
+          		<table>
+                  <tr>
+                    <th width="85px">12345</th>
+                    <th>12345</th>
+                  </tr>
+				</table>
+          <hr/>
+      </div>
+      <div class="carriedOver">
+          Carried Over
+      </div>-->
+  </body>
+
+</apex:page>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <customErrors>
+        <name>Custom_Error_Message_1</name>
+        <label>Custom Error Message 1</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <customErrorMessages>
+            <errorMessage>Oops..!! you don&apos;t have permission to delete this record</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <decisions>
+        <name>check_user_profile</name>
+        <label>check user profile</label>
+        <locationX>182</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>accounts</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Profile.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Accounts</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Custom_Error_Message_1</targetReference>
+            </connector>
+            <label>accounts</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>Salesinvoice flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Salesinvoice flow to Prevent Deletion</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>check_user_profile</targetReference>
+        </connector>
+        <object>Sales_Invoice__c</object>
+        <recordTriggerType>Delete</recordTriggerType>
+        <triggerType>RecordBeforeDelete</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>Error</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <value>
+            <stringValue>&apos;Oops .... you don&apos;t have permission to delete this record&apos;</stringValue>
+        </value>
+    </variables>
+</Flow>

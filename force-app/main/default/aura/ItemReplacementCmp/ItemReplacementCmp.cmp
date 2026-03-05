@@ -1,0 +1,202 @@
+<aura:component controller="ItemReplacementCtrl"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global">
+    <aura:attribute name="customerId" type="String" />
+    <aura:attribute name="type" type="String" />
+    <aura:attribute name="customerName" type="String" />
+    <aura:attribute name="today" type="Date" />
+    <aura:attribute name="Replacement" type="Item_Replacement__c" default="{}" />
+    <aura:attribute name="replaceItems" type="Object[]" default="[]" />
+    <aura:attribute name="matchproducts" type="Stock__c[]" default="[]"/>
+    <aura:attribute name="searchProduct" type="string" default=""/>
+    <aura:attribute name="blktext" type="string" default="Available Quantity"/>
+    <aura:attribute name="searchIndex" type="Integer" />
+    <aura:attribute name="Products" type="Object[]"  default="[]"/>
+    <aura:attribute name="disableSave" type="boolean" default="false" />
+    <aura:attribute name="spinner" type="boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    <aura:handler name="change" value="{!v.searchProduct}" action="{!c.searchProduct}"></aura:handler>
+    
+    <!--Header-->
+    <div class="slds-tabs_card">
+        <div class="slds-page-header">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-opportunity">
+                                <lightning:icon iconName="utility:cart" alternativeText="Event" title="Event" />
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span>Seraphine</span>
+                                        <span class="slds-page-header__title slds-truncate" title="Item Replacement">Item Replacement</span>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <br />
+    
+    <div class="slds-tabs_card">
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                <div class="slds-size_1-of-1 slds-max-small-size_1-of-1 slds-p-horizontal_x-small" >
+                    <b>Store Name  &nbsp; :</b> &nbsp;  <lightning:formattedText value="{!v.customerName}" />
+                </div>
+
+                <div class="slds-size_1-of-1 slds-max-small-size_1-of-1 slds-p-horizontal_x-small" >
+                    <b>Date  &nbsp; :</b> &nbsp;<lightning:formattedDateTime value="{!v.today}" year="2-digit" month="short" day="2-digit" weekday="long"/> 
+                </div>
+        </div>
+            <br/>
+
+        </div>
+    </div>
+   <!-- <aura:if isTrue="{!or(v.type =='Return',v.type =='Replacement')}">-->
+    <aura:iteration items="{!v.replaceItems}" var="rep" indexVar="index">
+        <lightning:card class="slds-p-left_xx-small groove">
+            <div class="slds-grid slds-gutters slds-wrap slds-grid_pull-padded-x-small">
+
+                <div class="slds-size_1-of-4 slds-max-small-size_1-of-1  slds-p-horizontal_small">
+                    <div class="slds-combobox_container"> 
+                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"  data-record="{!index}"  onchange="{!c.searchProduct}" >    
+                            <lightning:input value="{!rep.Name}" aura:id="field1" name="enter-search" label="Product Name"   type="search" required="true" id="combobox-id-1" aria-autocomplete="list" aria-controls="listbox-id-1" aria-expanded="false" aria-haspopup="listbox" autoComplete="off" role="combobox" placeholder="Search..."/>                                      
+                        </div>
+                        <aura:if isTrue="{!rep.searchIndexPrd == index}">
+                            <div class="{!not(empty(rep.matchproducts)) ? 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click' }" aura:id="open">
+                                <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox">
+                                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                        <aura:if isTrue="{!rep.matchproducts}">   
+                                            <aura:iteration items="{!rep.matchproducts}" var="item">
+                                                <li role="presentation" class="slds-listbox__item">
+                                                    <div id="option1" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                        <span class="slds-media__figure slds-listbox__option-icon">
+                                                            <span class="slds-icon_container slds-icon-standard-account">
+                                                                <lightning:icon iconName="standard:user" size="xx-small"/>&nbsp;
+                                                            </span>
+                                                        </span>
+                                                        <span class="slds-media__body">
+                                                            <div class="slds-lookup__result-text" data-id="{!item.Id}"  data-record="{!index}" onclick="{!c.updateProduct }">
+                                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Name}</span>
+                                                            </div>
+                                                        </span>
+                                                    </div>
+                                                </li>
+                                            </aura:iteration>
+                                            
+                                        </aura:if>     
+                                    </ul>
+                                </div>  
+                            </div>
+                        </aura:if>   
+                    </div> 
+                </div>
+                
+                <div class="slds-size_1-of-4 slds-max-small-size_1-of-1  slds-p-horizontal_small">
+                    <div class="slds-combobox_container"> 
+                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"  data-record="{!index}"  onchange="{!c.searchDamStock}">
+                            <lightning:input value="{!rep.Damaged_Stock_Name__c}" aura:id="field1" name="enter-search" label="Damage Stock"   type="search" required="true" id="combobox-id-1" aria-autocomplete="list" aria-controls="listbox-id-1" aria-expanded="false" aria-haspopup="listbox" autoComplete="off" role="combobox" placeholder="Search..."/>                                         
+                        </div>
+                        <aura:if isTrue="{!rep.searchIndexDmgStock == index}">
+                            <div class="{!not(empty(rep.matchDmgStocks)) ? 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click' }" aura:id="open">
+                                <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox">
+                                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                        <aura:if isTrue="{!rep.matchDmgStocks}">
+                                            <aura:iteration items="{!rep.matchDmgStocks}" var="item">
+                                                <li role="presentation" class="slds-listbox__item">
+                                                    <div id="option1" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                        <span class="slds-media__figure slds-listbox__option-icon">
+                                                            <span class="slds-icon_container slds-icon-standard-account">
+                                                                <lightning:icon iconName="standard:user" size="xx-small"/>&nbsp;
+                                                            </span>
+                                                        </span>
+                                                        <span class="slds-media__body">
+                                                            <div class="slds-lookup__result-text" data-id="{!item.Id}"  data-record="{!index}" onclick="{!c.updateDamStock }">
+                                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Product_Batch_Name__c} - MRP: {!item.Price__c}</span>
+                                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Manufacturing_Date__c}</span>
+                                                            </div>
+                                                        </span>
+                                                    </div>
+                                                </li>
+                                            </aura:iteration>
+                                        </aura:if>     
+                                    </ul>
+                                </div>  
+                            </div>
+                        </aura:if>  
+                    </div>
+                </div>
+                
+                
+               <!-- <aura:if isTrue="{!v.type == 'Replacement'}">-->
+                    <div class="slds-size_1-of-4 slds-max-small-size_1-of-1 slds-p-horizontal_small">
+                        <div class="slds-combobox_container">
+                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"  data-record="{!index}"  onchange="{!c.searchNewStock}">
+                                <lightning:input value="{!rep.New_Stock_Name__c}" aura:id="field1" name="enter-search" label="New Stock"   type="search" required="true" id="combobox-id-1" aria-autocomplete="list" aria-controls="listbox-id-1" aria-expanded="false" aria-haspopup="listbox" autoComplete="off" role="combobox" placeholder="Search..."/>                                      
+                            </div>
+                            <aura:if isTrue="{!rep.searchIndexNewStock == index}">
+                                <div class="{!not(empty(rep.matchNewStocks)) ? 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click' }" aura:id="open">
+                                    <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox">
+                                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                            <aura:if isTrue="{!rep.matchNewStocks}">
+                                                <aura:iteration items="{!rep.matchNewStocks}" var="item">
+                                                    <li role="presentation" class="slds-listbox__item">
+                                                        <div id="option1" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">  
+                                                            <span class="slds-media__figure slds-listbox__option-icon">
+                                                                <span class="slds-icon_container slds-icon-standard-account">
+                                                                    <lightning:icon iconName="standard:user" size="xx-small"/>&nbsp;
+                                                                </span>
+                                                            </span>
+                                                            <span class="slds-media__body">
+                                                                <div class="slds-lookup__result-text" data-id="{!item.Id}"  data-record="{!index}" onclick="{!c.updateNewStock }">
+                                                                    <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Product_Batch_Name__c} - MRP: {!item.Price__c}</span>
+                                                                    <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Manufacturing_Date__c} - Avbl. Qty: {!item.Available_Quantity__c}</span>
+                                                                </div>
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                </aura:iteration>
+                                            </aura:if>     
+                                        </ul>
+                                    </div>  
+                                </div>
+                            </aura:if> 
+                        </div> 
+                    </div>
+              <!--  </aura:if>-->
+                <div class="slds-size_1-of-5 slds-max-small-size_1-of-2  slds-p-horizontal_small" data-record="{!index}">
+                    <lightning:input  aura:id="field1"  name="retQty"  type="number" max="{!rep.Available_Quantity__c}" label="Quantity" value="{!rep.Quantity__c}"  messageWhenRangeOverflow="Choose QTY less than Available quantity "  min="1"  messageWhenRangeUnderflow="Enter quantity" required="true" />
+                  <!--  <aura:if isTrue="{!v.type =='Replacement'}"> --> <lightning:badge label="{! v.blktext +'  ' +rep.Available_Quantity__c}"/> <!--</aura:if>-->
+                </div>
+            </div>
+            <aura:set attribute="actions" >
+                <a onclick="{!c.removeRow}" data-record="{!index}">
+                    <lightning:buttonIcon iconName="utility:delete" iconClass="red"  size="x-large" variant="destructive" alternativeText="Delete" />
+                </a>
+                <lightning:buttonIcon iconName="utility:add" iconClass="green"  size="x-large" variant="success" alternativeText="Add" onclick="{!c.addRow}"/>
+                
+            </aura:set>
+        </lightning:card>
+    </aura:iteration>
+   <!-- </aura:if>-->
+    <div class="slds-p-top_small">
+        <lightning:card class="slds-p-left_xx-small groove">
+            <div class="slds-align_absolute-center slds-p-top_small ">
+                <lightning:button variant="destructive" label="Cancel" title="Cancel" onclick="{!c.CancelClick }" />
+                <lightning:button variant="brand" label="Submit" title="Brand action" disabled="{!v.disableSave}" onclick="{!c.save}" />
+            </div>
+        </lightning:card>
+    </div>
+    
+    <!-- spinner -->
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+</aura:component>

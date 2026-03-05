@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Description_is_mendatory</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ISPICKVAL( Stock_Type__c , &apos;Manufacturing Defect&apos;),
+ ISBLANK(Description__c))</errorConditionFormula>
+    <errorDisplayField>Description__c</errorDisplayField>
+    <errorMessage>A description is required to create to set stock type as manufacturing defect.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,117 @@
+.THIS .spins::after {
+    position: absolute;
+    content: 'Please wait while loading';
+    width: 100%;
+    text-align: center;
+    top: calc(50% + 3em);
+    font-weight: bold;
+}
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}
+
+.THIS .slds-backdrop {
+    height: 100%;
+}
+
+.THIS .border{
+    border-style: solid;
+    border-width: 0.5px;
+    border-color: rgba(50, 50, 93, 0.25);
+    border-radius: 5px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.THIS .availableQty{
+    padding: 2px 2px 2px 2px;
+    font-size: 12px; 
+    color: white;
+    border-style: solid;
+    border-width: 0.5px;
+    background : rgb(111,65,119);
+    border-color: rgba(50, 50, 93, 0.25);
+    border-radius: 5px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.THIS .productDetails  {
+    font-family: "Segoe UI";
+    font-weight: bold;
+    font-size: 14px; 
+}
+.THIS .productName  {
+    font-size: 16px; 
+    color : rgb(194, 57, 52);
+}
+.THIS .productParameters  {
+    color : rgb(0, 0, 0);
+}
+.THIS .productParaInfo  {
+    color : rgb(2, 75, 194);
+}
+.THIS.myBtn  {
+    width: 5px;
+}
+.THIS .field-title{
+    font-weight: bold;
+    color:blue;
+}
+.THIS .field-title2{
+    font-weight: bold;
+    color:rgb(194, 57, 52);
+}
+.THIS .field-title3{
+    font-weight: bold;
+    color:#4bc076;
+}
+
+.THIS .summarybox{
+    
+    border: solid 2px #85adad;
+    background: #85adad;
+
+}
+.THIS .summarylabel{
+      font-size: 10px;
+      color:white;
+ }
+.THIS .summaryValue{
+      font-size: 22px;
+      color:white;
+ }
+.THIS.disable-pull-to-refresh {
+  overflow: hidden;
+}
+.THIS.mainContainer {
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 1px; /* compensation for the navigation bar */
+    border: 1px solid black; /* used to highlight border */
+}
+.THIS .childContainer {
+    background-color: lightgray;
+    position: absolute;
+    top: 2px; /* compensation for the navigation bar */
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    overflow-y: auto;
+    border: 1px solid lightseagreen; /* used to highlight border */
+}
+.THIS.widebutton {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    width: 96%;
+    min-width: 140px;
+    margin-left: auto;
+    margin-right: auto; 
+    background-color: red;
+}
+.THIS .allvisitsdiv{
+   /* background-color: #87ceeb;*/
+    margin-top:5px;
+    
+}

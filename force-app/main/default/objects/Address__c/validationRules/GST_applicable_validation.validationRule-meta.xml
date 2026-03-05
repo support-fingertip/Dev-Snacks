@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GST_applicable_validation</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ISBLANK(GST_No__c ), Customer__r.GST_applicable__c  = true)</errorConditionFormula>
+    <errorDisplayField>GST_No__c</errorDisplayField>
+    <errorMessage>GST field is required when GST Applicable is added in the customer.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,53 @@
+<aura:component controller="displayVisitPhotos"
+                implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+	<aura:handler name="init" action="{!c.returnAttList}" value="{!this}" />
+    <aura:attribute name="atlist" type="String[]"/>
+    <aura:attribute name="imgUrl" type="String"/>
+    <aura:attribute name="showPhoto" type="boolean" default="false"/>
+    <aura:attribute name="visitId" type="String" default=""/>
+    <aura:dependency resource="markup://force:navigateToURL" type="EVENT"/>
+    <div class="slds-grid slds-wrap" >
+         <aura:if isTrue="{!v.atlist !=null}">
+        <aura:iteration items="{!v.atlist}" var="acc">
+            <div class="slds-col slds-size_1-of-3 slds-p-around_small">
+                <lightning:card >
+                    <p class="slds-p-horizontal_small">
+                       
+                            <div data-value="{!index}" data-record="{!acc.url}" data-index="{!index}"  data-id="{!acc.url}" onclick="{!c.showSinglePhoto}" name="{!index}" >
+                                <img src="{!acc.url}" width="50" height="60"/>
+                        </div>
+                       
+                    </p>
+                    <aura:set attribute="actions" >
+                        <lightning:button name="{!acc.imgid}" iconName="action:delete" value="Delete" variant="Destructive" onclick="{!c.doDelete}" /> 
+                    </aura:set>
+                </lightning:card>
+            </div>     
+        </aura:iteration>
+             <aura:set attribute="else">
+                 No Photos
+             </aura:set>
+        </aura:if>
+    </div>
+    <div>
+    <aura:if isTrue="{!v.showPhoto}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse"
+                                title="Close" onclick="{!c.closePhoto}">
+                            X <span class="slds-assistive-text">Close</span>
+                        </button>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_large slds-text-align--center" id="modal-content-id-1">
+                    <center><img src="{!v.imgUrl}" /></center>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.closePhoto}">Close</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    </div>
+</aura:component>

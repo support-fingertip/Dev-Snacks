@@ -1,0 +1,265 @@
+<aura:component controller="newBeatController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+	
+     <aura:attribute name="users" type="object[]" />
+    <aura:attribute name="Routes" type="String[]" />
+    <aura:attribute name="userId" type="String" />
+    <aura:attribute name="NextUserId" type="String" />
+     <aura:attribute name="routeName" type="String" />
+      <aura:attribute name="SEId" type="String" />
+     <aura:attribute name="routeId" type="String" />
+     <aura:attribute name="beatId" type="String" />
+     <aura:attribute name="startdate" type="Date" />
+   
+    <aura:attribute name="showBeats" type="boolean" default="false"/>
+	<aura:attribute name="showvisits" type="boolean" default="false"/> 
+     <aura:attribute name="showupcoming" type="boolean" default="false"/>
+	<aura:attribute name="showrecent" type="boolean" default="false"/> 
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    <!-- lookup attributes -->
+     <aura:attribute name="allroutes" type="object[]" default="[]"/>
+    <aura:attribute name="searchText" type="string" default=""/>
+    <aura:attribute name="matchRoutes" type="object[]" default="[]"/>
+    <aura:handler name="change" value="{!v.searchText}" action="{!c.searchText}"></aura:handler> 
+    
+    
+    <!-- data tabel attributes -->
+      <aura:attribute name="mydata" type="Object"/>
+    <aura:attribute name="mycolumns" type="List"/>
+     <aura:attribute name="mydata1" type="Object"/>
+    <aura:attribute name="mycolumns1" type="List"/>
+    <aura:attribute name="mydata3" type="Object"/>
+    <aura:attribute name="mycolumns3" type="List"/>
+     <aura:attribute name="mydata2" type="Object"/>
+    <aura:attribute name="mycolumns2" type="List"/>
+     <aura:attribute name="selectedRowsCount2" type="Integer" default="0"/>
+     <aura:attribute name="selectedstores2" type="List" />
+     <aura:attribute name="mydata4" type="Object"/>
+    <aura:attribute name="mycolumns4" type="List"/>
+     <aura:attribute name="selectedRowsCount4" type="Integer" default="0"/>
+     <aura:attribute name="selectedstores4" type="List" />
+    <aura:attribute name="selectedRowsCount" type="Integer" default="0"/>
+     <aura:attribute name="selectedstores" type="List" />
+    <aura:attribute name="CurrentUser" type="Object"/>
+	<force:recordData recordId="{!$SObjectType.CurrentUser.Id}"
+                  fields="Profile.Name"
+                  targetFields="{!v.CurrentUser}"/>
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+   
+    <div >
+    <div class="slds-page-header">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title slds-align-middle">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <lightning:icon size="large" iconName="standard:record_update"/>
+                    </div>
+                    <div class="slds-media__body slds-align-middle"><span style="font-size:18px;font-weight: bold;">Beat Plan</span></div>
+                </div>
+            </div>
+             </div>
+         </div>
+                 <lightning:tabset variant="scoped">
+        <lightning:tab label="Create new beat" >
+             <div class="slds-page-body">
+       
+                <div class="slds-has-flexi-truncate">
+                    <div class="slds-grid  slds-wrap slds-grid_pull-padded-xx-small slds-m-bottom--medium">
+                         <div class="slds-size_1-of-3 slds-p-horizontal_x-small"> 
+                            <lightning:input  type="date"  label="Select Beat Date" aura:id="mystartdate" value="{!v.startdate}" />
+                        </div>
+                         <aura:if isTrue="{!v.startdate}">
+                        <div class="slds-size_1-of-3 slds-p-horizontal_x-small"> 
+                            <lightning:select class="select"  label="User Name" value="{!v.userId}" onchange="{!c.getRoutes}" messageWhenValueMissing="Please select this field">
+                                <option value="">Select User</option>
+                                <aura:iteration items="{!v.users}" var="val">
+                                    <option value="{!val.Id}"> {!val.Name}</option>
+                                </aura:iteration></lightning:select>
+                        </div>
+                        </aura:if>
+                         <aura:if isTrue="{!v.userId}">
+                        <div class="slds-size_1-of-3 slds-p-horizontal_x-small"> 
+                            <ul class="slds-lookup__list" role="listbox"> 
+                               <lightning:input value="{!v.searchText}" aura:id="enter-search" name="enter-search" label="Route Name" type="search"/><br/>                                      
+    <aura:if isTrue="{!v.matchRoutes}">
+        <div class="{!if(not(empty(v.matchRoutes)), 'result-buttom','')}">
+            <aura:iteration items="{!v.matchRoutes}" var="item">
+                <li role="presentation">
+                    <span class="slds-lookup__item-action slds-media slds-media--center" role="option">
+                        <div class="slds-media__body">
+                            <div class="slds-input-has-icon slds-input-has-icon--right">
+                                <div class="slds-lookup__result-text" data-id="{!item.Id}" onclick="{!c.update }">
+                                    <a role="option" >
+                                            <lightning:icon iconName="standard:account" size="xx-small"/>&nbsp;{!item.Name}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </li>
+            </aura:iteration>
+        </div>
+    </aura:if>     
+                            </ul>
+                        </div>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+               <aura:if isTrue="{!v.showBeats}">
+            <aura:if isTrue="{!and(v.mydata1 != '',v.mydata1 != null)}">
+              <div style="background-color:white;">
+                <center><h1 class="slds-text-align_center slds-text-heading_medium"><span style="color:maroon;"><b>Recent Beats</b></span></h1></center>
+
+        </div>
+            <div style="height: 200px">
+         <lightning:datatable
+                             keyField="id"
+                             data="{! v.mydata1 }"
+                             columns="{! v.mycolumns1 }"
+                             onrowaction="{!c.handleRowAction1 }"
+                            hideCheckboxColumn="true"/>
+    </div>
+            </aura:if>
+                   <br/>
+           <aura:if isTrue="{!and(v.mydata != '',v.mydata != null)}">
+                 <div style="background-color:white;">
+                <center><h1 class="slds-text-align_center slds-text-heading_medium"><span style="color:maroon;"><b>All Stores</b></span></h1></center>
+        </div>
+            <div style="height: 500px">
+        <h1>Selected Stores: {! v.selectedRowsCount }</h1>
+         <lightning:datatable
+                             keyField="id"
+                             data="{! v.mydata }"
+                             columns="{! v.mycolumns }"
+                             onrowaction="{!c.handleRowAction }"
+                             onrowselection="{! c.updateSelectedText }"/>
+    </div>
+            </aura:if>
+         <aura:if isTrue="{!(v.selectedRowsCount != 0)}">
+         <div class="slds-text-align_center">
+        <button class="slds-button slds-button--brand" onclick="{!c.runBeat}" >Run Beat</button>
+    	</div>
+        </aura:if>
+        
+        </aura:if>
+         <aura:if isTrue="{!v.showvisits}">
+             <button class="slds-button slds-button--brand" onclick="{!c.docancel}" >Go back</button>
+         <aura:if isTrue="{!and(v.mydata2 != '',v.mydata2 != null)}">
+                 <div style="background-color:white;">
+                <center><h1 class="slds-text-align_center slds-text-heading_medium"><span style="color:maroon;"><b>Stores Under Selected Beat</b></span></h1></center>
+        </div>
+            <div style="height: 500px">
+        <h1>Selected Stores: {! v.selectedRowsCount2 }</h1>
+         <lightning:datatable
+                             keyField="Account1__c"
+                             data="{! v.mydata2 }"
+                             columns="{! v.mycolumns2 }"
+                             onrowaction="{!c.handleRowAction2 }"
+                             onrowselection="{! c.updateSelectedText2 }"/>
+    </div>
+            </aura:if>
+         
+         <div class="slds-text-align_center">
+             <button class="slds-button slds-button--brand" onclick="{!c.docancel}" >cancel</button>
+             <aura:if isTrue="{!(v.selectedRowsCount2 != 0)}">
+        <button class="slds-button slds-button--brand" onclick="{!c.runagainBeat}" >Run Beat</button>
+                  </aura:if>
+    	</div>
+        </aura:if>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+       
+        </lightning:tab>
+         <aura:if isTrue="{!(v.CurrentUser.Profile.Name !='Sales executive')}">            
+        <lightning:tab label="Change beat owner" >
+           <div class="slds-page-body">
+       
+                <div class="slds-has-flexi-truncate">
+                    <div class="slds-grid  slds-wrap slds-grid_pull-padded-xx-small slds-m-bottom--medium">
+                      
+                        <div class="slds-size_1-of-2 slds-p-horizontal_x-small"> 
+                            <lightning:select class="select"  label="Actual User Name" value="{!v.SEId}" onchange="{!c.fetchbeats}" messageWhenValueMissing="Please select this field">
+                                <option value="">Select User</option>
+                                <aura:iteration items="{!v.users}" var="val">
+                                    <option value="{!val.Id}"> {!val.Name}</option>
+                                </aura:iteration></lightning:select>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-horizontal_x-small"> 
+                            <lightning:select class="select"  label="Assigning To" value="{!v.NextUserId}" messageWhenValueMissing="Please select this field">
+                                <option value="">Select User</option>
+                                <aura:iteration items="{!v.users}" var="val">
+                                    <option value="{!val.Id}"> {!val.Name}</option>
+                                </aura:iteration></lightning:select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <aura:if isTrue="{!v.showupcoming}">
+            <aura:if isTrue="{!and(v.mydata3 != '',v.mydata3 != null)}">
+              <div style="background-color:white;">
+                <center><h1 class="slds-text-align_center slds-text-heading_medium"><span style="color:maroon;"><b>Upcoming Beats</b></span></h1></center>
+
+        </div>
+                 
+            <div style="height: 200px">
+         <lightning:datatable
+                             keyField="id"
+                             data="{! v.mydata3 }"
+                             columns="{! v.mycolumns3 }"
+                             onrowaction="{!c.handleRowAction3 }"
+                            hideCheckboxColumn="true"/>
+    </div>
+                </aura:if>
+            </aura:if>
+                   <br/>
+       
+         <aura:if isTrue="{!v.showrecent}">
+              <button class="slds-button slds-button--brand" onclick="{!c.docancel2}" >Go back</button>
+         <aura:if isTrue="{!and(v.mydata4 != '',v.mydata4 != null)}">
+                 <div style="background-color:white;">
+                <center><h1 class="slds-text-align_center slds-text-heading_medium"><span style="color:maroon;"><b>Visits Under Selected Beat</b></span></h1></center>
+        </div>
+            <div style="height: 250px">
+        <h1>Selected visits: {! v.selectedRowsCount4 }</h1>
+         <lightning:datatable
+                             keyField="id"
+                             data="{! v.mydata4 }"
+                             columns="{! v.mycolumns4 }"
+                             onrowaction="{!c.handleRowAction4 }"
+                             onrowselection="{! c.updateSelectedText4 }"/>
+    </div>
+            </aura:if>
+         
+         <div class="slds-text-align_center">
+             <button class="slds-button slds-button--brand" onclick="{!c.docancel2}" >cancel</button>
+             <aura:if isTrue="{!(v.selectedRowsCount4 != 0)}">
+        <button class="slds-button slds-button--brand" onclick="{!c.changeBeatOwner}" >Change Beat Owner</button>
+                  </aura:if>
+    	</div>
+        </aura:if>
+        <aura:if isTrue="{!v.spinner}">
+            <!--<lightning:spinner class="spins" size="large" variant="brand"  alternativeText="Loading" />-->
+            <div class="demo-only demo--inverse" style="height:12rem;position:relative">
+  <div role="status" class="slds-spinner slds-spinner_medium">
+    <span class="slds-assistive-text">Loading</span>
+    <div class="slds-spinner__dot-a"></div>
+    <div class="slds-spinner__dot-b"></div>
+  </div>
+</div>
+        </aura:if>
+        </lightning:tab>
+                     </aura:if>
+    </lightning:tabset>
+           
+       
+    
+  
+    </div>
+         
+            
+        
+</aura:component>

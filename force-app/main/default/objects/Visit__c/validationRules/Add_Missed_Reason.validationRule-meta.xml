@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Add_Missed_Reason</fullName>
+    <active>true</active>
+    <errorConditionFormula>IF(AND( ISPICKVAL(Status__c, &apos;Missed&apos;), ISBLANK(Missed_PostPone_Reason__c)), true, false)</errorConditionFormula>
+    <errorDisplayField>Missed_PostPone_Reason__c</errorDisplayField>
+    <errorMessage>Please add missed reason when status is missed.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,268 @@
+<aura:component controller="SalesOrderItemListCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="listFromApexController" type="List" />
+    <aura:attribute name="cashDiscount" type="Decimal" default="0.00"/>
+    <aura:attribute name="sObjectName" type="String" />
+    <aura:attribute name="redirect" type="Boolean" default="false"/>
+    <aura:attribute name="selectedRecordId" type="String" />
+     <aura:attribute name="showPayment" type="boolean" default="false"/>
+     <aura:attribute name="disableBtn" type="boolean" default="false"/>
+    
+    <aura:attribute name="selectedValue" type="Decimal"/>
+    <aura:attribute name="Pending" type="Decimal" default="0.00"/>
+    
+    <aura:attribute name="data" type="object" />
+    <aura:attribute name="routeId" type="string" />
+    
+    <aura:attribute name="showNewInvoice" type="boolean" default="true"/>
+    <aura:attribute name="stockList" type="List" />
+    <aura:attribute name="cartProductIds" type="List"/>
+    <aura:attribute name="searchList" type="List" />
+    <aura:attribute name="OrderLineLists" type="List" />
+    <aura:attribute name="searchProd" type="String" default=""/>
+    <aura:attribute name="Name" type="List" />
+    
+    <aura:attribute name="disApplied" type="boolean" default="false"/>
+    
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    
+    <aura:attribute name="Order" type="object" default="{}" /> 
+    <aura:attribute name="orderItemList" type="object[]"/>
+    <aura:attribute name="Receipt" type="object" default="{}" /> 
+    <aura:attribute name="banks"  type="String[]" default="[]"/>
+    <aura:attribute name="discounts" type="Object[]" />
+    <aura:attribute name="GrandTotal" type="Decimal" default="0.00"/>
+    <aura:attribute name="GrandTotalDisc" type="Decimal" default="0.00"/>
+    <aura:attribute name="Products" type="Stock__c[]" default="[]" />
+    <aura:attribute name="matchproducts" type="Stock__c[]" default="[]"/>
+    <aura:attribute name="searchProduct" type="string" default=""/>
+    <aura:attribute name="searchIndex" type="Integer" />
+      <aura:handler name="change" value="{!v.searchProduct}" action="{!c.searchProduct}"></aura:handler>
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        
+        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> Convert To Invoice</h2>
+        
+    </div>
+    
+    <div class="slds-modal__content">
+        
+        <table > 
+            <tbody> 
+                
+                <aura:iteration items="{!v.orderItemList}" var="prd" indexVar="index">
+                    <tr>
+                        <td> 
+                            <lightning:card iconName="standard:work_order_item" class="slds-p-left_xx-small groove">
+                                <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                                  <!--  &nbsp;&nbsp;&nbsp;&nbsp;Available Quantiy: {!prd.Stock__r.Available_Quantity__c}-->
+                                    
+                                    <div class="{!$Browser.formFactor == 'DESKTOP' ? 'slds-size_1-of-3 slds-p-horizontal_small' : 'slds-size_1-of-1 slds-p-horizontal_small'}"> 
+                                    <!--<div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                        <lightning:recordEditForm aura:id="recordEditForm"
+                                                                      objectApiName="Sales_order_item__c">
+                                            <label  class="slds-form-element__label" for="unique-id-of-input">Stock</label>
+                                                <lightning:inputField  aura:id="field1"  fieldName="Stock__c" required="true" value="{!prd.Stock__c}"  variant = "label-hidden" />
+                                                
+                                            </lightning:recordEditForm>      -->
+                                        
+                                        <!-- Product-->
+                                       <!-- <aura:if isTrue="{!and(prd.Product__c !='',prd.Product__c !=null)}">
+                                            <lightning:input value="{!prd.Product_Name__c}" aura:id="enter-search" name="enter-search" label="{!index+1+(') Product Name')}" type="text" />
+                                            
+                                            
+                                            <aura:set attribute="else">-->
+                                                <div class="slds-combobox_container">
+                                                    
+                                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"  data-record="{!index}"  onchange="{!c.searchProduct}">
+                                                            
+                                                            <lightning:input value="{!prd.Product_Name__c}" aura:id="field1" name="enter-search" label="Product Name"   type="search" required="true" id="combobox-id-1" aria-autocomplete="list" aria-controls="listbox-id-1" aria-expanded="false" aria-haspopup="listbox" autoComplete="off" role="combobox" placeholder="Search..."/>     
+                                                             <aura:if isTrue="{!prd.Fixed_Price_Item__c}"><span style="font-size:9px;color:red">* This is a fixed price item.</span></aura:if>
+                                                            
+                                                        </div>
+                                                       
+                                                        
+                                                    <aura:if isTrue="{!v.searchIndex == index}">
+                                                         <div class="{!not(empty(v.matchproducts)) ? 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click' }" aura:id="open">
+                                                         <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox">
+                                                             <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                            <aura:if isTrue="{!v.matchproducts}">
+                                                              
+                                                                    <aura:iteration items="{!v.matchproducts}" var="item">
+                                                                        <li role="presentation" class="slds-listbox__item">
+                                                                            <div id="option1" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                                                
+                                                                                <span class="slds-media__figure slds-listbox__option-icon">
+                                                                                    <span class="slds-icon_container slds-icon-standard-account">
+                                                                                        <lightning:icon iconName="standard:user" size="xx-small"/>&nbsp;
+                                                                                    </span>
+                                                                                </span>
+                                                                                <span class="slds-media__body">
+                                                                                    <div class="slds-lookup__result-text" data-id="{!item.Id}"  data-record="{!index}" onclick="{!c.updateProduct }">
+                                                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Product_Batch_Name__c} - Avl. Qty: {!item.Available_Quantity__c}</span>
+                                                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="white-space:normal">{!item.Manufacturing_Date__c}</span>
+                                                                                    </div>
+                                                                                </span>
+                                                                            </div>
+                                                                        </li>
+                                                                    </aura:iteration>
+                                                              
+                                                            </aura:if>     
+                                                        </ul>
+                                                              </div>  
+                                                             </div>
+                                                    </aura:if> 
+                                                          
+                                                  
+                                                </div>
+                                          <!--  </aura:set>
+                                        </aura:if>-->
+                                    </div>
+                                    <!-- <div class="slds-size_1-of-3 slds-p-horizontal_small" >
+                                        <lightning:recordEditForm aura:id="recordEditForm"
+                                                                      objectApiName="Sales_order_item__c">
+                                            <label  class="slds-form-element__label" for="unique-id-of-input">Product</label>
+                                                <lightning:inputField  aura:id="field1"  fieldName="Product__c" required="true" value="{!prd.Product__c}"  variant = "label-hidden" />
+                                                
+                                            </lightning:recordEditForm>
+                                    </div>
+                                     -->
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" onchange="{!c.getGrandTotal}" data-record="{!index}">
+                                        <lightning:input name="prodQty" type="number"  label="Quantity" value="{!prd.Quantity__c}" /> 
+                                    </div>
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small"  data-record="{!index}" >
+                                        <lightning:input name="prodPrice" type="number" formatter="currency" disabled="true" step="0.01" label="Unit Price" value="{!prd.Unit_Price__c}" />
+                                    </div>
+                                    <!--<div class="slds-size_1-of-3 slds-p-horizontal_small" >
+                                        <lightning:input name="tax" type="number" formatter="percent-fixed" label="GST" disabled="true" step="0.01" value="{!prd.GST_Percentage__c}" />
+                                    </div>-->
+                                     <!--<div class="slds-size_1-of-3 slds-p-horizontal_small" >
+                                        <lightning:input name="tax" type="number" formatter="currency" label="{!('GST Value (') + prd.GST_Percentage__c + ('%)')}" disabled="true" step="0.01" value="{!((prd.Quantity__c * prd.Unit_Price__c)*prd.GST_Percentage__c)/100}" />
+                                    </div>-->
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" >
+                                        <lightning:input name="tax" type="text" formatter="percent-fixed" label="Cash Discount(%)" disabled="true" value="{!prd.Cash_Discount__c + ('%')}" /> 
+                                    </div>
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small" >
+                                        <lightning:input name="tax" type="text" formatter="percent-fixed" label="Sales Tax(%)" value="{! prd.Sales_Tax__c + ('%')}" disabled="true"/>
+                                    </div>
+                                    
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small">
+                                        <lightning:input name="total" type="number" formatter="currency" step="0.01" disabled="true" label="Total Price" value="{!prd.Total__c}"  style="color:green;font-weight:bold"/>
+                                    </div>
+                                    
+                                    <div class="slds-size_1-of-3 slds-p-horizontal_small slds-clearfix">
+                                        <div class="slds-float_left">
+                                            <p class="slds-m-around_xx-small slds-p-top_large availableQty"><strong>Available quantity : <ui:outputText value="{!prd.Available_Quantity__c}"/></strong></p>
+                                            <p class="slds-m-around_xx-small slds-p-top_large availableQty"><strong>MRP : <ui:outputText value="{!prd.Price__c}"/></strong></p>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <aura:set attribute="actions" >
+                                    <a onclick="{!c.removeRow}" data-record="{!index}">
+                                        <lightning:buttonIcon iconName="utility:delete" iconClass="red"  size="x-large" variant="destructive" alternativeText="Delete" />
+                                    </a>
+                                    <lightning:buttonIcon iconName="utility:add" iconClass="green"  size="x-large" variant="success" alternativeText="Add" onclick="{!c.addRow}"/>
+                                    
+                                </aura:set>
+                            </lightning:card>
+                        </td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+        <div class="slds-p-top_small">
+            <lightning:card  class="slds-p-left_xx-small groove" >
+                <lightning:icon iconName="custom:custom17" size="x-small"/>
+                &nbsp;&nbsp;
+                <b>Grand Total:</b>&nbsp; &nbsp;<span style="color:red; font-size:12px;font-weight:bold">₹{!v.GrandTotalDisc}</span>
+                <br/>
+                <lightning:icon iconName="standard:discounts" size="x-small"/>
+                &nbsp;&nbsp;
+                <b>Cash Discount:</b>&nbsp; &nbsp;<span style=" font-size:12px;font-weight:bold">{!v.cashDiscount}%</span>
+                <br/>
+                <p style="font-size:9px;color:red">* Cash discount will be applied on each items before Sales Tax.</p>
+            </lightning:card>
+            <!--
+            <lightning:card iconName="standard:contract_payment" class="slds-p-left_xx-small groove">
+                <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                    <div class="slds-size_1-of-1 slds-p-horizontal_small">
+                        <lightning:select name="select1" label="Payment Type" value="{!v.Receipt.Payment_Type__c}" required="true" onchange="{!c.onSelectPay}">
+                            <option value="">-None-</option>
+                            <option value="Credit">Credit</option>
+                            <option value="Immediate">Immediate</option>
+                        </lightning:select>
+                    </div>
+                </div>
+                <aura:if isTrue="{!v.showPayment}"> 
+                    
+                    <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                        <div class="slds-size_1-of-2 slds-p-horizontal_small">
+                            <lightning:select name="select1" label="Mode of Payment" required="true" value="{!v.Receipt.Mode_of_payment__c}" onchange="{!c.onSelectPayMode}">
+                                <option value="">-None-</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Cheque">Cheque</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                            </lightning:select>
+                        </div>
+                        <aura:if isTrue="{!v.Receipt.Mode_of_payment__c == 'Cheque'}">
+                             <div class="slds-size_1-of-2 slds-p-horizontal_small">
+                                <lightning:input  type="date"  label="Cheque Date" value="{!v.Receipt.Cheque_Date__c}"  />
+                            </div>
+                       
+                        </aura:if>
+                    </div>
+                    
+                    <aura:if isTrue="{!v.Receipt.Mode_of_payment__c == 'Cheque'}">
+                        <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                            
+                            <div class="slds-size_1-of-2 slds-p-horizontal_small">
+                                <lightning:input label="Cheque Transaction Number" type="text" name="input3"  value="{!v.Receipt.Cheque_Trasaction_Number__c}"/>
+                            </div>
+                            <div class="slds-size_1-of-2 slds-p-horizontal_small">
+                                <lightning:select name="select1" label="Bank Name" required="true" value="{!v.Receipt.Bank_Name__c}">
+                                    <option value="">-None-</option>
+                                    <aura:iteration items="{!v.banks}" var="bnk">
+                                        <option value="{!bnk}" text="{!bnk}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.Receipt.Mode_of_payment__c == 'Bank Transfer'}">
+                        <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                            <div class="slds-size_1-of-2 slds-p-horizontal_small">
+                                <lightning:select name="select1" label="Bank Name" required="true" value="{!v.Receipt.Bank_Name__c}">
+                                    <option value="">-None-</option>
+                                    <aura:iteration items="{!v.banks}" var="bnk">
+                                        <option value="{!bnk}" text="{!bnk}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                            
+                        </div>
+                    </aura:if>
+                    
+                </aura:if>
+                
+                
+            </lightning:card>
+            -->
+            <div class="slds-align_absolute-center slds-p-top_small ">
+                <!--<lightning:button variant="brand" label="Cancel" title="Brand action" onclick="{!c.cancel}" />-->
+                <lightning:button variant="destructive" label="Cancel" title="Cancel" onclick="{!c.CancelClick }" />
+                <lightning:button  variant="brand" label="Submit" title="Brand action"  disabled="{!v.disableBtn}"  onclick="{!c.save}" />
+               
+            </div>
+        </div>
+    </div>
+     <!-- spinner -->
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+</aura:component>

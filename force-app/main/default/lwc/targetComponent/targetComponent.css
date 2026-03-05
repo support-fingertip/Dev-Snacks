@@ -1,0 +1,59 @@
+.header{
+
+  height:76px;
+  background-color: #e8e8ed;
+  padding:5px;
+  margin-bottom: 5px;
+}
+
+.targetcomponent{
+  padding:12px;
+  border-radius: 3px;
+  background-color: #fff;   
+}
+
+table
+{
+   width:auto !important;
+   border-color:  #afacac;
+   ;
+}
+
+.tablebody td
+{
+  padding:5px; 
+ }
+th.exeName, td.exeName  {
+  text-align:left;
+  width:200px;
+} 
+th.trgName
+{
+ text-align:center;
+ padding:5px;
+ width:150px;
+}
+tr:nth-child(even) {background-color: #f2f2f2;}
+tr.headers{
+  background-color: #f2f2f2;
+}
+.values{
+  text-align:center;
+}
+.filter{
+
+   width:300px;
+   float:left;
+   
+}
+.filter span{
+  font-size: 12px;
+}
+
+.pillContainer{
+    position: absolute;
+    z-index: 100000;
+    background-color: #e8e8ed;
+    border: solid 1px #c1c1c6;
+    display: none;
+}

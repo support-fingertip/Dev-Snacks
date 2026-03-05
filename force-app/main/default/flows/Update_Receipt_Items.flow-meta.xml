@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <assignments>
+        <name>Updated_Status_to_Approved</name>
+        <label>Updated Status to Approved</label>
+        <locationX>374</locationX>
+        <locationY>600</locationY>
+        <assignmentItems>
+            <assignToReference>Iterate_Receipt_Items.Approval_Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Approved</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Iterate_Receipt_Items</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Receipt_Item_size</name>
+        <label>Receipt Item size</label>
+        <locationX>418</locationX>
+        <locationY>384</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Receipt_Items</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Pending_Receipt_Items</leftValueReference>
+                <operator>IsEmpty</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Iterate_Receipt_Items</targetReference>
+            </connector>
+            <label>Receipt Items</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>Update Receipt Items {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update Receipt Items</label>
+    <loops>
+        <name>Iterate_Receipt_Items</name>
+        <label>Iterate Receipt Items</label>
+        <locationX>286</locationX>
+        <locationY>492</locationY>
+        <collectionReference>Pending_Receipt_Items</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Updated_Status_to_Approved</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_receipt_items</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Pending_Receipt_Items</name>
+        <label>Pending Receipt Items</label>
+        <locationX>418</locationX>
+        <locationY>276</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Receipt_Item_size</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Approval_Status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Approved</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Receipt_Item__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_receipt_items</name>
+        <label>Update receipt items</label>
+        <locationX>286</locationX>
+        <locationY>792</locationY>
+        <inputReference>Pending_Receipt_Items</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Approval_status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Approved</stringValue>
+            </value>
+        </filters>
+        <object>Receipt__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <scheduledPaths>
+            <name>After_receipt_approval</name>
+            <connector>
+                <targetReference>Pending_Receipt_Items</targetReference>
+            </connector>
+            <label>After receipt approval</label>
+            <offsetNumber>1</offsetNumber>
+            <offsetUnit>Minutes</offsetUnit>
+            <recordField>Approved_Date_Time__c</recordField>
+            <timeSource>RecordField</timeSource>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

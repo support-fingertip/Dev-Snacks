@@ -1,0 +1,48 @@
+.cards {
+    margin-top: 12px;
+    display: grid;
+    gap: 12px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.title {
+    font-weight: 700;
+}
+
+.code {
+    opacity: .75;
+    font-size: 12px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.kv {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.kv span {
+    opacity: .8;
+    font-size: 12px;
+}
+
+.kv.full {
+    grid-column: 1 / -1;
+}

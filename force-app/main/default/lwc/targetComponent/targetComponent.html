@@ -1,0 +1,51 @@
+<template>
+ 
+    
+    
+    <div class="targetcomponent"> 
+        <div class="header">
+                <div  class="filter">
+                    <lightning-icon icon-name="symbols:remove" alternative-text="Connected"    title="xx-small size"></lightning-icon>
+
+                    <span>Select  Period</span> 
+                    <c-cmp-Picklist  onselected={onselectedPeriod} items={periods}></c-cmp-Picklist> 
+                </div>  
+                <div  class="filter">
+                     <span>Select by Role</span> 
+                     <c-cmp-Picklist  onselected={onselectedProfile}     items={profiles}></c-cmp-Picklist>
+
+                </div> 
+                <div  class="filter">
+                    <span>Select Reporting To</span>
+                    <c-cmp-Picklist  onselected={onselectedUser}    items={users}></c-cmp-Picklist>
+                </div> 
+        </div>
+        <div class="tablebody">
+             <table border="1px" style="border-collapse: collapse;"> 
+                 
+                 <tr class="headers">
+                 <th rowspan="2" class="exeName">Executive</th>
+                 <template for:each={columns} for:item="col">
+                     <th class="trgName" colspan="2" key={col.Id}> {col.Name}</th>
+                 </template> 
+                 </tr>
+                 <tr class="headers">
+                    <template for:each={columns} for:item="col">
+                    <th class="trgName"  key={col.Id}> Target</th>
+                    <th class="trgName"  key={col.Id}> Actual</th>
+                 </template>   
+                 </tr> 
+                 <template for:each={rows} for:item="row"> 
+
+                    <tr    key={row.Id} class="targetbody"> 
+                        <td class="exeName"> {row.executiveName}</td>
+                        <template for:each={row.targets} for:item="trg">
+                            <td class="values"  key={trg.Id}> {trg.Target__c}</td>
+                            <td class="values"  key={trg.Id}> {trg.Actual__c}</td> 
+                        </template>  
+                    </tr> 
+                 </template>  
+              </table>
+        </div>  
+    </div>
+</template>

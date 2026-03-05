@@ -1,0 +1,109 @@
+<apex:page controller="CollectionSheetController" showHeader="false" standardStylesheets="false"  applyBodyTag="false" applyHtmlTag="false" renderAs="pdf">
+    <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+            <style type="text/css">
+                @page {
+                size:A4 portrait;
+                border: 1px solid black;  
+                h1 {text-align: center;}
+                  @bottom-right {   
+                   content: element(footer);
+                   } 
+                }
+                  div.footer {  
+            position: running(footer);
+            }
+                table, th, td {
+                border:.3px solid black;
+                 word-wrap: break-word;
+                }
+            </style>
+        </head>
+        
+        <body>
+            <div>
+                  <p style="float:right;font-size:12.9px;">
+                    Date From :&nbsp; {!fromDate}<br/>
+                      Date To : &nbsp;&nbsp;{!toDate}<br/>
+                    Route :{!route}
+                </p>
+                <p style="text-align:Center;">
+                    <apex:image url="{!$Resource.Ledger_logo}"/> 
+                </p>
+                
+                <p style="text-align:Center ;font-size: 20px">
+                    <b><u>Collection Sheet</u></b>
+                </p>
+                <br/>
+              
+                <apex:form >
+                    <table width="100%" style="border-collapse: collapse;">
+                        <tr style="background-color:#ddd9c4;font-size:13.4px;text-align:center;">
+                            <th>SL.NO.</th>
+                            <th>NAME OF PARTY</th>
+                            <th >Ph no</th>
+                            <th >PLACE</th>
+                            <th >BILL NO</th>
+                            <th >CH NO</th>
+                            <th>DATE</th>
+                           
+                            <th >CH AMT</th>
+                               <th >SALE AMT</th>
+                               <th>OLD AMT</th>
+                            <th>NEW AMT</th>
+                            
+                        </tr>
+                        <apex:variable var="rowNo" value="{!0}"/>
+                        
+                        <apex:repeat value="{!salesInvoices}" var="inv" id="theRepeat">
+                            <tr style="font-size:13.8px;text-align:center;" >
+                                <td> <apex:variable var="rowNo" value="{!rowNo+1}"/>{!rowNo}</td>
+                                <td>{!inv.PartyName}</td>
+                                  <td>{!inv.Phone}</td>
+                                <td>{!inv.Place}</td> 
+                                <td>{!inv.InvoiceNo}</td>
+                                <td>{!inv.CheckNo}</td>
+                                <td><apex:outputText value="{0,date,dd/MM/yy}"> <apex:param value="{!inv.invDate}" /> </apex:outputText></td>
+                                <td>{!inv.ChequeAmount}</td>
+                                <td>{!inv.SaleAmount}</td>
+                                <td>{!inv.oldAmount}</td>
+                                <td>{!inv.CashAmount}</td>
+                              
+                            </tr>
+                        </apex:repeat>
+                        <tr style="text-align:center;font-size:14px;text-align:center;">
+                            <th></th>
+                            <th>TOTAL</th>
+                            <th></th>
+                            <th></th>
+                             <th></th>                              
+                             <th></th>
+                            <th></th>
+                            <th>{!totalChequeCollection}</th>
+                            <th>{!TotalSalesAmount}</th>
+                            <th>{!totaloldCash}</th>
+                            <th>{!totalCashCollection}</th>
+                           
+                        </tr>
+                    </table>
+                    
+                </apex:form>   
+                <br/>
+                <div style="font-size:15px;">
+                    <p><strong>TOTAL SALE :&nbsp;</strong>{!TotalSalesAmount}</p>
+                    <p><strong>TOTAL CHEQUE :&nbsp;</strong>{!totalChequeCollection}</p>
+                    <p><strong>TOTAL CASH :&nbsp;</strong>{!totalCashCollectionall}</p>
+                    <p><strong>TOTAL EXPENSE :&nbsp;</strong>{!totalExpense}</p>
+                    <p><strong>CASH IN HAND :&nbsp;</strong>{!ClosingBalance}</p>
+                </div>
+            </div>
+            <div class="footer">
+                
+             <p style="float:right;font-size:10px;">
+  Report generated Date:&nbsp;<apex:outputText value="{0,date,dd/MM/yyyy}"> <apex:param value="{!Now()}" /> </apex:outputText>
+                </p>
+            </div>
+        </body>
+    </html>
+</apex:page>

@@ -1,0 +1,137 @@
+<template> 
+          
+   
+      <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+           <!--     <div class="filters slds-grid"> 
+                 <lightning-combobox data-field="Product_Familty__c" class="slds-size_1-of-4 slds-col " name="family"  label="Product Family"  value={selectedFamily}  placeholder="Select product family" options={productFamily}   ></lightning-combobox>
+                <lightning-combobox  data-field="Product_Size__c" class="slds-size_1-of-4 slds-col "  name="size"  label="Product Size"  value={selectedSize}  placeholder="Select product size" options={sizes}    ></lightning-combobox>
+                <lightning-combobox  data-field="Product_Colour__c"  class="slds-size_1-of-4 slds-col "  name="colour"  label="Product Colour"  value={selectedColour}  placeholder="Select product colour" options={colours}    ></lightning-combobox>
+                <lightning-button     class="slds-size_1-of-4 slds-col  slds-align_absolute-center"  icon-name="utility:search" variant="brand" label="Search" title="Search Products" onclick={searchProducts}></lightning-button>
+                </div>-->
+          <div class="slds-page-header">
+ 
+               <div class="filters slds-grid slds-wrap slds-gutters">  
+                  <lightning-combobox class="slds-size_1-of-2   slds-col" label="Product Family"  data-use="filter" data-type="picklist"     data-field="ProductFamily__c"  value={filter.ProductFamily__c} onchange={handleFilterChange} options={options.ProductFamily__c}  placeholder="Select product family" ></lightning-combobox>
+                  <lightning-combobox class="slds-size_1-of-2   slds-col" label="Product Size2"   data-use="filter"  data-type="picklist"   data-field="Size__c" value={filter.Size__c} options={options.Size__c} onchange={handleFilterChange} placeholder="Select product size"></lightning-combobox>
+                  <lightning-combobox  class="slds-size_1-of-2   slds-col" label="Product Colour"  data-use="filter"  data-type="picklist"    data-field="Color__c" value={filter.Color__c} options={options.Color__c}  onchange={handleFilterChange} placeholder="Select product colour" ></lightning-combobox>
+                  <div class="slds-size_1-of-2 slds-p-top_medium  slds-col  slds-grid slds-gutters"> 
+                     <lightning-button     class="slds-size_1-of-2   slds-col  slds-align_absolute-center"  icon-name="utility:search" variant="brand"   title="Search Products" onclick={searchRecordsCall}></lightning-button>
+                      <div  class="slds-size_1-of-2   slds-col  slds-align_absolute-center" if:false={cardview}>
+                        <lightning-button class="slds-size_1-of-6" onclick={changeView} icon-name="standard:apps" ></lightning-button>
+                      </div>
+                      <div  class="slds-size_1-of-2   slds-col  slds-align_absolute-center" if:true={cardview}>
+                        <lightning-button class="slds-size_1-of-6" onclick={changeView} icon-name="standard:lead_list"></lightning-button>
+                      </div>  
+                  </div>
+                 
+               </div>  
+          </div> 
+                <div if:true={cardview} class="slds-grid slds-wrap slds-grid_pull-padded-xx-small">
+                  <template for:each={items} for:item="item"> 
+                        <div key={item.Id}   class="slds-box box slds-m-bottom--small slds-m-around_small">
+                        <div class="slds-grid slds-grid_pull-padded-xx-small">
+
+                        <div class="slds-size_1-of-2 slds-p-horizontal--xx-small">
+                           <div class="slds-form-element product_title">
+                                 {item.Name}
+                           </div>
+                           <div class="slds-form-element unit_price">
+                               Unit Price -  ₹  {item.MRP__c} 
+                           </div>   
+                        </div>
+                      
+                        <div class="slds-size_1-of-2 slds-p-horizontal--xx-small"> 
+                           <div class="slds-float_right  cart_button"> 
+                           <div if:false={item.selected}  data-id={item.Id}  data-cart="out"  onclick={onselectItem}>
+                              <lightning-button   icon-name="utility:cart" variant="brand"   ></lightning-button>
+                           </div>   
+                           <div if:true={item.selected}  data-id={item.Id}  data-cart="in" onclick={onselectItem}>
+                              <lightning-button   icon-name="utility:delete" variant="destructive"></lightning-button>
+                           </div>   
+                            <!--   <lightning-button   class="slds-button slds-button_brand"    icon-name="utility:cart" variant="brand"   title="Search Products" onclick={searchRecordsCall}></lightning-button>
+                              <lightning-button   class="slds-button slds-button_destructive"    icon-name="utility:delete" variant="destructive"   title="Search Products" onclick={searchRecordsCall}></lightning-button>
+                            -->
+                           </div>  
+                       </div>
+                     </div>
+
+
+
+                        <div class="slds-grid slds-grid_pull-padded-xx-small slds-m-top--medium">
+                           <div class="slds-size_1-of-2 slds-p-horizontal--xx-small">
+                              <div class="slds-grid slds-wrap number_input">
+                                       <div class="slds-align-middle">  
+                                          <button class="slds-button number_button"  icon-name="utility:dash"  title="Substract"></button>
+                                       </div>
+                                    <div class="slds-has-flexi-truncate slds-align-middle hide_lable">
+                                       <input type="number" class="slds-input" placeholder="Qty" name="Quantity"   value={item.Quantity__c} ></input>
+                                    </div> 
+                                       <div class="slds-align-middle">
+                                          <button class="slds-button number_button"   icon-name="utility:add"  title="add"  ></button>
+                                       </div>
+                              </div> 
+                           </div> 
+                           <div class="slds-size_1-of-2 slds-p-horizontal--xx-small discount_blk">
+                              <div class="slds-grid slds-wrap number_input">
+                                  <div class="slds-has-flexi-truncate slds-align-middle hide_lable">
+                                      <input class="slds-input" type="number" placeholder="Disc" name="Discount" label="Discount" value={items.Discount__c}></input>
+                                  </div> 
+                                  <div class="slds-align-middle">
+                                      <span class="percentage_icon">%</span>
+                                  </div> 
+                              </div>
+                        </div>
+                              
+                           </div> 
+                          
+                       </div>  
+                     </template>
+                  </div> 
+
+                  
+
+                    <table  if:false={cardview} class="slds-table slds-table_bordered slds-no-row-hover slds-table_cell-buffer listview" role="grid">
+                        <thead>
+                        <tr class="queryFields">
+                           <td scope="col" height="22" style="width: 3rem"> 
+                                 <lightning-input type="checkbox" onchange={onselectAll}  name="input1"></lightning-input>
+                           </td>
+                           <td scope="col" height="22" data-field="Name">Product</td>
+                           <td scope="col" height="22" data-field="MRP__c">Price</td>
+                           <td scope="col" height="22" data-field="MRP__c">Quantity</td>
+                           <td scope="col" height="22" data-field="TAX_Per_GST__c">Tax(%)</td>
+                           <td scope="col" height="22" data-field="Description__c">Description</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <template for:each={items} for:item="item">
+                           <tr key={item.Id} class="slds-hint-parent">
+                                 <td style="font-weight: bold" >
+                                    <lightning-input checked={item.selected} data-id={item.Id} type="checkbox" value={item.selected} class="checkbox" onchange={onselectItem}  name="input1"></lightning-input>
+                                 </td>
+                                 <td >  
+                                    {item.Name}                              
+                                 </td>
+                                 <td>  
+                                    {item.MRP__c}                             
+                                 </td>
+                                 <td>  
+                                    <input type="number" class="slds-input" placeholder="Qty" name="Quantity"   value={item.Quantity__c} ></input>
+                                 </td>
+                                 <td >  
+                                    {item.TAX_Per_GST__c}                              
+                                 </td>
+                                 <td>
+                                    {item.Description__c}  
+                                 </td>  
+                           </tr>
+                        </template>
+                        </tbody>
+                     </table>    
+          </div> 
+          <!-- modal footer start-->
+          <footer class="slds-modal__footer">
+             <lightning-button variant="neutral" label="Add Products" title="add additional row" icon-name="utility:add" onclick={addItemsEvent}></lightning-button>
+             <button class="slds-button slds-button_neutral" onclick={cancelEvent}>Cancel</button>
+          </footer> 
+   </template>

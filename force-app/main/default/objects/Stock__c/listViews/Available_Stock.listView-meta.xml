@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Available_Stock</fullName>
+    <columns>NAME</columns>
+    <columns>Product__c</columns>
+    <columns>Manufacturing_Date__c</columns>
+    <columns>Intial_Stock__c</columns>
+    <columns>Available_Quantity__c</columns>
+    <columns>Blocked_Quantity__c</columns>
+    <columns>Sold_Qty__c</columns>
+    <columns>Batch_Number__c</columns>
+    <columns>Price__c</columns>
+    <columns>Route__c</columns>
+    <columns>OWNER.ALIAS</columns>
+    <columns>Branch_Name__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Available_Quantity__c</field>
+        <operation>greaterThan</operation>
+        <value>0</value>
+    </filters>
+    <label>Available Stock</label>
+</ListView>

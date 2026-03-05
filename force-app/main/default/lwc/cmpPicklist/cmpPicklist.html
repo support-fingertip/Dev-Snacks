@@ -1,0 +1,41 @@
+<template> 
+    
+
+     
+    <div class="slds-combobox_container slds-size_small cmpPicklist">
+    <div onclick={ignore}  class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open menu">
+    <div onclick={clickToOpen} dataset-id="menuinput"  class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+    <!-- sldsValidatorIgnoreNextLine -->
+    <button type="button" class="slds-input_faux slds-combobox__input slds-has-focus" aria-labelledby="combobox-label-id-51 combobox-id-2-selected-value" id="combobox-id-2-selected-value" aria-controls="listbox-id-2" aria-expanded="true" aria-haspopup="listbox">
+    <span class="slds-truncate" data-id="picklistvalue" id="combobox-value-id-57">{selectedItem.label}</span> 
+    </button>
+
+    <span  class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right">
+        <lightning-icon onclick={clearItem} class="clear-icon" icon-name="action:close" alternative-text="Connected" size="xx-small"  title="xx-small size"></lightning-icon>
+    </span> 
+    
+    </div>
+    <template if:true={isVisible}>   
+    <div data-id="suggestions" id="listbox-id-2" class="suggestions slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+      <template for:each={items} for:item="item">  
+            <li key={item.name} data-value={item.name} onclick={changeOption}  role="presentation" class="slds-listbox__item">
+            <div data-id={item.name} class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+            <span class="slds-media__figure slds-listbox__option-icon"></span>
+            <span class="slds-media__body">
+            <span class="slds-truncate" title="Option A">{item.label}</span> 
+            </span> 
+            </div>
+            </li> 
+      </template>
+    </ul>
+    </div>
+  </template>
+
+
+    </div>
+    </div>
+   
+
+
+</template>

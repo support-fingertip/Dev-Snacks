@@ -1,0 +1,36 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+
+	<!-- Attriute to show header Text -->
+    <aura:attribute name="type" type="String"  />
+ <aura:attribute name="customerId" type="String" />
+	<!-- Modal Code -->
+	<div class="popup" >
+       
+		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-modal_full slds-fade-in-open">
+		    <div class="slds-modal__container" style ="bottom : 3rem">
+		    	<!-- Modal Header -->
+			    <header class="slds-modal__header">
+			        <lightning:buttonIcon iconName="utility:close" class="slds-modal__close" size="large" variant="bare" alternativeText="Close" onclick="{! c.closeModal }"/>
+			        <h2 id="modal-heading-01" style="font-size:16px;font-weight: bold;" class="slds-text-heading_medium slds-hyphenate">New Item Replacement</h2>
+			     </header>
+			     <!-- Main Body of Modal -->
+			      <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+			       <div class=" slds-max-small-size_1-of-1 slds-p-horizontal_small" >
+                    <lightning:select aura:id="field1"  required="true"  name="Type" label="Item Replacement Type" value="{!v.type}">
+                        <option class="field-title2" value="">choose one...</option>
+                        <option class="field-title3" value="Return">Return</option>
+                        <option class="field-title" value="Replacement">Replacement</option>
+                    </lightning:select>
+                </div>
+			    </div>
+			    <!-- Footer of Modal -->
+			    <footer class="slds-modal__footer">
+			        <lightning:button variant="brand" label="Proceed" title="Proceed" onclick="{! c.handleProceed }" />
+			        <lightning:button variant="brand" label="Cancel" title="Cancel" onclick="{! c.closeModal }" />   
+			    </footer>
+		    </div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open"></div>
+	</div>
+
+</aura:component>

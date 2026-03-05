@@ -1,0 +1,186 @@
+<aura:component controller= "BeatPlanner"
+                implements="force:lightningQuickActionWithoutHeader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    
+    <aura:attribute name="users" type="object[]" />
+    <aura:attribute name="Routes" type="String[]" />
+    <aura:attribute name="userId" type="String" />
+    <aura:attribute name="NextUserId" type="String" />
+    <aura:attribute name="routeName" type="String" />
+    <aura:attribute name="SEId" type="String" />
+    <aura:attribute name="routeId" type="String" />
+    <aura:attribute name="beatId" type="String" />
+    <aura:attribute name="Btype" type="String" />
+    <aura:attribute name="startdate" type="Date" />
+    <aura:attribute name="Today" type="Date" />
+    
+    <aura:attribute name="showBeats" type="boolean" default="false"/>
+    <aura:attribute name="showvisits" type="boolean" default="false"/> 
+    <aura:attribute name="showupcoming" type="boolean" default="false"/>
+    <aura:attribute name="showrecent" type="boolean" default="false"/> 
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    <!-- lookup attributes -->
+    <aura:attribute name="allroutes" type="object[]" default="[]"/>
+    <aura:attribute name="searchText" type="string" default=""/>
+    <aura:attribute name="matchRoutes" type="object[]" default="[]"/>
+    
+    
+    
+    <!-- data tabel attributes -->
+    <aura:attribute name="mydata" type="Object"/>
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="mydata1" type="Object"/>
+    <aura:attribute name="mycolumns1" type="List"/>
+    <aura:attribute name="mydata3" type="Object"/>
+    <aura:attribute name="mycolumns3" type="List"/>
+    <aura:attribute name="mycolumns5" type="List"/>
+    <aura:attribute name="mycolumns6" type="List"/>
+    <aura:attribute name="mydata5" type="Object"/>
+    <aura:attribute name="mydata6" type="Object"/>
+    <aura:attribute name="mydata2" type="Object"/>
+    <aura:attribute name="mycolumns2" type="List"/>
+    <aura:attribute name="selectedRowsCount2" type="Integer" default="0"/>
+    <aura:attribute name="selectedstores2" type="List" />
+    <aura:attribute name="mydata4" type="Object"/>
+    <aura:attribute name="mycolumns4" type="List"/>
+    <aura:attribute name="selectedRowsCount4" type="Integer" default="0"/>
+    <aura:attribute name="selectedstores4" type="List" />
+    <aura:attribute name="selectedstores5" type="List" />
+    <aura:attribute name="selectedLeads1" type="List" />
+    <aura:attribute name="selectedRowsCount" type="Integer" default="0"/>
+    <aura:attribute name="selectedRowsCountAcc" type="Integer" default="0"/>
+    <aura:attribute name="selectedRowsCount5" type="Integer" default="0"/>
+    <aura:attribute name="selectedRowsCountAcc1" type="Integer" default="0"/>
+    
+    <aura:attribute name="DistrictList" type="List"/>
+    <aura:attribute name="selectedDistrictList" type="List" default="[]" description="Selected District Picklist Values"/>
+     
+    <aura:attribute name="selectedstores" type="List" />
+    <aura:attribute name="selectedleads" type="List" />
+    <aura:attribute name="selectedaccounts" type="List" />
+    <aura:attribute name="selectedaccounts1" type="List" />
+    <aura:attribute name="CurrentUser" type="Object"/>
+    <aura:attribute name="Edit" type="boolean" default="false"/>
+    
+    <aura:attribute name="StatePicklist" type="String[]" />
+    <aura:attribute name="DistPicklist" type="String[]" default="--None--"/> 
+    <aura:attribute name="state" type="String" />
+    <aura:attribute name="districtSelected" type="String" />
+    <aura:attribute name="district" type="String" />
+    <aura:attribute name="daySelected" type="String" />
+    
+    <aura:attribute name="buttonName" type="String" default="Add Leads/Accounts"/>
+    
+    <aura:attribute name="addLeadAccount" type="boolean" default="false"/>
+    <force:recordData recordId="{!$SObjectType.CurrentUser.Id}"
+                      fields="Profile.Name"
+                      targetFields="{!v.CurrentUser}"/> 
+    <aura:attribute name="beatRecord" type="Object"/>
+    <aura:attribute name="recordLoadError" type="String"/>
+    
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      fields="Name,Executive__c,Number_Days__c"
+                      targetFields="{!v.beatRecord}"
+                      targetError="{!v.recordLoadError}"
+                      recordUpdated="{!c.updateUserId}"
+                      />
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Search Accounts</h1>
+            </div>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                
+                <div class="slds-page-body"> 
+                    <div class="slds-has-flexi-truncate slds-grid">  
+                        <div class="slds-size_1-of-3 slds-p-horizontal_x-small">
+                            <lightning:select value="{!v.daySelected}" name="select1" label="Day to Add" required="true">
+                                <option value="">Select</option>
+                                <option value="1">Day 1</option>
+                                <option value="2">Day 2</option>
+                                <option value="3">Day 3</option>
+                                <option value="4">Day 4</option>
+                                <option value="5">Day 5</option>
+                                <option value="6">Day 6</option>
+                                <option value="7">Day 7</option>
+                                <option value="8">Day 8</option>
+                                <option value="9">Day 9</option>
+                                <option value="10">Day 10</option>
+                                <option value="11">Day 11</option>
+                                <option value="12">Day 12</option>
+                                <option value="13">Day 13</option>
+                                <option value="14">Day 14</option>
+                                <option value="15">Day 15</option>
+                                <option value="16">Day 16</option>
+                                <option value="17">Day 17</option>
+                                <option value="18">Day 18</option>
+                                <option value="19">Day 19</option>
+                                <option value="20">Day 20</option>
+                                <option value="21">Day 21</option>
+                                <option value="22">Day 22</option>
+                                <option value="23">Day 23</option>
+                                <option value="24">Day 24</option>
+                                <option value="25">Day 25</option>
+                                <option value="26">Day 26</option>
+                                <option value="27">Day 27</option>
+                                <option value="28">Day 28</option>
+                                <option value="29">Day 29</option>
+                                <option value="20">Day 30</option>             
+                            </lightning:select>
+                            
+                        </div>
+                        <div class="slds-size_2-of-3 slds-p-horizontal_x-small">
+                            
+                            <!-- <lightning:select value="{!v.districtSelected}" name="select1" label="District" required="true" onchange="{!c.update}">
+                               
+                                <option value="">Select</option>
+                                <option value="Alappuzha">Alappuzha</option>
+                                <option value="Ernakulam">Ernakulam</option>
+                                <option value="Idukki">Idukki</option>
+                                <option value="Kannur">Kannur</option>
+                                <option value="Kasargod">Kasargod</option>
+                                <option value="Kollam">Kollam</option>
+                                <option value="Kottayam">Kottayam</option>
+                                <option value="Kozhikode">Kozhikode</option>
+                                <option value="Malappuram">Malappuram</option>
+                                <option value="Palakkad">Palakkad</option>
+                                <option value="Pathanamthitta">Pathanamthitta</option>
+                                <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                                <option value="Thrissur">Thrissur</option>
+                                <option value="Wayanad">Wayanad</option></lightning:select> -->
+                            
+                            <lightning:dualListbox
+                                                   name="select1"
+                                                   label="District"
+                                                   sourceLabel="Available District"
+                                                   selectedLabel="Selected Distict"
+                                                   options="{!v.DistrictList}"
+                                                   value="{!v.selectedDistrictList}"
+                                                   onchange="{!c.handleDistrictChange}"/>
+                        </div>
+                    </div>   
+                </div>  
+                <div style="height: 350px">
+                    <h1>Selected : {! v.selectedRowsCount }</h1>
+                    <lightning:datatable
+                                         keyField="id"
+                                         data="{! v.mydata}"
+                                         columns="{! v.mycolumns }"
+                                         onrowaction="{!c.handleRowAction }" 
+                                         onrowselection="{! c.updateSelectedText }"/> 
+                </div>
+                
+            </div>  
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral"  onclick="{!c.closePopup}" aria-label="Cancel and close">Cancel</button>
+                <button class="slds-button slds-button_brand" onclick="{!c.addItems}">Add Items</button>
+            </div>  
+            
+            
+        </div>
+    </section>
+</aura:component>

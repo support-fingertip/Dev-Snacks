@@ -1,0 +1,49 @@
+<aura:component controller="SAPsend_TriggerHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+     <aura:attribute name="log" type="object"  />
+         <aura:attribute name="logList" type="list"  />
+     <aura:attribute name="recordId" type="string"  />
+    <aura:attribute name="showCmp" type="boolean" default="false"/>
+    <aura:attribute name="label" type="string" default="Show"/>	
+     <aura:handler name="init" value="{!this}" action="{! c.selectChange}" />
+      <aura:handler event="force:refreshView" action="{! c.selectChange}" />
+    <lightning:card >
+        <aura:set attribute="title">
+            <lightning:icon iconName="action:change_record_type" size="x-small"/>
+          &nbsp; Log Result
+        </aura:set>
+        <aura:set attribute="actions">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col">                
+                            <div class="slds-align_absolute-center">   
+                                <lightning:input class="slds-p-right_medium"  type="toggle"  onchange="{!c.selectChange}" messageToggleActive=" Refresh"  messageToggleInactive="Show"/>
+                       <!--   <lightning:icon size="xx-small" iconName="{!v.showCmp ? 'action:preview' : 'action:'}"/> --> 
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+        </aura:set>
+            <aura:if isTrue="{!v.showCmp}">    
+            <div class="slds-panel slds-m-around_small slds-text-align_center" style="height:16rem;">
+                    <aura:if isTrue="{!!empty(v.logList)}"> 
+                  <table class="slds-table" cellpadding="1" border="1" style="width:100%">
+                         <aura:iteration items="{!v.logList}" var="log">
+                      <tr><th><div class="slds-m-around_small slds-text-align_center"><b>Log Name</b></div></th><th>  <div class="slds-m-around_small"> <a target="_blank" href="{!'/'+log.Id}"><b>{!log.Name}</b></a></div></th></tr>
+                      <tr><th>  <div class="slds-m-around_small slds-text-align_center"><b>Response</b></div></th><td rowspan="1" >  <div class="slds-m-around_small ">{!log.Response__c}</div></td></tr>
+                       <tr><th>  <div class="slds-m-around_small slds-text-align_center"><b>created Date</b></div></th><td rowspan="1" >  <div class="slds-m-around_small ">{!log.CreatedDate_F__c}</div></td></tr>
+                      </aura:iteration>
+                      </table>
+                          <aura:set attribute="else">
+                                <div class="slds-m-around_small slds-text-align_center">
+                                <b>No Record Found</b> 
+                            </div>
+                        </aura:set>
+                </aura:if>
+
+                </div>
+        </aura:if>
+    </lightning:card>
+</aura:component>

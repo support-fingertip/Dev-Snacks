@@ -1,0 +1,177 @@
+<aura:component controller="purchaseOrderController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride"  access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="POId" type="string" />
+    <aura:attribute name="sObjectName" type="String" />
+    <aura:attribute name="vendorId" type="String" />
+    <aura:attribute name="vendorName" type="String" />
+    <aura:attribute name="poDate" type="date" />
+     <aura:attribute name="item" type="object" />
+    <aura:attribute name="itemList" type="object[]"/>
+    <aura:attribute name="GrandTotal" type="Decimal" default="0.00"/>
+    <aura:attribute name="Products" type="Product__c[]" default="[]" />
+    <aura:attribute name="matchproducts" type="Product__c[]" default="[]"/>
+    <aura:attribute name="searchText" type="string" default=""/>
+    <aura:attribute name="vendors" type="Vendor__c[]" default="[]" />
+    <aura:attribute name="matchVendors" type="Vendor__c[]" default="[]"/>
+    <aura:attribute name="searchText2" type="string" default=""/>
+    <aura:attribute name="showRecord" type="boolean" default="true"/>
+    <aura:attribute name="showPdf" type="boolean" default="false"/>
+    <aura:handler name="change" value="{!v.searchText}" action="{!c.searchText}"></aura:handler> 
+    <aura:handler name="change" value="{!v.searchText2}" action="{!c.searchText2}"></aura:handler>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    
+    <aura:html tag="style">
+        .slds-p-around–medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+    </aura:html>
+    
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        
+        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> Create New PO</h2>
+         <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+        <div class="slds-size_1-of-2 slds-p-horizontal_small">
+                                            <aura:if isTrue="{!and(v.vendorName !='',v.vendorName !=null)}">
+                                                
+                                                <lightning:input value="{!v.vendorName}" aura:id="enter-search" name="enter-search" label="Vendor Name" type="text" disabled="true"/>
+                                                
+                                                <aura:set attribute="else">
+                                                    
+                                                    <ul class="slds-lookup__list" role="listbox">
+                                                        
+                                                        <lightning:input value="{!v.searchText2}" aura:id="enter-search" name="enter-search" label="Vendor Name" type="search"/><br/>
+                                                        <aura:if isTrue="{!v.matchVendors}">
+                                                            <div class="{!if(not(empty(v.matchVendors)), 'result-buttom','')}">
+                                                                <aura:iteration items="{!v.matchVendors}" var="item">
+                                                                    <li role="presentation">
+                                                                        <span class="slds-lookup__item-action slds-media slds-media--center" role="option">
+                                                                            <div class="slds-media__body">
+                                                                                <div class="slds-input-has-icon slds-input-has-icon--right">
+                                                                                    <div class="slds-lookup__result-text" data-record="{!index}" data-id="{!item.Id}" onclick="{!c.update2 }">
+                                                                                        <a role="option" >
+                                                                                            <lightning:icon iconName="standard:buyer_account" size="xx-small"/>&nbsp;{!item.Name}
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </span>
+                                                                    </li>
+                                                                </aura:iteration>
+                                                            </div>
+                                                        </aura:if>
+                                                    </ul>
+                                                    
+                                                    
+                                                </aura:set>
+                                            </aura:if>
+                                            
+                                        </div>
+        <div class="slds-size_1-of-2 slds-p-horizontal_small">
+                    <lightning:input type="date" name="input1" label="PO date" value="{!v.poDate}"/>
+        </div>
+    </div>
+    </div>
+    
+    <div class="slds-modal__content">
+        <aura:if isTrue="{!v.showRecord}">
+            <table > 
+                <tbody>      
+                    <aura:iteration items="{!v.ItemList}" var="rec" indexVar="index">
+                        <tr>
+                            <td> 
+                                <lightning:card title="{!index+1+(')')}" class="slds-p-left_xx-small groove">
+                                    <div class="slds-grid slds-wrap slds-grid_pull-padded-x-small">
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small">
+                                            <aura:if isTrue="{!and(rec.Product_Name__c !='',rec.Product_Name__c !=null)}">
+                                                
+                                                <lightning:input value="{!rec.Product_Name__c}" aura:id="enter-search" name="enter-search" label="Product Name" type="text" disabled="true"/>
+                                                
+                                                <aura:set attribute="else">
+                                                    
+                                                    <ul class="slds-lookup__list" role="listbox">
+                                                        
+                                                        <lightning:input value="{!v.searchText}" aura:id="enter-search" name="enter-search" label="Product Name" type="search"/><br/>
+                                                        <aura:if isTrue="{!v.matchproducts}">
+                                                            <div class="{!if(not(empty(v.matchproducts)), 'result-buttom','')}">
+                                                                <aura:iteration items="{!v.matchproducts}" var="item">
+                                                                    <li role="presentation">
+                                                                        <span class="slds-lookup__item-action slds-media slds-media--center" role="option">
+                                                                            <div class="slds-media__body">
+                                                                                <div class="slds-input-has-icon slds-input-has-icon--right">
+                                                                                    <div class="slds-lookup__result-text" data-record="{!index}" data-id="{!item.Id}" onclick="{!c.update }">
+                                                                                        <a role="option" >
+                                                                                            <lightning:icon iconName="standard:product" size="xx-small"/>&nbsp;{!item.Name}
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </span>
+                                                                    </li>
+                                                                </aura:iteration>
+                                                            </div>
+                                                        </aura:if>
+                                                    </ul>
+                                                    
+                                                    
+                                                </aura:set>
+                                            </aura:if>
+                                            
+                                        </div>
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small" onkeyup="{!c.getGrandTotal}" data-record="{!index}">
+                                            <lightning:input name="prodQty" type="number"  label="Quantity" value="{!rec.Ordered_Quantity__c}" /> 
+                                        </div>
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small" onkeyup="{!c.getGrandTotal}" data-record="{!index}">
+                                            <lightning:input name="prodPrice" type="number" formatter="currency" step="0.01" label="Unit Price" value="{!rec.Unit_Price__c}" />
+                                        </div>
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small" >
+                                            <lightning:input name="tax" type="number" formatter="percent-fixed" label="Tax" step="0.01" value="{!rec.Tax__c}" disabled="true"/>
+                                        </div>
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small" >
+                                            <lightning:input name="tax" type="number" formatter="currency" label="Tax Value" step="0.01" value="{!((rec.Ordered_Quantity__c * rec.Unit_Price__c)*rec.Tax__c)/100}" disabled="true"/>
+                                        </div>
+                                        <div class="slds-size_1-of-6 slds-p-horizontal_small">
+                                            <lightning:input name="total" type="number" formatter="currency" step="0.01" label="Total Price" value="{!((rec.Ordered_Quantity__c * rec.Unit_Price__c)+ ((rec.Ordered_Quantity__c * rec.Unit_Price__c)*rec.Tax__c)/100)}" disabled="true" />
+                                        </div>
+                                    </div>
+                                    <aura:set attribute="actions" >
+                                        <a onclick="{!c.removeRow}" data-record="{!index}">
+                                            <lightning:buttonIcon iconName="utility:delete" iconClass="red"  size="x-large" variant="destructive" alternativeText="Delete" />
+                                        </a>
+                                        <lightning:buttonIcon iconName="utility:add" iconClass="green"  size="x-large" variant="success" alternativeText="Add" onclick="{!c.addRow}"/>
+                                        
+                                    </aura:set>
+                                </lightning:card>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </aura:if>
+        <aura:if isTrue="{!v.showPdf}">
+            
+            <iframe src="{!'/apex/quotePdfVfpage?Id='+ v.POId}" width="100%" height="500px;" frameBorder="0"/>
+        </aura:if>
+        <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+            <aura:if isTrue="{!v.showRecord}">
+                <b>Grand Total:</b>₹{!v.GrandTotal}
+                <div class="slds-align_absolute-center slds-p-top_small ">
+                    <lightning:button variant="brand" label="Cancel" title="Brand action" onclick="{!c.doCancel}" />
+                    <lightning:button  variant="brand" label="Save" title="Brand action" onclick="{!c.doSave}" />
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.showPdf}">
+                <lightning:button variant="brand" label="Cancel" title="Brand action" onclick="{!c.doCancel}" />
+                <lightning:button  variant="brand" label="Send " title="Brand action" onclick="{!c.sendEmail}" />
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

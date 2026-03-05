@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sub_Mode_of_transport__c</fullName>
+    <externalId>false</externalId>
+    <label>Sub Mode of transport</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Mode_of_Transport__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>2 wheeler</fullName>
+                <default>false</default>
+                <label>2 wheeler</label>
+            </value>
+            <value>
+                <fullName>4 wheeler</fullName>
+                <default>false</default>
+                <label>4 wheeler</label>
+            </value>
+            <value>
+                <fullName>Public Transport</fullName>
+                <default>false</default>
+                <label>Public Transport</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Road</controllingFieldValue>
+            <valueName>2 wheeler</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Road</controllingFieldValue>
+            <valueName>4 wheeler</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Road</controllingFieldValue>
+            <valueName>Public Transport</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>
