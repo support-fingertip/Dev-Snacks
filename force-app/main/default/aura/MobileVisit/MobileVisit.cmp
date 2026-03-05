@@ -24,6 +24,7 @@
     <aura:attribute name="OrderLineLists" type="List" />
     <aura:attribute name="searchProd" type="String" default=""/>
     <aura:attribute name="searchProdCode" type="String" default=""/>
+    <aura:attribute name="originalStockQuantities" type="Map" default="{}" />
    <!-- <aura:attribute name="Name" type="List" />-->
     <aura:attribute type="List" name="selectedCheckBoxes" default="[]"  />
     <aura:attribute name="tripData" type="object" />
