@@ -24,6 +24,7 @@
     <aura:attribute name="OrderLineLists" type="List" />
     <aura:attribute name="searchProd" type="String" default=""/>
     <aura:attribute name="searchProdCode" type="String" default=""/>
+    <aura:attribute name="originalStockQuantities" type="Map" default="{}" />
    <!-- <aura:attribute name="Name" type="List" />-->
     <aura:attribute type="List" name="selectedCheckBoxes" default="[]"  />
     <aura:attribute name="tripData" type="object" />
@@ -999,6 +1000,7 @@
                                                     <div class="slds-float_right">
                                                         <p class="slds-m-around_xx-small slds-p-top_large availableQty"><strong>Available quantity : <ui:outputText value="{!prd.Available_Quantity__c}"/></strong></p>
                                                         <p class="slds-m-around_xx-small slds-p-top_large availableQty"><strong>MRP : <ui:outputText value="{!prd.MRP__c}"/></strong></p>
+                                                         
                                                     </div>
                                                 </div>
                                             </aura:if>
@@ -1102,6 +1104,7 @@
                                                     <div class="slds-float_right">
                                                         <p class="slds-m-around_xx-small slds-p-top_large availableQty"><strong>Available quantity : <ui:outputText value="{!prd.Available_Quantity__c}"/></strong></p>
                                                     	<p class="slds-m-around_xx-small slds-p-top_large availableQty"><strong>MRP : <ui:outputText value="{!prd.MRP__c}"/></strong></p>
+                                                        
                                                     </div>
                                                 </div>
                                             </aura:if>

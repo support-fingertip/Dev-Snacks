@@ -50,6 +50,7 @@
                     var state = response.getState();
                     if(state == "SUCCESS" ){ 
                         var db = response.getReturnValue();
+ alert(JSON.stringify(db)) ;
                         component.set('v.Products',db);
                         component.set('v.spinner',false);
                     }

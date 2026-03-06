@@ -61,7 +61,7 @@
                                                 var action=component.get("c.getproductList");
                                                 action.setCallback(this,function(response){
                                                     if(response.getState() == "SUCCESS"){ 
-                                                        
+                                                      
                                                         helper.data.products = response.getReturnValue();
                                                         var action=component.get("c.getTodaysVisits");
                                                         action.setCallback(this,function(response){
