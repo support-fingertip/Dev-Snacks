@@ -1585,6 +1585,7 @@
         component.set("v.productStockMfgMap", []);
         component.set("v.confirmOrderWithItems", false);
         component.set('v.showConfirmInvoiceWithItem',false);
+        component.set("v.originalStockQuantities", {});
     },
     CancelClick: function (component, event) {
 
@@ -1606,6 +1607,7 @@
         component.set("v.productStockMfgMap", []);
         component.set("v.confirmOrderWithItems", false);
         component.set('v.showConfirmInvoiceWithItem',false);
+        component.set("v.originalStockQuantities", {});
     },
     addRow: function (component, event, helper) {
         var storeId = component.get('v.data.currentvisit.Account1__r.EId__c');
@@ -1796,6 +1798,7 @@
         console.log('selectedStock== ' + selectedStock);
         var products = component.get('v.orderItemList');
         var stocks = component.get('v.stocks');
+        var originalStockQuantities = component.get("v.originalStockQuantities");
         var storeId = component.get('v.data.currentvisit.Account1__c');
         var cashDis = component.get('v.data.currentvisit.Account1__r.Cash_Discount__c');
         var discounts = component.get('v.discounts');
@@ -1814,6 +1817,12 @@
                 // products[index].Stock__c = stocks[i].Id;
                 products[index].MRP__c = stocks[i].Price__c;                      
                 products[index].Available_Quantity__c = stocks[i].Available_Quantity__c;
+                // Store original quantity if not already stored
+                var stockId = stocks[i].Id;
+                if (!originalStockQuantities[stockId]) {
+                    originalStockQuantities[stockId] = stocks[i].Available_Quantity__c;
+                    component.set("v.originalStockQuantities", originalStockQuantities);
+                }
                 //  component.set('v.orderItemList', products);
                 console.log('products : ' + products);
                 var unitPriceAfterDiscount = 0.0,productDiscount=0,productDiscountAmt=0;
@@ -2102,11 +2111,57 @@
    
 	//This function is called when Quantity is entered in order/invoice. Grand Total is also calculated here
     getPrices: function (component, event, helper) {
-        console.log('current QTY=== '+JSON.stringify(Object.assign({}, event.currentTarget.dataset)));
+        try{
         var quantity = event.currentTarget.dataset.value;
         console.log('quantity==' + quantity);
         var index = event.currentTarget.dataset.record;
         var oitems = component.get('v.orderItemList');
+        var orderItemList = oitems;
+
+        var originalStockQuantities = component.get("v.originalStockQuantities");
+        var currentItem = orderItemList[index];
+        var stockId = currentItem.Stock__c;
+        var enteredQty = currentItem.Quantity__c;
+        var indexNum = parseInt(index, 10);
+              var newOrder = false;
+             var newInvoice = false;
+        if (component.get('v.buttonsToCreateOrder') == 'NewOrder') {
+            newOrder = true;
+        } else if(component.get('v.buttonsToCreateOrder') == 'NewInvoice'){
+            newOrder = false;
+            newInvoice=true;
+        }else if(component.get('v.buttonsToCreateOrder') == 'unsealed'){
+            newOrder = false;
+        }
+
+
+        // Validate stock is selected and quantity is entered
+        if(stockId && enteredQty && enteredQty > 0 && newInvoice) {
+            var originalQty = currentItem.Available_Quantity__c;
+
+            // Calculate total quantity used by this stock in other items
+            var totalUsedQty = 0;
+            for(var i = 0; i < orderItemList.length; i++) {
+                if(i !== indexNum && orderItemList[i].Stock__c === stockId && orderItemList[i].Quantity__c) {
+                    totalUsedQty += parseFloat(orderItemList[i].Quantity__c);
+                }
+            }
+
+            // Calculate remaining quantity
+            var remainingQty =0;
+           remainingQty= originalQty - totalUsedQty;
+            // Validate entered quantity
+            if(enteredQty > remainingQty) {
+                helper.showToast("Entered quantity (" + enteredQty + ") exceeds available quantity (" + remainingQty + ") for " + currentItem.Name, "error");
+                currentItem.Quantity__c = null;
+                component.set("v.orderItemList", orderItemList);
+                return;
+            }
+
+          
+        }
+
+        // Continue with existing price calculation logic below...
         var storeId = component.get('v.data.currentvisit.Account1__c');
         var cashDis = component.get('v.data.currentvisit.Account1__r.Cash_Discount__c');
         var salesTaxPercent= 0;
@@ -2130,15 +2185,7 @@
             console.log('salesTaxPrice== ' + salesTaxPrice);
         }
         
-        var newOrder = false;
-        if (component.get('v.buttonsToCreateOrder') == 'NewOrder') {
-            newOrder = true;
-        } else if(component.get('v.buttonsToCreateOrder') == 'NewInvoice'){
-            newOrder = false;
-        }else if(component.get('v.buttonsToCreateOrder') == 'unsealed'){
-            newOrder = false;
-        }
-
+      
         if(newOrder == false && quantity > oitems[index].Available_Quantity__c){
             helper.showToast("Added quantity is exceeding then available quantity for "+'"'+oitems[index].Name+'"',"error");
         }
@@ -2220,6 +2267,9 @@
         component.set('v.GrandTotalDisc', Number(grandtotaldisc).toFixed(2));
         console.log('grandtotaldisc-after:'+component.get('v.GrandTotalDisc'))
         console.log('grandtotal = ' + grandtotal);
+        }catch(e){
+           console.error(e.messaage);
+        }
     },
    
      getRackStock: function (component, event, helper) {
